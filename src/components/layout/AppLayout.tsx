@@ -1,14 +1,27 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { 
+  LayoutDashboard, 
+  UserCircle, 
+  Globe2, 
+  Users, 
+  GitMerge, 
+  Rocket,
+  BookOpen,
+  Sparkles,
+  LogOut,
+  ChevronRight
+} from 'lucide-react';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [isHovered, setIsHovered] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -17,40 +30,79 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const navItems = [
-    { name: 'Tổng quan (Dashboard)', path: '/' },
-    { name: 'Module 01: Hồ sơ năng lực', path: '/m01' },
-    { name: 'Module 02: Phân tích Thị trường', path: '/m02' },
-    { name: 'Module 03: Hiểu người Mua', path: '/m03' },
-    { name: 'Module 04: Quy trình Bán hàng', path: '/m04' },
-    { name: 'Module 05: Kế hoạch Hành động', path: '/m05' },
+    { name: 'Tổng quan (Dashboard)', path: '/', icon: <LayoutDashboard size={20} /> },
+    { name: 'Module 01: Hồ sơ năng lực', path: '/m01', icon: <UserCircle size={20} /> },
+    { name: 'Module 02: Phân tích Thị trường', path: '/m02', icon: <Globe2 size={20} /> },
+    { name: 'Module 03: Hiểu người Mua', path: '/m03', icon: <Users size={20} /> },
+    { name: 'Module 04: Quy trình Bán hàng', path: '/m04', icon: <GitMerge size={20} /> },
+    { name: 'Module 05: Kế hoạch Hành động', path: '/m05', icon: <Rocket size={20} /> },
   ];
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      {/* SIDEBAR */}
-      <div style={{
-        width: '280px',
-        background: 'var(--bg-secondary)',
-        borderRight: '1px solid var(--border-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '24px 0',
-        position: 'fixed',
-        height: '100vh',
-        overflowY: 'auto'
-      }}>
-        <div style={{ padding: '0 24px', marginBottom: '32px' }}>
-          <h2 style={{ color: 'var(--accent-primary)', fontSize: '1.25rem', margin: 0, lineHeight: '1.4' }}>
-            Export Sales<br/>Interactive Hub
-          </h2>
-          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-            Workstation B2B
+      
+      {/* THAY THẾ CHO SIDEBAR ĐỂ DỮ CHỖ (DUMMY SIDEBAR) */}
+      <div style={{ width: '70px', flexShrink: 0 }}></div>
+
+      {/* AUTO-COLLAPSE SIDEBAR (OVERLAY) */}
+      <div 
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        style={{
+          width: isHovered ? '280px' : '70px',
+          background: 'var(--bg-secondary)',
+          borderRight: '1px solid var(--border-color)',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '24px 0',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          height: '100vh',
+          zIndex: 50,
+          overflowX: 'hidden',
+          transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          boxShadow: isHovered ? '4px 0 24px rgba(0,0,0,0.5)' : 'none'
+        }}
+      >
+        {/* LOGO AREA */}
+        <div style={{ padding: '0 24px', marginBottom: '32px', display: 'flex', alignItems: 'center', height: '48px' }}>
+          <div style={{ 
+            width: '22px', 
+            height: '22px', 
+            background: 'var(--accent-primary)', 
+            borderRadius: '4px',
+            flexShrink: 0,
+            marginRight: '16px'
+          }}></div>
+          
+          <div style={{ 
+            opacity: isHovered ? 1 : 0, 
+            transition: 'opacity 0.2s',
+            whiteSpace: 'nowrap'
+          }}>
+            <h2 style={{ color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0, lineHeight: '1.2' }}>
+              Export Sales<br/>Hub
+            </h2>
           </div>
         </div>
 
+        {/* NAVIGATION LINKS */}
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 12px' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px', marginBottom: '4px' }}>
-            Hành trình Học tập
+          <div style={{ 
+            fontSize: '0.65rem', 
+            fontWeight: 'bold', 
+            color: 'var(--text-muted)', 
+            textTransform: 'uppercase', 
+            letterSpacing: '0.05em', 
+            padding: '8px 12px', 
+            marginBottom: '4px',
+            opacity: isHovered ? 1 : 0,
+            transition: 'opacity 0.2s',
+            whiteSpace: 'nowrap',
+            height: '24px' // Prevent layout shift when invisible
+          }}>
+            {isHovered ? 'Hành trình Học tập' : ''}
           </div>
           
           {navItems.map((item) => {
@@ -60,81 +112,174 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.path} 
                 href={item.path}
                 style={{
-                  padding: '12px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '12px 14px',
                   borderRadius: '8px',
                   textDecoration: 'none',
                   color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
                   background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
                   fontWeight: isActive ? 'bold' : 'normal',
                   transition: 'all 0.2s ease',
-                  borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent'
+                  borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent',
+                  whiteSpace: 'nowrap'
                 }}
+                title={!isHovered ? item.name : undefined}
               >
-                {item.name}
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+                  {item.icon}
+                </div>
+                <span style={{ 
+                  marginLeft: '16px', 
+                  opacity: isHovered ? 1 : 0,
+                  transition: 'opacity 0.2s',
+                  display: isHovered ? 'inline-block' : 'none'
+                }}>
+                  {item.name}
+                </span>
               </Link>
             );
           })}
 
-          <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', padding: '8px 12px', marginTop: '24px', marginBottom: '4px' }}>
-            Hỗ trợ & Công cụ
+          <div style={{ 
+            fontSize: '0.65rem', 
+            fontWeight: 'bold', 
+            color: 'var(--text-muted)', 
+            textTransform: 'uppercase', 
+            letterSpacing: '0.05em', 
+            padding: '8px 12px', 
+            marginTop: '24px', 
+            marginBottom: '4px',
+            opacity: isHovered ? 1 : 0,
+            transition: 'opacity 0.2s',
+            whiteSpace: 'nowrap',
+            height: '24px'
+          }}>
+            {isHovered ? 'Hỗ trợ & Công cụ' : ''}
           </div>
           <a 
             href="#"
             style={{
-              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '12px 14px',
               borderRadius: '8px',
               textDecoration: 'none',
               color: 'var(--text-secondary)',
               transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
+              borderLeft: '3px solid transparent',
+              whiteSpace: 'nowrap'
             }}
+            title="Tài liệu Tham khảo"
           >
-            📚 Tài liệu Tham khảo
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+              <BookOpen size={20} />
+            </div>
+            <span style={{ 
+              marginLeft: '16px',
+              opacity: isHovered ? 1 : 0,
+              transition: 'opacity 0.2s',
+              display: isHovered ? 'inline-block' : 'none'
+            }}>
+              Tài liệu Tham khảo
+            </span>
           </a>
           <a 
             href="https://notebooklm.google.com/"
             target="_blank"
             rel="noopener noreferrer"
             style={{
-              padding: '12px 16px',
+              display: 'flex',
+              alignItems: 'center',
+              padding: '12px 14px',
               borderRadius: '8px',
               textDecoration: 'none',
               color: 'var(--text-secondary)',
               transition: 'all 0.2s ease',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
+              borderLeft: '3px solid transparent',
+              whiteSpace: 'nowrap'
             }}
+            title="Trợ lý AI (NotebookLM)"
           >
-            ✨ Trợ lý AI (NotebookLM)
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+              <Sparkles size={20} style={{ color: 'var(--accent-warning)' }} />
+            </div>
+            <span style={{ 
+              marginLeft: '16px',
+              opacity: isHovered ? 1 : 0,
+              transition: 'opacity 0.2s',
+              display: isHovered ? 'inline-block' : 'none'
+            }}>
+              Trợ lý AI (NotebookLM)
+            </span>
           </a>
         </nav>
 
-        <div style={{ padding: '24px', borderTop: '1px solid var(--border-color)', marginTop: 'auto' }}>
+        {/* LOGOUT BUTTON */}
+        <div style={{ padding: '24px 12px', borderTop: '1px solid var(--border-color)', marginTop: 'auto' }}>
           <button 
             onClick={handleLogout}
             style={{ 
               width: '100%', 
-              padding: '10px', 
+              padding: '12px 14px', 
               background: 'transparent', 
-              border: '1px solid var(--border-color)', 
+              border: 'none', 
               color: 'var(--text-secondary)', 
               borderRadius: '8px',
               cursor: 'pointer',
-              transition: 'all 0.2s'
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              borderLeft: '3px solid transparent'
             }}
-            onMouseOver={(e) => e.currentTarget.style.color = 'var(--accent-danger)'}
-            onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+            onMouseOver={(e) => {
+              e.currentTarget.style.color = 'var(--accent-danger)';
+              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.color = 'var(--text-secondary)';
+              e.currentTarget.style.background = 'transparent';
+            }}
+            title="Đăng xuất"
           >
-            Đăng xuất
+            <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+              <LogOut size={20} />
+            </div>
+            <span style={{ 
+              marginLeft: '16px',
+              opacity: isHovered ? 1 : 0,
+              transition: 'opacity 0.2s',
+              display: isHovered ? 'inline-block' : 'none',
+              whiteSpace: 'nowrap'
+            }}>
+              Đăng xuất
+            </span>
           </button>
         </div>
+
+        {/* Cửa sổ gợi ý mở rộng (Chevron) */}
+        {!isHovered && (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            right: '-12px',
+            transform: 'translateY(-50%)',
+            background: 'var(--bg-secondary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: '50%',
+            padding: '4px',
+            color: 'var(--text-muted)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+            <ChevronRight size={14} />
+          </div>
+        )}
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div style={{ flex: 1, marginLeft: '280px', width: 'calc(100% - 280px)' }}>
+      <div style={{ flex: 1, width: 'calc(100% - 70px)' }}>
         {children}
       </div>
     </div>
