@@ -72,25 +72,11 @@ export default function Module02Page() {
   return (
     <div style={{ padding: '24px', height: 'calc(100vh - 64px)', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       {/* Header riêng của Module */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <div>
-          <h1 style={{ fontSize: '1.75rem', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <button 
-              onClick={() => router.push('/dashboard')}
-              style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '1.5rem', padding: '0 8px' }}
-              title="Quay lại Dashboard"
-            >
-              ←
-            </button>
-            Module 02
-          </h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Phân tích Thị trường & Chân dung Khách hàng B2B (ICP)</p>
-        </div>
-        <div>
-          <button className="btn btn-primary" onClick={() => router.push('/m03')}>
-            Tiếp tục: Module 03 ➔
-          </button>
-        </div>
+      <div style={{ marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '1.75rem', marginBottom: '8px', color: 'var(--text-primary)' }}>
+          Module 02
+        </h1>
+        <p style={{ color: 'var(--text-secondary)' }}>Phân tích Thị trường & Chân dung Khách hàng B2B (ICP)</p>
       </div>
 
       <ModuleLayout 
