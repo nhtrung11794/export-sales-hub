@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAutoSave } from '@/hooks/useAutoSave';
+import { createClient } from '@/lib/supabase/client';
 
 interface M1FormData {
   competency_radar: {
@@ -28,20 +29,59 @@ const initialData: M1FormData = {
 };
 
 export default function M1_CompetencyForm() {
-  const handleSave = async (data: M1FormData) => {
-    // Tạm thời giả lập gọi API lưu (delay 1s)
-    return new Promise<void>((resolve) => {
-      setTimeout(() => {
-        console.log('Saved data to Supabase (Mock):', data);
-        resolve();
-      }, 1000);
-    });
+  const supabase = createClient();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // Khởi tạo và Load dữ liệu cũ nếu có
+  useEffect(() => {
+    async function loadData() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setIsInitializing(false);
+        return;
+      }
+      
+      setUserId(user.id);
+      
+      const { data, error } = await supabase
+        .from('module_submissions')
+        .select('form_data')
+        .eq('user_id', user.id)
+        .eq('module_id', 'M01')
+        .single();
+        
+      if (data && data.form_data) {
+        setData(data.form_data as M1FormData);
+      }
+      setIsInitializing(false);
+    }
+    loadData();
+  }, []);
+
+  const handleSave = async (formData: M1FormData) => {
+    if (!userId) return;
+    
+    const { error } = await supabase
+      .from('module_submissions')
+      .upsert({
+        user_id: userId,
+        module_id: 'M01',
+        form_data: formData,
+        status: 'draft',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,module_id' });
+      
+    if (error) {
+      console.error('Error saving to Supabase:', error);
+      throw error; // Để useAutoSave bắt lỗi
+    }
   };
 
   const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M1FormData>(
     initialData,
     handleSave,
-    3000 // Test nhanh với 3s delay thay vì 30s
+    3000 // Tự động lưu sau 3s
   );
 
   // Cập nhật trạng thái lên UI thông qua ID được định nghĩa ở ModuleLayout
@@ -73,6 +113,10 @@ export default function M1_CompetencyForm() {
       },
     }));
   };
+
+  if (isInitializing) {
+    return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu bài làm...</div>;
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
