@@ -10,42 +10,13 @@ export default function AuthForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   
   const router = useRouter();
-
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-    
-    try {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: 'Học viên Mới',
-            cohort_batch: 'BATCH_01'
-          }
-        }
-      });
-      
-      if (error) throw error;
-      setMessage('Đăng ký thành công! Vui lòng kiểm tra email để xác thực.');
-    } catch (err: any) {
-      setError(err.message || 'Đã xảy ra lỗi khi đăng ký');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    setMessage(null);
     
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -106,31 +77,15 @@ export default function AuthForm() {
           </div>
         )}
 
-        {message && (
-          <div style={{ padding: '12px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)', borderRadius: '8px', fontSize: '0.875rem' }}>
-            {message}
-          </div>
-        )}
-
         <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
           <button 
             type="button" 
             onClick={handleSignIn}
             disabled={loading}
             className="btn btn-primary" 
-            style={{ flex: 1 }}
+            style={{ width: '100%' }}
           >
             {loading ? 'Đang xử lý...' : 'Đăng nhập'}
-          </button>
-          
-          <button 
-            type="button" 
-            onClick={handleSignUp}
-            disabled={loading}
-            className="btn btn-secondary" 
-            style={{ flex: 1 }}
-          >
-            {loading ? 'Đang xử lý...' : 'Đăng ký mới'}
           </button>
         </div>
       </form>
