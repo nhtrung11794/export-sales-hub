@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { createClient } from '@/lib/supabase/client';
 
+import { useModuleStore } from '@/store/useModuleStore';
+
 interface M2FormData {
   target_market: string;
   market_reason: string;
@@ -35,39 +37,16 @@ const initialData: M2FormData = {
 
 export default function M2_MarketForm() {
   const supabase = createClient();
+  const { isInitialized } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
-  const [isInitializing, setIsInitializing] = useState(true);
 
-  // Khởi tạo và Load dữ liệu cũ nếu có
   useEffect(() => {
     async function loadData() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setIsInitializing(false);
-        return;
-      }
-      
-      setUserId(user.id);
-      
-      const { data, error } = await supabase
-        .from('module_submissions')
-        .select('form_data')
-        .eq('user_id', user.id)
-        .eq('module_id', 'M02')
-        .single();
-        
-      if (data && data.form_data) {
-        // Đảm bảo load đủ cấu trúc mảng competitors kể cả khi dữ liệu cũ bị thiếu
-        const loadedData = data.form_data as M2FormData;
-        if (!loadedData.competitors || loadedData.competitors.length < 2) {
-            loadedData.competitors = initialData.competitors;
-        }
-        setData(loadedData);
-      }
-      setIsInitializing(false);
+      if (user) setUserId(user.id);
     }
     loadData();
-  }, []);
+  }, [supabase.auth]);
 
   const handleSave = async (formData: M2FormData) => {
     if (!userId) return;
@@ -79,7 +58,7 @@ export default function M2_MarketForm() {
         module_id: 'M02',
         form_data: formData,
         status: 'draft',
-        updated_at: new Date().toISOString()
+        last_saved_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       
     if (error) {
@@ -89,6 +68,7 @@ export default function M2_MarketForm() {
   };
 
   const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M2FormData>(
+    'M02',
     initialData,
     handleSave,
     3000
@@ -135,8 +115,8 @@ export default function M2_MarketForm() {
     });
   };
 
-  if (isInitializing) {
-    return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu bài làm...</div>;
+  if (!isInitialized) {
+    return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu bài làm từ Global Store...</div>;
   }
 
   return (

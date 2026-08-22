@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useModuleStore } from '@/store/useModuleStore';
 import { 
   LayoutDashboard, 
   UserCircle, 
@@ -22,6 +23,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const supabase = createClient();
   const [isHovered, setIsHovered] = useState(false);
+
+  const { fetchAllSubmissions, isLoading: isStoreLoading } = useModuleStore();
+
+  useEffect(() => {
+    const initStore = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id) {
+        await fetchAllSubmissions(session.user.id);
+      }
+    };
+    initStore();
+  }, [supabase, fetchAllSubmissions]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

@@ -1,13 +1,21 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useModuleStore, ModuleId } from '@/store/useModuleStore';
 
 type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
 
 export function useAutoSave<T>(
+  moduleId: ModuleId,
   initialData: T,
   onSave: (data: T) => Promise<void>,
-  delayMs: number = 30000
+  delayMs: number = 3000
 ) {
-  const [data, setData] = useState<T>(initialData);
+  // Try to use store data if it exists, otherwise fallback to initialData
+  const storeData = useModuleStore(state => state.submissions[moduleId]?.form_data);
+  const updateStore = useModuleStore(state => state.updateSubmissionLocal);
+  
+  const [data, setData] = useState<T>(
+    (storeData && Object.keys(storeData).length > 0) ? (storeData as T) : initialData
+  );
   const [status, setStatus] = useState<SaveStatus>('idle');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   
@@ -23,6 +31,10 @@ export function useAutoSave<T>(
     try {
       setStatus('saving');
       await onSave(dataToSave);
+      
+      // Update global store on successful save
+      updateStore(moduleId, dataToSave);
+      
       savedDataRef.current = dataToSave;
       setLastSaved(new Date());
       setStatus('saved');
@@ -30,7 +42,7 @@ export function useAutoSave<T>(
       console.error('Auto-save failed:', error);
       setStatus('error');
     }
-  }, [onSave]);
+  }, [onSave, moduleId, updateStore]);
 
   // Handle auto-save on delay (debounce)
   useEffect(() => {
