@@ -1,8 +1,41 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import ModuleLayout from '@/components/layout/ModuleLayout';
 import M1_CompetencyForm from '@/components/modules/m01/M1_CompetencyForm';
+import { supabase } from '@/lib/supabase';
 
 export default function M01Page() {
+  const [loadingFile, setLoadingFile] = useState<string | null>(null);
+
+  const handleOpenDocument = async (fileName: string) => {
+    try {
+      setLoadingFile(fileName);
+      
+      // Xin link ký tự động (Signed URL) có hiệu lực trong 60 giây
+      const { data, error } = await supabase
+        .storage
+        .from('course_materials')
+        .createSignedUrl(fileName, 60);
+
+      if (error) {
+        console.error('Lỗi khi lấy tài liệu:', error);
+        alert('Không thể mở tài liệu. Vui lòng kiểm tra lại file đã được tải lên Supabase chưa.');
+        return;
+      }
+
+      if (data?.signedUrl) {
+        // Mở link trong tab mới
+        window.open(data.signedUrl, '_blank');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Đã xảy ra lỗi kết nối.');
+    } finally {
+      setLoadingFile(null);
+    }
+  };
+
   const learningContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div className="glass-panel" style={{ padding: '16px' }}>
@@ -11,9 +44,14 @@ export default function M01Page() {
           Thế giới thay đổi chóng mặt với AI và Data. Bài này giúp bạn reset tư duy, nhìn nhận lại vai trò của người Sales B2B trong kỷ nguyên mới.
         </p>
         <div style={{ marginTop: '12px' }}>
-          <a href="https://drive.google.com/drive/folders/1L2KWrNRg9UvNe9RR6sfAgAlRQc37K4Ye?usp=sharing" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem' }}>
-            📄 Mở tài liệu đọc thêm
-          </a>
+          <button 
+            onClick={() => handleOpenDocument('M01_Bai01.pdf')}
+            disabled={loadingFile === 'M01_Bai01.pdf'}
+            className="btn btn-secondary" 
+            style={{ display: 'block', width: '100%', textAlign: 'center', fontSize: '0.875rem' }}
+          >
+            {loadingFile === 'M01_Bai01.pdf' ? '⏳ Đang tải...' : '📄 Mở tài liệu đọc thêm'}
+          </button>
         </div>
       </div>
       
@@ -23,9 +61,14 @@ export default function M01Page() {
           Bạn không chỉ là người bán hàng, bạn là "Cố vấn giải pháp" (Solution Consultant). Làm sao để xây dựng niềm tin vượt biên giới?
         </p>
         <div style={{ marginTop: '12px' }}>
-          <a href="https://drive.google.com/drive/folders/1L2KWrNRg9UvNe9RR6sfAgAlRQc37K4Ye?usp=sharing" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem' }}>
-            📄 Mở tài liệu đọc thêm
-          </a>
+          <button 
+            onClick={() => handleOpenDocument('M01_Bai02.pdf')}
+            disabled={loadingFile === 'M01_Bai02.pdf'}
+            className="btn btn-secondary" 
+            style={{ display: 'block', width: '100%', textAlign: 'center', fontSize: '0.875rem' }}
+          >
+            {loadingFile === 'M01_Bai02.pdf' ? '⏳ Đang tải...' : '📄 Mở tài liệu đọc thêm'}
+          </button>
         </div>
       </div>
     </div>
@@ -50,7 +93,7 @@ export default function M01Page() {
       </div>
       
       <a 
-        href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14"
+        href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="btn" 
