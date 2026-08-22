@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 
 export default function M01Page() {
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const handleOpenDocument = async (fileName: string) => {
     try {
@@ -25,8 +26,8 @@ export default function M01Page() {
       }
 
       if (data?.signedUrl) {
-        // Mở link trong tab mới
-        window.open(data.signedUrl, '_blank');
+        // Hiển thị trực tiếp trên web thay vì mở tab mới
+        setPreviewUrl(data.signedUrl);
       }
     } catch (err) {
       console.error(err);
@@ -128,6 +129,48 @@ export default function M01Page() {
         formContent={<M1_CompetencyForm />}
         aiTutorContent={aiTutorContent}
       />
+
+      {/* PDF Preview Modal */}
+      {previewUrl && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          zIndex: 9999,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backdropFilter: 'blur(4px)'
+        }}>
+          <div style={{ width: '90%', maxWidth: '1200px', display: 'flex', justifyContent: 'flex-end', paddingBottom: '12px' }}>
+            <button 
+              onClick={() => setPreviewUrl(null)}
+              style={{ 
+                background: 'var(--accent-danger, #ef4444)', 
+                color: 'white', 
+                border: 'none',
+                padding: '8px 24px',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              Đóng lại (X)
+            </button>
+          </div>
+          <div style={{ width: '90%', maxWidth: '1200px', height: '85vh', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+            <iframe 
+              src={previewUrl} 
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              title="PDF Preview"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
