@@ -11,7 +11,7 @@ export default function M01Page() {
           Thế giới thay đổi chóng mặt với AI và Data. Bài này giúp bạn reset tư duy, nhìn nhận lại vai trò của người Sales B2B trong kỷ nguyên mới.
         </p>
         <div style={{ marginTop: '12px' }}>
-          <a href="#" className="btn btn-secondary" style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem' }}>
+          <a href="https://drive.google.com/drive/folders/1L2KWrNRg9UvNe9RR6sfAgAlRQc37K4Ye?usp=sharing" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem' }}>
             📄 Mở tài liệu đọc thêm
           </a>
         </div>
@@ -23,7 +23,7 @@ export default function M01Page() {
           Bạn không chỉ là người bán hàng, bạn là "Cố vấn giải pháp" (Solution Consultant). Làm sao để xây dựng niềm tin vượt biên giới?
         </p>
         <div style={{ marginTop: '12px' }}>
-          <a href="#" className="btn btn-secondary" style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem' }}>
+          <a href="https://drive.google.com/drive/folders/1L2KWrNRg9UvNe9RR6sfAgAlRQc37K4Ye?usp=sharing" target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ display: 'block', textAlign: 'center', fontSize: '0.875rem' }}>
             📄 Mở tài liệu đọc thêm
           </a>
         </div>
@@ -50,7 +50,7 @@ export default function M01Page() {
       </div>
       
       <a 
-        href="#" 
+        href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14"
         target="_blank" 
         rel="noopener noreferrer" 
         className="btn" 
