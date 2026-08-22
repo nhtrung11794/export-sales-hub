@@ -58,7 +58,7 @@ export default function M01Page() {
       <div className="glass-panel" style={{ padding: '16px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px' }}>Bài 02 - Bản chất nghề sales xuất khẩu</h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-          Bạn không chỉ là người bán hàng, bạn là "Cố vấn giải pháp" (Solution Consultant). Làm sao để xây dựng niềm tin vượt biên giới?
+          Bạn không chỉ là người bán hàng, bạn là &quot;Cố vấn giải pháp&quot; (Solution Consultant). Làm sao để xây dựng niềm tin vượt biên giới?
         </p>
         <div style={{ marginTop: '12px' }}>
           <button 
@@ -89,7 +89,7 @@ export default function M01Page() {
         fontFamily: 'monospace',
         color: 'var(--text-muted)'
       }}>
-        "Dựa vào hồ sơ năng lực tôi vừa tự đánh giá (Research: 3, Negotiation: 2...), hãy đề xuất cho tôi 3 mục tiêu 90 ngày thiết thực nhất để cải thiện kỹ năng đàm phán B2B."
+        &quot;Dựa vào hồ sơ năng lực tôi vừa tự đánh giá (Research: 3, Negotiation: 2...), hãy đề xuất cho tôi 3 mục tiêu 90 ngày thiết thực nhất để cải thiện kỹ năng đàm phán B2B.&quot;
       </div>
       
       <a 
