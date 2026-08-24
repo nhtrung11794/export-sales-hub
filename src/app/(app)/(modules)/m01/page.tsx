@@ -210,7 +210,7 @@ export default function M01Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 01"
+        moduleTitle="Module 01: Mindset nền tảng Sales XK"
         learningContent={learningContent}
         formContent={<M1_CompetencyForm />}
         aiTutorContent={aiTutorContent}

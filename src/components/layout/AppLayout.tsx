@@ -44,11 +44,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { name: 'Tổng quan (Dashboard)', path: '/', icon: <LayoutDashboard size={20} /> },
-    { name: 'Module 01: Hồ sơ năng lực', path: '/m01', icon: <UserCircle size={20} /> },
-    { name: 'Module 02: Phân tích Thị trường', path: '/m02', icon: <Globe2 size={20} /> },
-    { name: 'Module 03: Hiểu người Mua', path: '/m03', icon: <Users size={20} /> },
-    { name: 'Module 04: Quy trình Bán hàng', path: '/m04', icon: <GitMerge size={20} /> },
-    { name: 'Module 05: Kế hoạch Hành động', path: '/m05', icon: <Rocket size={20} /> },
+    { name: 'Module 01: Mindset nền tảng Sales XK', path: '/m01', icon: <UserCircle size={20} /> },
+    { name: 'Module 02: Thị trường & Khách hàng', path: '/m02', icon: <Globe2 size={20} /> },
+    { name: 'Module 03: Cơ hội & Quản trị Pipeline', path: '/m03', icon: <Users size={20} /> },
+    { name: 'Module 04: Giao tiếp & Chốt giao dịch', path: '/m04', icon: <GitMerge size={20} /> },
+    { name: 'Module 05: Thực thi & Sau bán', path: '/m05', icon: <Rocket size={20} /> },
   ];
 
   return (

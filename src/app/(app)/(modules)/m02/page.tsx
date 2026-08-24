@@ -236,7 +236,7 @@ export default function Module02Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 02"
+        moduleTitle="Module 02: Thị trường & Khách hàng"
         learningContent={learningContent}
         formContent={<M2_MarketForm />}
         aiTutorContent={aiTutorContent}
