@@ -131,30 +131,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             const isActive = pathname === item.path;
             const unlocked = isUnlocked(item.id);
             
-            const ItemWrapper = unlocked ? Link : 'div';
-            const extraProps = unlocked ? { href: item.path } : { onClick: () => alert('Vui lòng làm bài và nhấn XÁC NHẬN NỘP BÀI ở Module trước đó để mở khóa Module này!') };
+            const sharedStyle: React.CSSProperties = {
+              display: 'flex',
+              alignItems: 'center',
+              padding: '12px 14px',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              color: !unlocked ? 'rgba(255,255,255,0.2)' : (isActive ? 'var(--accent-primary)' : 'var(--text-secondary)'),
+              background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+              fontWeight: isActive ? 'bold' : 'normal',
+              transition: 'all 0.2s ease',
+              borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent',
+              whiteSpace: 'nowrap',
+              cursor: !unlocked ? 'not-allowed' : 'pointer',
+              position: 'relative'
+            };
 
-            return (
-              <ItemWrapper 
-                key={item.path} 
-                {...extraProps}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  padding: '12px 14px',
-                  borderRadius: '8px',
-                  textDecoration: 'none',
-                  color: !unlocked ? 'rgba(255,255,255,0.2)' : (isActive ? 'var(--accent-primary)' : 'var(--text-secondary)'),
-                  background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                  fontWeight: isActive ? 'bold' : 'normal',
-                  transition: 'all 0.2s ease',
-                  borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent',
-                  whiteSpace: 'nowrap',
-                  cursor: !unlocked ? 'not-allowed' : 'pointer',
-                  position: 'relative'
-                }}
-                title={!isHovered ? item.name : undefined}
-              >
+            const innerContent = (
+              <>
                 <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
                   {item.icon}
                 </div>
@@ -168,7 +162,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   {item.name}
                 </span>
                 
-                {/* Ổ khóa nếu bị khóa */}
                 {!unlocked && isHovered && (
                   <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', opacity: 0.5 }}>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -177,8 +170,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     </svg>
                   </div>
                 )}
-              </ItemWrapper>
+              </>
             );
+
+            if (unlocked) {
+              return (
+                <Link key={item.path} href={item.path} style={sharedStyle} title={!isHovered ? item.name : undefined}>
+                  {innerContent}
+                </Link>
+              );
+            } else {
+              return (
+                <div key={item.path} onClick={() => alert('Vui lòng làm bài và nhấn XÁC NHẬN NỘP BÀI ở Module trước đó để mở khóa Module này!')} style={sharedStyle} title={!isHovered ? item.name : undefined}>
+                  {innerContent}
+                </div>
+              );
+            }
           })}
 
           <div style={{ 
