@@ -79,6 +79,7 @@ export default function M1_CompetencyForm() {
   };
 
   const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M1FormData>(
+    'M01',
     initialData,
     handleSave,
     3000 // Tự động lưu sau 3s

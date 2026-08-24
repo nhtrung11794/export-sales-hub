@@ -30,7 +30,7 @@ const initialData: M3FormData = {
 
 export default function M3_FitScoreForm() {
   const supabase = createClient();
-  const { isInitialized, getFormData } = useModuleStore();
+  const { isInitialized, getModuleData } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function M3_FitScoreForm() {
   }
 
   // Lấy dữ liệu kế thừa từ M02
-  const m2Data: any = getFormData('M02');
+  const m2Data: any = getModuleData('M02');
   const targetMarket = m2Data?.target_market || 'Chưa xác định';
   const icp = m2Data?.icp || {};
 
