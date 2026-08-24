@@ -27,8 +27,11 @@ export default function Dashboard() {
   }, []);
 
   // Tính toán trạng thái các Module dựa trên Global Store (Zustand)
-  // Thực tế có thể phức tạp hơn (tùy thuộc vào việc điền đủ field hay chưa), ở đây dùng mock logic để minh họa
-  const hasData = (moduleId: string) => !!getModuleData(moduleId);
+  const hasData = (moduleId: string) => {
+    // Module ID trong DB được lưu in hoa (VD: 'M01', 'M02') 
+    // trong khi đó route path là chữ thường ('m01')
+    return !!getModuleData(moduleId.toUpperCase() as any);
+  };
 
   const modules = [
     { 
