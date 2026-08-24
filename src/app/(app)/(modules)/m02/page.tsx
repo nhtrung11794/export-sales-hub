@@ -295,20 +295,20 @@ export default function Module02Page() {
             onClick={handleSubmit}
             disabled={!isValid || isLocked || isSubmitting}
             style={{
-              padding: '6px 16px',
-              borderRadius: '6px',
-              border: 'none',
-              background: isLocked ? 'var(--accent-success)' : (isValid ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)'),
-              color: isValid || isLocked ? '#fff' : 'rgba(255,255,255,0.3)',
-              cursor: (!isValid || isLocked) ? 'not-allowed' : 'pointer',
+              padding: '10px 20px',
+              backgroundColor: isLocked ? 'var(--bg-tertiary)' : (isValid ? 'var(--accent-primary)' : 'var(--bg-tertiary)'),
+              color: isLocked ? 'var(--text-muted)' : (isValid ? '#fff' : 'var(--text-muted)'),
+              border: isValid && !isLocked ? 'none' : '1px solid var(--border-color)',
+              borderRadius: '8px',
+              cursor: isValid && !isLocked ? 'pointer' : 'not-allowed',
+              opacity: isSubmitting ? 0.7 : 1,
+              fontSize: '1rem',
               fontWeight: 'bold',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              transition: 'all 0.2s'
+              boxShadow: isValid && !isLocked ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+              transition: 'all 0.2s ease'
             }}
           >
-            {isSubmitting ? 'Đang nộp...' : (isLocked ? <><Check size={16} /> Đã nộp bài</> : 'Xác nhận Nộp bài')}
+            {isSubmitting ? 'Đang nộp...' : isLocked ? 'Đã Nộp Bài' : 'Xác nhận Nộp bài'}
           </button>
         }
       />
