@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import ModuleLayout from '@/components/layout/ModuleLayout';
 import M2_MarketForm from '@/components/modules/m02/M2_MarketForm';
-import { supabase } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabase';
 import { useModuleStore } from '@/store/useModuleStore';
 import { Copy, Check, Play, BookOpen, X } from 'lucide-react';
 import { Rnd } from 'react-rnd';
