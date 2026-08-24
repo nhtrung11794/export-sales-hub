@@ -33,6 +33,22 @@ export default function M1_CompetencyForm() {
   const supabase = createClient();
   const [userId, setUserId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isOnline, setIsOnline] = useState(true);
+
+  // Lắng nghe trạng thái mạng
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   // Khởi tạo và Load dữ liệu cũ nếu có
   useEffect(() => {
@@ -132,6 +148,22 @@ export default function M1_CompetencyForm() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
       
+      {!isOnline && (
+        <div style={{ 
+          background: 'rgba(239, 68, 68, 0.15)', 
+          border: '1px dashed var(--accent-danger)', 
+          padding: '16px', 
+          borderRadius: '12px', 
+          color: '#fca5a5', 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px',
+          boxShadow: '0 4px 20px rgba(239, 68, 68, 0.1)'
+        }}>
+          <strong>⚠️ MẤT KẾT NỐI MẠNG:</strong> Toàn bộ dữ liệu đã được tự động khóa (Read-only) để bảo vệ an toàn thông tin. Vui lòng kiểm tra lại đường truyền internet.
+        </div>
+      )}
+
       {/* PHẦN 1: ĐÁNH GIÁ NĂNG LỰC CỐT LÕI */}
       <section>
         <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>
@@ -175,7 +207,8 @@ export default function M1_CompetencyForm() {
                   value={data.competency_radar[skill.id as keyof M1FormData['competency_radar']]}
                   onChange={(e) => handleRadarChange(skill.id as keyof M1FormData['competency_radar'], parseInt(e.target.value))}
                   onBlur={handleBlur}
-                  style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--accent-primary)' }}
+                  disabled={!isOnline}
+                  style={{ width: '100%', cursor: !isOnline ? 'not-allowed' : 'pointer', accentColor: !isOnline ? '#6b7280' : 'var(--accent-primary)', opacity: !isOnline ? 0.5 : 1 }}
                 />
               </div>
             ))}
@@ -222,7 +255,8 @@ export default function M1_CompetencyForm() {
           value={data.mindset_shift}
           onChange={(e) => setData({ ...data, mindset_shift: e.target.value })}
           onBlur={handleBlur}
-          style={{ width: '100%', resize: 'none', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }}
+          disabled={!isOnline}
+          style={{ width: '100%', resize: 'none', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', opacity: !isOnline ? 0.6 : 1, cursor: !isOnline ? 'not-allowed' : 'text' }}
         />
       </section>
 
@@ -241,7 +275,8 @@ export default function M1_CompetencyForm() {
           value={data.goals_90d}
           onChange={(e) => setData({ ...data, goals_90d: e.target.value })}
           onBlur={handleBlur}
-          style={{ width: '100%', resize: 'none', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)' }}
+          disabled={!isOnline}
+          style={{ width: '100%', resize: 'none', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', opacity: !isOnline ? 0.6 : 1, cursor: !isOnline ? 'not-allowed' : 'text' }}
         />
       </section>
 
