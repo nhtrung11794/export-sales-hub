@@ -12,9 +12,12 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ Tư du
    - Chốt sử dụng **Server Actions** thay vì REST API.
    - Chốt sử dụng **Client-side PDF (html2pdf)** thay vì Vercel Chromium.
 2. **Giao diện & Logic (UI/UX):**
-   - Xây dựng thành công Global Store (`useModuleStore.ts`).
-   - Xây dựng hook `useAutoSave` (Debounce 3s) liên kết mượt mà với Supabase.
-   - Đã hoàn thiện **Module 01, 02, và 03**. Trong đó M03 đã có thanh trượt Fit Score (Cognitive Simulation) và lấy dữ liệu thành công từ M02.
+   - Xây dựng thành công Global Store (`useModuleStore.ts`) và hook `useAutoSave` (Debounce 3s) liên kết mượt mà với Supabase.
+   - **(Đột phá M01 v5.0):** 
+     - **Cognitive Simulation:** Tích hợp thành công thư viện `recharts` cho Biểu đồ Radar động (real-time).
+     - **Interactive Workspace:** Thiết kế lại Cột 1 với 2 nút song song: "Giáo án PDF" (Iframe mở rộng) và "Video Tổng kết" (Cửa sổ nổi PiP siêu mượt bằng `react-rnd`).
+     - **Dynamic AI Tutor:** Cột 3 chứa AI Prompt tự động lấy điểm từ Cột 2 (Zustand) và hỗ trợ Click-to-copy nhanh chóng.
+   - Hoàn thiện luồng logic cơ bản của **Module 02 và 03** (Fit Score).
 3. **Định nghĩa Đội ngũ (Agent Roles v5.0):**
    - **Dev Agents:** FE-01 (Frontend), DB-02 (Backend/JSONB), DevOps-03.
    - **AI Tutors:** 
@@ -23,6 +26,7 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ Tư du
 
 ## 2. ⏳ NHỮNG ĐIỂM CHƯA LÀM ĐƯỢC (NEXT STEPS/PENDING)
 *Đây là các Task ưu tiên cao nhất cho Sprint tiếp theo:*
+- **[Sprint 1.1c] Chuẩn hóa M02 & M03:** Nhân bản kiến trúc UI (PiP Video, PDF Iframe, Dynamic AI Prompt) từ M01 sang M02 và M03.
 - **[Sprint 1.2] Khóa Rủi ro M04:** Chặn thanh toán (D/P, CAD) nếu Fit Score ở M03 thấp. Ép học viên phải chọn L/C an toàn.
 - **[Sprint 1.3] System (Reverse-flow Edit):** Viết Logic tạo Snapshot history khi học viên sửa data M02 cũ để không làm gãy data M03, M04.
 

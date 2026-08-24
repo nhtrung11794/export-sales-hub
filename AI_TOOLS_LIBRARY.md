@@ -39,5 +39,13 @@ File này chứa các "Thần chú" (System Commands) đúc kết từ Kiến tr
 > **Trường hợp dùng:** Khi bạn đang code M04, M05 và cần Data 100 điểm chuẩn từ M01-M03 để test luồng (mà không muốn gõ tay).
 > **Hành động của AI:** AI sẽ chạy script bơm trực tiếp Data chuẩn vào Zustand Store trên Localhost của bạn.
 
+### 🎨 Lệnh Chuẩn hóa Kiến trúc Module (Standardize UI/UX)
+> `[RUN_TOOL: @standardize-module-ui]`
+> **Trường hợp dùng:** Khi bạn muốn áp dụng kiến trúc đỉnh cao của Module 01 (Cột 1: Iframe + PiP Video, Cột 2: Form/Chart, Cột 3: Dynamic AI Prompt) sang các Module khác (M02, M03, M04, M05).
+> **Hành động của AI:** 
+> 1. Đọc lại file `src/app/(app)/(modules)/m01/page.tsx` và `M1_CompetencyForm.tsx` để copy tư duy (React-Rnd PiP, Dynamic Prompt, Recharts).
+> 2. Đập đi xây lại màn hình `page.tsx` và file Component của Module tương ứng để nó y chang M01, chỉ thay đổi nội dung chữ và dữ liệu.
+> 3. Tự động liên kết video/pdf từ Supabase theo đúng chuẩn tên file (Ví dụ: `M02_Bai01.pdf`).
+
 ---
 *(Lưu ý: Bạn có thể tiếp tục bổ sung thêm các Lệnh mới vào file này trong tương lai nếu phát sinh các Tool/Skill mới)*
