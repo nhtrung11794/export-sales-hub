@@ -97,10 +97,10 @@ export default function M01Page() {
       {/* BÀI 01 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 01 - Tư duy bán hàng trong bối cảnh thế giới mới
+          Bài 01 - BANI/VUCA, Tư duy Customer-centric
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Thế giới thay đổi chóng mặt với AI và Data. Bài này giúp bạn reset tư duy, nhìn nhận lại vai trò của người Sales B2B trong kỷ nguyên mới.
+          Dịch chuyển tư duy (Mindset Shift) từ bán hàng truyền thống sang tư vấn. Hiểu rõ bối cảnh thị trường BANI/VUCA để xây dựng sự thấu cảm (Customer-centric) với khách hàng B2B.
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
@@ -125,10 +125,10 @@ export default function M01Page() {
       {/* BÀI 02 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 02 - Bản chất nghề sales xuất khẩu
+          Bài 02 - 5 Phase sales, 4 Trụ cột năng lực
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Bạn không chỉ là người bán hàng, bạn là "Cố vấn giải pháp" (Solution Consultant). Làm sao để xây dựng niềm tin vượt biên giới?
+          Nắm vững 5 giai đoạn của một chu trình Sales B2B tiêu chuẩn và tự đánh giá bản thân qua 4 trụ cột năng lực cốt lõi để vẽ nên Radar Chart của riêng bạn.
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
