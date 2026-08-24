@@ -15,6 +15,7 @@ export default function Dashboard() {
 
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
   const [userName, setUserName] = useState('Nhà xuất khẩu');
+  const [debugError, setDebugError] = useState<string | null>(null);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -37,7 +38,7 @@ export default function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        // Chưa đăng nhập -> Chạy mockup
+        setDebugError("Chưa đăng nhập (User is null)");
         startMockupTimer();
         return;
       }
@@ -53,11 +54,13 @@ export default function Dashboard() {
         
       if (error) {
         console.error("Lỗi khi lấy dữ liệu Supabase:", error.message);
+        setDebugError(`Lỗi query bảng profiles: ${error.message} (Có thể do RLS hoặc thiếu row của user id: ${user.id})`);
         startMockupTimer(); // Lỗi RLS hoặc không có profile -> Chạy mockup
         return;
       }
 
       if (profileData && profileData.batch_end_date) {
+        setDebugError(null); // Thành công
         const endDate = new Date(profileData.batch_end_date).getTime();
         
         timer = setInterval(() => {
@@ -173,38 +176,46 @@ export default function Dashboard() {
             borderRadius: '12px', 
             border: '1px solid rgba(220, 38, 38, 0.3)',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            flexDirection: 'column',
+            gap: '12px',
             boxShadow: '0 4px 20px rgba(220, 38, 38, 0.1)'
           }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-danger)', marginBottom: '4px', fontWeight: 'bold' }}>
-                <Clock size={18} />
-                THỜI GIAN KHÓA SỔ CÒN LẠI (GRACE PERIOD)
-              </div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Hãy hoàn thành tiến độ trước khi khóa truy cập bài tập.</div>
-            </div>
-            <div style={{ display: 'flex', gap: '12px' }}>
-              {[
-                { label: 'Ngày', value: timeLeft.days },
-                { label: 'Giờ', value: timeLeft.hours },
-                { label: 'Phút', value: timeLeft.mins },
-                { label: 'Giây', value: timeLeft.secs }
-              ].map((item, idx) => (
-                <div key={idx} style={{ textAlign: 'center' }}>
-                  <div style={{ 
-                    fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)',
-                    background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px',
-                    minWidth: '50px'
-                  }}>
-                    {item.value.toString().padStart(2, '0')}
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
-                    {item.label}
-                  </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-danger)', marginBottom: '4px', fontWeight: 'bold' }}>
+                  <Clock size={18} />
+                  THỜI GIAN KHÓA SỔ CÒN LẠI (GRACE PERIOD)
                 </div>
-              ))}
+                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Hãy hoàn thành tiến độ trước khi khóa truy cập bài tập.</div>
+              </div>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                {[
+                  { label: 'Ngày', value: timeLeft.days },
+                  { label: 'Giờ', value: timeLeft.hours },
+                  { label: 'Phút', value: timeLeft.mins },
+                  { label: 'Giây', value: timeLeft.secs }
+                ].map((item, idx) => (
+                  <div key={idx} style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                      fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)',
+                      background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px',
+                      minWidth: '50px'
+                    }}>
+                      {item.value.toString().padStart(2, '0')}
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
+                      {item.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+            {/* Hiển thị lỗi Supabase để Debug */}
+            {debugError && (
+              <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px dashed #ef4444', padding: '8px', borderRadius: '6px', fontSize: '0.8rem', color: '#fca5a5' }}>
+                <strong>⚠️ Debug:</strong> {debugError}
+              </div>
+            )}
           </div>
           
         </div>
