@@ -10,6 +10,7 @@ import { Rnd } from 'react-rnd';
 
 export default function M01Page() {
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
+  const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   
   // Trạng thái cho Video PiP
@@ -72,9 +73,22 @@ export default function M01Page() {
     }
   };
 
-  const handleOpenVideo = (videoUrl: string) => {
-    // Mở video dưới dạng PiP
-    setPipVideoUrl(videoUrl);
+  const handleOpenVideo = async (fileName: string) => {
+    try {
+      setLoadingVideo(fileName);
+      const { data, error } = await supabase
+        .storage
+        .from('course_materials')
+        .createSignedUrl(fileName, 3600);
+
+      if (error) throw error;
+      if (data?.signedUrl) setPipVideoUrl(data.signedUrl);
+    } catch (err) {
+      console.error(err);
+      alert('Không thể mở video. Vui lòng kiểm tra lại file đã được tải lên Supabase chưa.');
+    } finally {
+      setLoadingVideo(null);
+    }
   };
 
   const learningContent = (
@@ -98,11 +112,12 @@ export default function M01Page() {
             <BookOpen size={16}/> {loadingFile === 'M01_Bai01.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
           </button>
           <button 
-            onClick={() => handleOpenVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')} // Placeholder video URL
+            onClick={() => handleOpenVideo('M01_Video01.mp4')}
+            disabled={loadingVideo === 'M01_Video01.mp4'}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> Video Tổng kết
+            <Play size={16}/> {loadingVideo === 'M01_Video01.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
@@ -125,11 +140,12 @@ export default function M01Page() {
             <BookOpen size={16}/> {loadingFile === 'M01_Bai02.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
           </button>
           <button 
-            onClick={() => handleOpenVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')} // Placeholder video URL
+            onClick={() => handleOpenVideo('M01_Video02.mp4')}
+            disabled={loadingVideo === 'M01_Video02.mp4'}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> Video Tổng kết
+            <Play size={16}/> {loadingVideo === 'M01_Video02.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
@@ -248,14 +264,16 @@ export default function M01Page() {
                 <X size={16} />
               </button>
             </div>
-            {/* PiP Body (Iframe Video) */}
+            {/* PiP Body (HTML5 Video) */}
             <div style={{ flex: 1, position: 'relative' }}>
-              <iframe 
+              <video 
                 src={pipVideoUrl} 
-                style={{ width: '100%', height: '100%', border: 'none' }}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+                controls
+                autoPlay
+                style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'black', outline: 'none' }}
+              >
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
             </div>
           </div>
         </Rnd>
