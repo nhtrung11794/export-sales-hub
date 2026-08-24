@@ -140,8 +140,66 @@ export default function Dashboard() {
   ];
 
   return (
-    <div style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: '32px', maxWidth: '1200px', margin: '0 auto', minHeight: '100vh' }}>
       
+      {/* HEADER WEBSITE */}
+      <header style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '16px 24px',
+        background: 'rgba(255, 255, 255, 0.03)',
+        borderRadius: '16px',
+        border: '1px solid var(--border-color)',
+        marginBottom: '32px',
+        boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
+      }}>
+        {/* Logo / Tên Website */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ 
+            background: 'var(--accent-primary)', 
+            color: 'white', 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '8px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            fontWeight: 800,
+            fontSize: '1.2rem'
+          }}>
+            B2B
+          </div>
+          <h1 style={{ 
+            fontSize: '1.4rem', 
+            fontWeight: 800, 
+            margin: 0,
+            background: 'linear-gradient(to right, #3b82f6, #8b5cf6)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            EXPORT SALES HUB
+          </h1>
+        </div>
+
+        {/* User Profile */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+            Xin chào, <strong style={{ color: 'var(--text-primary)' }}>{userName}</strong>
+          </span>
+          <button 
+            className="btn btn-secondary" 
+            style={{ padding: '8px 16px', fontSize: '0.85rem' }}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = '/login';
+            }}
+          >
+            Đăng xuất
+          </button>
+        </div>
+      </header>
+
       {/* TẦNG 1: GIỚI THIỆU GIẢNG VIÊN & KHÓA HỌC */}
       <div className="glass-panel" style={{ padding: '32px', display: 'flex', gap: '32px', marginBottom: '32px', alignItems: 'flex-start' }}>
         {/* Hình ảnh giảng viên */}
