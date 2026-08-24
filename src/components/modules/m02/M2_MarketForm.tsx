@@ -75,9 +75,31 @@ const ZONES = [
 
 export default function M2_MarketForm() {
   const supabase = createClient();
-  const { isInitialized, isOnline } = useModuleStore();
+  const { isInitialized } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
   const [activeZone, setActiveZone] = useState('zone1_ice_breaking');
+  
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    // Add network listeners
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    
+    // Check initial state if window is defined
+    if (typeof window !== 'undefined') {
+      setIsOnline(navigator.onLine);
+      window.addEventListener('online', handleOnline);
+      window.addEventListener('offline', handleOffline);
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('online', handleOnline);
+        window.removeEventListener('offline', handleOffline);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     async function loadData() {
