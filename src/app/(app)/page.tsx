@@ -272,7 +272,7 @@ export default function Dashboard() {
       </div>
 
       {/* TẦNG 3: NGHIỆP VỤ THƯƠNG MẠI QUỐC TẾ */}
-      <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', marginBottom: '24px' }}>Nghiệp vụ Bổ trợ</h2>
+      <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', marginBottom: '24px' }}>Bổ trợ nghiệp vụ XNK</h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
         
         {/* Cột 1: TMQT */}
@@ -287,7 +287,7 @@ export default function Dashboard() {
                 <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Incoterms Guide</strong>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Hướng dẫn chi tiết các điều kiện giao hàng</span>
               </div>
-              <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => window.open('https://notebooklm.google.com/', '_blank')}>
+              <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => window.open('https://notebook.google.com/notebook/6a235b2f-f02c-4793-98a7-0dff36af6833', '_blank')}>
                 Hỏi AI ➔
               </button>
             </div>
@@ -296,8 +296,17 @@ export default function Dashboard() {
                 <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Thanh toán Quốc tế</strong>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>LC, T/T, D/P, D/A...</span>
               </div>
-              <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => window.open('https://notebooklm.google.com/', '_blank')}>
+              <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => window.open('https://notebook.google.com/notebook/6f30bc59-29e3-4211-a44b-32cc74896f0d', '_blank')}>
                 Hỏi AI ➔
+              </button>
+            </div>
+            <div style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Tài liệu Tham khảo</strong>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Giáo trình & Văn bản luật TMQT</span>
+              </div>
+              <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => window.open('https://drive.google.com/drive/folders/1m0x1Tg0dmiNI9z-dw5tqYp0dQMHrNH6D?usp=sharing', '_blank')}>
+                Mở tài liệu ➔
               </button>
             </div>
           </div>
@@ -314,7 +323,7 @@ export default function Dashboard() {
               <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '4px' }}>Business English Docs</strong>
               <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Mẫu Email & Kịch bản gọi điện</span>
             </div>
-            <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+            <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }} onClick={() => window.open('https://drive.google.com/drive/folders/1rh7KDLWghS6Hwd5_PKveviJQXzm1FGcv?usp=drive_link', '_blank')}>
               Mở tài liệu ➔
             </button>
           </div>
