@@ -21,6 +21,8 @@ export default function Module02Page() {
 
   const [formData, setFormData] = useState({
     targetMarket: '[Quốc gia]',
+    marketSignal: '[Lý do chọn]',
+    icpSegment: '[Phân khúc]',
     decisionMaker: '[Phòng ban]',
     painPoints: '[Nỗi đau]'
   });
@@ -41,6 +43,8 @@ export default function Module02Page() {
 
         setFormData({
           targetMarket: data.market_scan?.target_market || '[Quốc gia]',
+          marketSignal: data.market_scan?.market_signal || '[Lý do chọn]',
+          icpSegment: data.icp?.segment || '[Phân khúc]',
           decisionMaker: dmSlot,
           painPoints: data.discovery_line?.zone1_ice_breaking?.pain_points || '[Nỗi đau]'
         });
@@ -49,7 +53,7 @@ export default function Module02Page() {
     return () => clearInterval(interval);
   }, [getModuleData]);
 
-  const dynamicPrompt = `"Tôi đang phân tích thị trường ${formData.targetMarket}. Thông qua Drag & Drop Buyer Map, tôi xác định Decision Maker của mình nằm ở bộ phận ${formData.decisionMaker}. Trong giai đoạn Ice-breaking, nỗi đau lớn nhất của họ là: '${formData.painPoints}'. Hãy đóng vai chuyên gia B2B Sales, viết cho tôi một kịch bản Cold Email/LinkedIn Outreach nhắm thẳng vào nỗi đau này."`;
+  const dynamicPrompt = `"Tôi đang phân tích thị trường ${formData.targetMarket} vì ${formData.marketSignal}. Phân khúc khách hàng mục tiêu của tôi là ${formData.icpSegment}. Thông qua sơ đồ Buyer Map, tôi xác định Decision Maker nằm ở bộ phận ${formData.decisionMaker}. Trong giai đoạn Ice-breaking, nỗi đau lớn nhất của họ là: '${formData.painPoints}'. Hãy đóng vai chuyên gia B2B Sales, viết cho tôi một kịch bản Cold Email nhắm thẳng vào nỗi đau này."`;
 
   const handleCopyPrompt = async () => {
     try {

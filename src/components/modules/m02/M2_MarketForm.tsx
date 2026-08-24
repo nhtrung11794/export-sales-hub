@@ -17,8 +17,14 @@ interface DiscoveryZone {
 interface M2FormData {
   market_scan: {
     target_market: string;
+    market_signal: string;
     source_url: string;
     intelligence_result: string;
+  };
+  icp: {
+    segment: string;
+    company_size: string;
+    selection_criteria: string;
   };
   buyer_map: Record<string, string | null>;
   discovery_line: Record<string, DiscoveryZone>;
@@ -27,8 +33,14 @@ interface M2FormData {
 const initialData: M2FormData = {
   market_scan: {
     target_market: '',
+    market_signal: '',
     source_url: '',
     intelligence_result: ''
+  },
+  icp: {
+    segment: '',
+    company_size: '',
+    selection_criteria: ''
   },
   buyer_map: {
     'ceo': null,
@@ -163,6 +175,7 @@ export default function M2_MarketForm() {
   // Fallback for partial data
   const safeData = {
     market_scan: data?.market_scan || initialData.market_scan,
+    icp: data?.icp || initialData.icp,
     buyer_map: data?.buyer_map || initialData.buyer_map,
     discovery_line: data?.discovery_line || initialData.discovery_line
   };
@@ -231,6 +244,17 @@ export default function M2_MarketForm() {
           </div>
 
           <div>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Lý do lựa chọn / Market Signal</label>
+            <textarea 
+              className="form-input" rows={2} disabled={!isOnline}
+              value={safeData.market_scan.market_signal}
+              onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, market_signal: e.target.value } }))}
+              onBlur={handleBlur}
+              placeholder="VD: Cửa ngõ trung chuyển vào EU, thuế quan ưu đãi..."
+            />
+          </div>
+
+          <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
               <span>URL Nguồn tham khảo (Fact-check Validation)</span>
               {!isValidUrl && <span style={{ color: 'var(--accent-danger)' }}>Invalid URL (must start with http)</span>}
@@ -261,12 +285,46 @@ export default function M2_MarketForm() {
         </div>
       </section>
 
-      {/* TOOL 2: DRAG & DROP BUYER MAP */}
+      {/* TOOL 2: ICP & BUYER MAP */}
       <section className="glass-panel" style={{ padding: '24px' }}>
         <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--accent-primary)' }}>
-          <Users size={20} /> Tool 2: Drag & Drop Buyer Map
+          <Users size={20} /> Tool 2: Segment, ICP & Drag-n-Drop Buyer Map
         </h3>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+          <div>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Segment (Phân khúc)</label>
+            <input 
+              type="text" className="form-input" disabled={!isOnline}
+              value={safeData.icp.segment}
+              onChange={(e) => setData(p => ({ ...p, icp: { ...p.icp, segment: e.target.value } }))}
+              onBlur={handleBlur}
+              placeholder="VD: Nhà sản xuất thực phẩm"
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Company Size (Quy mô)</label>
+            <input 
+              type="text" className="form-input" disabled={!isOnline}
+              value={safeData.icp.company_size}
+              onChange={(e) => setData(p => ({ ...p, icp: { ...p.icp, company_size: e.target.value } }))}
+              onBlur={handleBlur}
+              placeholder="VD: Doanh thu > 10M USD"
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Tiêu chí chọn lọc (Criteria)</label>
+            <input 
+              type="text" className="form-input" disabled={!isOnline}
+              value={safeData.icp.selection_criteria}
+              onChange={(e) => setData(p => ({ ...p, icp: { ...p.icp, selection_criteria: e.target.value } }))}
+              onBlur={handleBlur}
+              placeholder="VD: Đang tìm nhà cung cấp giá rẻ"
+            />
+          </div>
+        </div>
+
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '16px' }}>
           Kéo thẻ Buyer Type (bên trái) và Thả vào Phòng ban tương ứng trong sơ đồ tổ chức (bên phải).
         </p>
 
