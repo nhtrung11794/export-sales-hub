@@ -128,18 +128,31 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   display: 'flex',
                   alignItems: 'center',
                   padding: '12px 14px',
-                  borderRadius: '8px',
+                  borderRadius: '10px',
                   textDecoration: 'none',
                   color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                  background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                  fontWeight: isActive ? 'bold' : 'normal',
-                  transition: 'all 0.2s ease',
-                  borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent',
+                  background: isActive ? 'rgba(14, 165, 233, 0.1)' : 'transparent',
+                  fontWeight: isActive ? '600' : '500',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  borderLeft: isActive ? '4px solid var(--accent-primary)' : '4px solid transparent',
+                  boxShadow: isActive ? 'inset 0 0 10px rgba(14, 165, 233, 0.05), 0 0 15px rgba(14, 165, 233, 0.1)' : 'none',
                   whiteSpace: 'nowrap'
                 }}
                 title={!isHovered ? item.name : undefined}
+                onMouseOver={(e) => {
+                  if(!isActive) {
+                    e.currentTarget.style.color = 'var(--text-primary)';
+                    e.currentTarget.style.background = 'rgba(255,255,255,0.03)';
+                  }
+                }}
+                onMouseOut={(e) => {
+                  if(!isActive) {
+                    e.currentTarget.style.color = 'var(--text-secondary)';
+                    e.currentTarget.style.background = 'transparent';
+                  }
+                }}
               >
-                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
+                <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', textShadow: isActive ? '0 0 10px var(--accent-glow)' : 'none' }}>
                   {item.icon}
                 </div>
                 <span style={{ 

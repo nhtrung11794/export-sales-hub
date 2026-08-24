@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface ModuleLayoutProps {
   moduleTitle: string;
@@ -19,6 +19,24 @@ export default function ModuleLayout({
   previewUrl,
   onClosePreview
 }: ModuleLayoutProps) {
+  const [isOnline, setIsOnline] = useState(true);
+
+  useEffect(() => {
+    // Only access navigator on client-side
+    setIsOnline(navigator.onLine);
+
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
   return (
     <div className="module-container">
       {/* CỘT 1: HỌC TẬP HOẶC ĐỌC TÀI LIỆU */}
@@ -61,16 +79,36 @@ export default function ModuleLayout({
       {/* CỘT 2: THỰC THI & LÀM BÀI */}
       <div 
         className="module-col col-2 glass-panel" 
-        style={{ border: '2px solid var(--accent-primary)', width: previewUrl ? '35%' : 'var(--col-2-width)', transition: 'width 0.3s' }}
+        style={{ border: !isOnline ? '2px solid var(--accent-danger)' : '2px solid var(--accent-primary)', width: previewUrl ? '35%' : 'var(--col-2-width)', transition: 'width 0.3s' }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ color: 'var(--accent-primary)' }}>Thực thi & Làm bài</h2>
-          <div id="status-bar" style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            Trạng thái: Đang tải...
+          <h2 style={{ color: !isOnline ? 'var(--accent-danger)' : 'var(--accent-primary)' }}>Thực thi & Làm bài</h2>
+          <div id="status-bar" style={{ fontSize: '0.875rem', color: !isOnline ? 'var(--accent-danger)' : 'var(--text-muted)' }}>
+            {!isOnline ? 'MẤT KẾT NỐI' : 'Trạng thái: Đang tải...'}
           </div>
         </div>
-        <div style={{ flex: 1 }}>
-          {formContent}
+        <div style={{ flex: 1, position: 'relative' }}>
+          {!isOnline && (
+            <div style={{
+              position: 'absolute',
+              top: 0, left: 0, right: 0, bottom: 0,
+              background: 'rgba(0,0,0,0.6)',
+              zIndex: 10,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(2px)',
+              borderRadius: '8px'
+            }}>
+              <div style={{ background: 'var(--bg-secondary)', padding: '24px', borderRadius: '12px', border: '1px solid var(--accent-danger)', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
+                <span style={{ color: 'var(--accent-danger)', fontWeight: 'bold', display: 'block', fontSize: '1.25rem', marginBottom: '8px' }}>⚠️ Rớt Mạng (Offline)</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Đã tự động khóa Form để bảo toàn dữ liệu. Vui lòng kiểm tra lại Internet.</span>
+              </div>
+            </div>
+          )}
+          <div style={{ pointerEvents: !isOnline ? 'none' : 'auto', opacity: !isOnline ? 0.5 : 1, transition: 'opacity 0.3s' }}>
+            {formContent}
+          </div>
         </div>
       </div>
 

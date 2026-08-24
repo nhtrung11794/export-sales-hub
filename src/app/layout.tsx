@@ -13,6 +13,23 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
+      <head>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+          {`
+            tailwind.config = {
+              theme: {
+                extend: {
+                  colors: {
+                    electric: '#0ea5e9',
+                    neon: '#f97316'
+                  }
+                }
+              }
+            }
+          `}
+        </script>
+      </head>
       <body>{children}</body>
     </html>
   );

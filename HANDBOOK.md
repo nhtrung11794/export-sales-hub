@@ -15,8 +15,9 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ Tư du
    - Xây dựng thành công Global Store (`useModuleStore.ts`) và hook `useAutoSave` (Debounce 3s) liên kết mượt mà với Supabase.
    - **(Đột phá M01 v5.0):** 
      - **Cognitive Simulation:** Tích hợp thành công thư viện `recharts` cho Biểu đồ Radar động (real-time).
-     - **Interactive Workspace:** Thiết kế lại Cột 1 với 2 nút song song: "Giáo án PDF" (Iframe mở rộng) và "Video Tổng kết" (Cửa sổ nổi PiP siêu mượt bằng `react-rnd`).
-     - **Dynamic AI Tutor:** Cột 3 chứa AI Prompt tự động lấy điểm từ Cột 2 (Zustand) và hỗ trợ Click-to-copy nhanh chóng.
+     - **Interactive Workspace:** Thiết kế lại Cột 1 với nút "Giáo án PDF" (Iframe) và "Video Tổng kết" (PiP `<Rnd>`).
+     - **Dynamic AI Tutor:** Cột 3 chứa AI Prompt tự động lấy điểm từ Cột 2 (Zustand).
+     - **UX Rành mạch:** Sidebar và Tiêu đề Cột giữa luôn bắt buộc phải gọi tên đầy đủ theo PRD (Ví dụ: `Module 01: Mindset nền tảng Sales XK`) thay vì chỉ hiện tên ngắn.
    - Hoàn thiện luồng logic cơ bản của **Module 02 và 03** (Fit Score).
 3. **Định nghĩa Đội ngũ (Agent Roles v5.0):**
    - **Dev Agents:** FE-01 (Frontend), DB-02 (Backend/JSONB), DevOps-03.

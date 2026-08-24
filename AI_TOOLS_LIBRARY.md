@@ -45,7 +45,8 @@ File này chứa các "Thần chú" (System Commands) đúc kết từ Kiến tr
 > **Hành động của AI:** 
 > 1. Đọc lại file `src/app/(app)/(modules)/m01/page.tsx` và `M1_CompetencyForm.tsx` để copy tư duy (React-Rnd PiP, Dynamic Prompt, Recharts).
 > 2. Đập đi xây lại màn hình `page.tsx` và file Component của Module tương ứng để nó y chang M01, chỉ thay đổi nội dung chữ và dữ liệu.
-> 3. Tự động liên kết video/pdf từ Supabase theo đúng chuẩn tên file (Ví dụ: `M02_Bai01.pdf`).
+> 3. Tự động liên kết video/pdf từ Supabase theo đúng chuẩn tên file nối tiếp (Ví dụ: M02 tiếp tục với `M02_Bai03.pdf`, M03 tiếp tục với `M03_Bai06.pdf`).
+> 4. **Bắt buộc:** Đảm bảo `moduleTitle` truyền vào `<ModuleLayout>` phải ghi rõ tên đầy đủ theo chuẩn PRD (Ví dụ: `Module 03: Phát triển cơ hội và quản trị Pipeline`) thay vì chỉ ghi chữ số.
 
 ---
 *(Lưu ý: Bạn có thể tiếp tục bổ sung thêm các Lệnh mới vào file này trong tương lai nếu phát sinh các Tool/Skill mới)*

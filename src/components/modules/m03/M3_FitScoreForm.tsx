@@ -32,6 +32,7 @@ export default function M3_FitScoreForm() {
   const supabase = createClient();
   const { isInitialized, getModuleData } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
+  const [isContextOpen, setIsContextOpen] = useState(true);
 
   useEffect(() => {
     async function loadUser() {
@@ -102,31 +103,56 @@ export default function M3_FitScoreForm() {
         </div>
       </div>
 
-      {/* DỮ LIỆU KẾ THỪA M02 */}
-      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] p-4 rounded-xl">
-        <h3 className="text-sm font-semibold text-gray-400 uppercase mb-3 tracking-wider">
-          Khách hàng đang phân tích (Kế thừa từ M02)
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Thị trường mục tiêu</label>
-            <div className="bg-[var(--bg-primary)] px-3 py-2 rounded-lg text-sm text-gray-300">
-              {targetMarket}
+      {/* DỮ LIỆU KẾ THỪA M02 (Collapsible Context Header) */}
+      <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl overflow-hidden transition-all duration-300">
+        <button 
+          onClick={() => setIsContextOpen(!isContextOpen)}
+          className="w-full flex items-center justify-between p-3 bg-gray-800/50 hover:bg-gray-800 transition-colors"
+        >
+          <div className="flex items-center space-x-2">
+            <span className="text-xl">📌</span>
+            <span className="text-sm font-semibold text-gray-300">
+              Dữ liệu nền tảng: {targetMarket}
+            </span>
+          </div>
+          <span className="text-gray-500 text-xs">{isContextOpen ? 'Thu gọn ▲' : 'Mở rộng ▼'}</span>
+        </button>
+        
+        {isContextOpen && (
+          <div className="p-4 border-t border-[var(--border-color)]">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Thị trường mục tiêu</label>
+                <div className="bg-[var(--bg-primary)] px-3 py-2 rounded-lg text-sm text-gray-300">
+                  {targetMarket}
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Quy mô công ty (ICP)</label>
+                <div className="bg-[var(--bg-primary)] px-3 py-2 rounded-lg text-sm text-gray-300">
+                  {icp.company_size || 'Chưa xác định'}
+                </div>
+              </div>
+              <div className="col-span-2 relative group">
+                <label className="text-xs text-gray-500 mb-1 block">Nhu cầu (Needs)</label>
+                <div className="bg-[var(--bg-primary)] px-3 py-2 rounded-lg text-sm text-gray-300">
+                  {icp.needs || 'Chưa xác định'}
+                </div>
+              </div>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button 
+                onClick={() => {
+                  alert('CẢNH BÁO: Sửa dữ liệu gốc (Target Market) sẽ ghi đè (Cascade Update) toàn bộ tiến trình phía sau. Chức năng sẽ mở ở Phase 3!');
+                }}
+                className="text-xs text-[var(--accent-warning)] flex items-center gap-1 hover:underline"
+              >
+                ✏️ Sửa dữ liệu gốc
+              </button>
             </div>
           </div>
-          <div>
-            <label className="text-xs text-gray-500 mb-1 block">Quy mô công ty</label>
-            <div className="bg-[var(--bg-primary)] px-3 py-2 rounded-lg text-sm text-gray-300">
-              {icp.company_size || 'Chưa xác định'}
-            </div>
-          </div>
-          <div className="col-span-2">
-            <label className="text-xs text-gray-500 mb-1 block">Nhu cầu (Needs)</label>
-            <div className="bg-[var(--bg-primary)] px-3 py-2 rounded-lg text-sm text-gray-300 line-clamp-2">
-              {icp.needs || 'Chưa xác định'}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto pr-2 space-y-6">
