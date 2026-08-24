@@ -20,11 +20,12 @@ export default function M01Page() {
   const { getModuleData } = useModuleStore();
 
   const [radarScores, setRadarScores] = useState({
-    research: 3,
-    negotiation: 3,
-    b2b: 3,
-    culture: 3,
-    english: 3
+    market: 3,
+    prospecting: 3,
+    pricing: 3,
+    risk: 3,
+    internal: 3,
+    crm: 3
   });
 
   useEffect(() => {
@@ -32,18 +33,19 @@ export default function M01Page() {
       const data = getModuleData('M01');
       if (data?.competency_radar) {
         setRadarScores({
-          research: data.competency_radar.market_research || 3,
-          negotiation: data.competency_radar.negotiation || 3,
-          b2b: data.competency_radar.b2b_sales_process || 3,
-          culture: data.competency_radar.cultural_understanding || 3,
-          english: data.competency_radar.english_communication || 3
+          market: data.competency_radar.market_and_icp || 3,
+          prospecting: data.competency_radar.prospecting_discovery || 3,
+          pricing: data.competency_radar.pricing_negotiation || 3,
+          risk: data.competency_radar.risk_management || 3,
+          internal: data.competency_radar.internal_claim || 3,
+          crm: data.competency_radar.crm_growth || 3
         });
       }
     }, 1000);
     return () => clearInterval(interval);
   }, [getModuleData]);
 
-  const dynamicPrompt = `"Dựa vào hồ sơ năng lực tôi vừa tự đánh giá (Research: ${radarScores.research}/5, Negotiation: ${radarScores.negotiation}/5, B2B Process: ${radarScores.b2b}/5, Culture: ${radarScores.culture}/5, English: ${radarScores.english}/5), hãy đề xuất cho tôi 3 mục tiêu 90 ngày thiết thực nhất để cải thiện các điểm yếu dưới 3 điểm của tôi trong đàm phán B2B."`;
+  const dynamicPrompt = `"Dựa vào hồ sơ năng lực tôi vừa tự đánh giá (Market & ICP: ${radarScores.market}/5, Prospecting: ${radarScores.prospecting}/5, Pricing: ${radarScores.pricing}/5, Risk: ${radarScores.risk}/5, Internal: ${radarScores.internal}/5, CRM: ${radarScores.crm}/5), hãy đề xuất cho tôi 3 mục tiêu 90 ngày thiết thực nhất để cải thiện các điểm yếu dưới 3 điểm của tôi trong đàm phán B2B."`;
 
   const handleCopyPrompt = async () => {
     try {
