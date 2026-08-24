@@ -28,10 +28,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const isUnlocked = (moduleId: string) => {
     if (moduleId === 'DASHBOARD' || moduleId === 'M01') return true;
-    if (moduleId === 'M02') return submissions['M01']?.is_locked === true;
-    if (moduleId === 'M03') return submissions['M02']?.is_locked === true;
-    if (moduleId === 'M04') return submissions['M03']?.is_locked === true;
-    if (moduleId === 'M05') return submissions['M04']?.is_locked === true;
+    
+    // Yêu cầu: Tạm khóa toàn bộ các Module còn lại (để hoàn thiện nội dung sau)
+    if (moduleId === 'M02') return false; // submissions['M01']?.is_locked === true;
+    if (moduleId === 'M03') return false; // submissions['M02']?.is_locked === true;
+    if (moduleId === 'M04') return false; // submissions['M03']?.is_locked === true;
+    if (moduleId === 'M05') return false; // submissions['M04']?.is_locked === true;
+    
     return true;
   };
 
@@ -180,8 +183,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             } else {
+              // Module bị khóa
+              const alertMsg = (item.id !== 'M02') 
+                ? 'Module này đang được xây dựng và sẽ sớm ra mắt!' 
+                : 'Module này đang được xây dựng và sẽ sớm ra mắt!';
+
               return (
-                <div key={item.path} onClick={() => alert('Vui lòng làm bài và nhấn XÁC NHẬN NỘP BÀI ở Module trước đó để mở khóa Module này!')} style={sharedStyle} title={!isHovered ? item.name : undefined}>
+                <div key={item.path} onClick={() => alert(alertMsg)} style={sharedStyle} title={!isHovered ? item.name : undefined}>
                   {innerContent}
                 </div>
               );
