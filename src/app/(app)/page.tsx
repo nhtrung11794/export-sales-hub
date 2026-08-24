@@ -111,7 +111,7 @@ export default function Dashboard() {
       name: 'Module 02: Thị trường & Khách hàng', 
       desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
       totalLessons: 3,
-      status: hasData('M02') ? 'completed' : (hasData('M01') ? 'active' : 'locked')
+      status: 'locked'
     },
     { 
       id: 'm03',
@@ -119,7 +119,7 @@ export default function Dashboard() {
       name: 'Module 03: Cơ hội & Quản trị rủi ro', 
       desc: 'Chấm điểm khách hàng và phòng ngừa rủi ro pháp lý', 
       totalLessons: 3,
-      status: hasData('M03') ? 'completed' : (hasData('M02') ? 'active' : 'locked')
+      status: 'locked'
     },
     { 
       id: 'm04',
