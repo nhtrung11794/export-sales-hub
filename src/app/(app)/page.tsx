@@ -17,62 +17,75 @@ export default function Dashboard() {
   const [userName, setUserName] = useState('Nhà xuất khẩu');
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+    
+    // Logic đếm ngược Mockup (Dùng chung cho cả khi lỗi hoặc chưa đăng nhập)
+    const startMockupTimer = () => {
+      setTimeLeft({ days: 15, hours: 4, mins: 30, secs: 0 }); // Set luôn ban đầu
+      timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev.secs > 0) return { ...prev, secs: prev.secs - 1 };
+          if (prev.mins > 0) return { ...prev, mins: prev.mins - 1, secs: 59 };
+          if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, mins: 59, secs: 59 };
+          if (prev.days > 0) return { ...prev, days: prev.days - 1, hours: 23, mins: 59, secs: 59 };
+          return { days: 15, hours: 4, mins: 30, secs: 0 };
+        });
+      }, 1000);
+    };
+
     async function fetchUserData() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserName(user.email?.split('@')[0] || 'Nhà xuất khẩu');
-        
-        // Fetch dữ liệu batch_end_date từ bảng profiles
-        const { data: profileData, error } = await supabase
-          .from('profiles')
-          .select('batch_end_date')
-          .eq('id', user.id)
-          .single();
-          
-        if (error) {
-          console.error("Lỗi khi lấy dữ liệu Supabase:", error.message);
-        } else {
-          console.log("Dữ liệu Supabase lấy được:", profileData);
-        }
+      
+      if (!user) {
+        // Chưa đăng nhập -> Chạy mockup
+        startMockupTimer();
+        return;
+      }
 
-        if (profileData && profileData.batch_end_date) {
-          const endDate = new Date(profileData.batch_end_date).getTime();
+      setUserName(user.email?.split('@')[0] || 'Nhà xuất khẩu');
+      
+      // Fetch dữ liệu batch_end_date từ bảng profiles
+      const { data: profileData, error } = await supabase
+        .from('profiles')
+        .select('batch_end_date')
+        .eq('id', user.id)
+        .single();
+        
+      if (error) {
+        console.error("Lỗi khi lấy dữ liệu Supabase:", error.message);
+        startMockupTimer(); // Lỗi RLS hoặc không có profile -> Chạy mockup
+        return;
+      }
+
+      if (profileData && profileData.batch_end_date) {
+        const endDate = new Date(profileData.batch_end_date).getTime();
+        
+        timer = setInterval(() => {
+          const now = new Date().getTime();
+          const distance = endDate - now;
           
-          // Set interval for real-time countdown
-          const timer = setInterval(() => {
-            const now = new Date().getTime();
-            const distance = endDate - now;
-            
-            if (distance > 0) {
-              setTimeLeft({
-                days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-                hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-                mins: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-                secs: Math.floor((distance % (1000 * 60)) / 1000)
-              });
-            } else {
-              clearInterval(timer);
-              setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
-            }
-          }, 1000);
-          
-          return () => clearInterval(timer);
-        } else {
-          // Mockup data if no batch_end_date
-          const timer = setInterval(() => {
-            setTimeLeft(prev => {
-              if (prev.secs > 0) return { ...prev, secs: prev.secs - 1 };
-              if (prev.mins > 0) return { ...prev, mins: prev.mins - 1, secs: 59 };
-              if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, mins: 59, secs: 59 };
-              if (prev.days > 0) return { ...prev, days: prev.days - 1, hours: 23, mins: 59, secs: 59 };
-              return { days: 15, hours: 4, mins: 30, secs: 0 }; // Default reset
+          if (distance > 0) {
+            setTimeLeft({
+              days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+              hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+              mins: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+              secs: Math.floor((distance % (1000 * 60)) / 1000)
             });
-          }, 1000);
-          return () => clearInterval(timer);
-        }
+          } else {
+            clearInterval(timer);
+            setTimeLeft({ days: 0, hours: 0, mins: 0, secs: 0 });
+          }
+        }, 1000);
+      } else {
+        startMockupTimer();
       }
     }
+
     fetchUserData();
+
+    return () => {
+      if (timer) clearInterval(timer);
+    };
   }, [supabase]);
 
   const hasData = (moduleId: import('@/store/useModuleStore').ModuleId) => {
