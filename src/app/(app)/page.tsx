@@ -69,39 +69,47 @@ export default function Dashboard() {
     fetchUserData();
   }, [supabase]);
 
-  const hasData = (moduleId: string) => !!getModuleData(moduleId);
+  const hasData = (moduleId: import('@/store/useModuleStore').ModuleId) => {
+    const data = getModuleData(moduleId);
+    return data && Object.keys(data).length > 0;
+  };
 
   const modules = [
     { 
-      id: 'm01', 
+      id: 'm01',
+      storeId: 'M01' as const,
       name: 'Module 01: Hồ sơ năng lực', 
       desc: 'Đánh giá năng lực cốt lõi và tư duy B2B Sales', 
       totalLessons: 2,
-      status: hasData('m01') ? 'completed' : 'active' 
+      status: hasData('M01') ? 'completed' : 'active' 
     },
     { 
-      id: 'm02', 
+      id: 'm02',
+      storeId: 'M02' as const,
       name: 'Module 02: Phân tích Thị trường', 
       desc: 'Chọn thị trường và chân dung khách hàng (ICP)', 
       totalLessons: 3,
-      status: hasData('m02') ? 'completed' : (hasData('m01') ? 'active' : 'locked')
+      status: hasData('M02') ? 'completed' : (hasData('M01') ? 'active' : 'locked')
     },
     { 
-      id: 'm03', 
+      id: 'm03',
+      storeId: 'M03' as const,
       name: 'Module 03: Hiểu người Mua', 
       desc: 'Phân tích hành vi mua hàng và nhu cầu', 
       totalLessons: 3,
-      status: hasData('m03') ? 'completed' : (hasData('m02') ? 'active' : 'locked')
+      status: hasData('M03') ? 'completed' : (hasData('M02') ? 'active' : 'locked')
     },
     { 
-      id: 'm04', 
+      id: 'm04',
+      storeId: 'M04' as const,
       name: 'Module 04: Quy trình Bán hàng', 
       desc: 'Xây dựng phễu và kỹ năng chốt sale', 
       totalLessons: 4,
       status: 'locked' 
     },
     { 
-      id: 'm05', 
+      id: 'm05',
+      storeId: 'M05' as const,
       name: 'Module 05: Kế hoạch Hành động', 
       desc: 'Lên kế hoạch 90 ngày thực chiến', 
       totalLessons: 3,
