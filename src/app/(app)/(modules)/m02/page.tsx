@@ -21,8 +21,8 @@ export default function Module02Page() {
 
   const [formData, setFormData] = useState({
     targetMarket: '[Quốc gia]',
-    icpCompanySize: '[Quy mô/Phân khúc]',
-    competitor1: '[Tên đối thủ]'
+    decisionMaker: '[Phòng ban]',
+    painPoints: '[Nỗi đau]'
   });
 
   // Quét dữ liệu từ Store mỗi 1 giây
@@ -30,17 +30,26 @@ export default function Module02Page() {
     const interval = setInterval(() => {
       const data = getModuleData('M02');
       if (data) {
+        let dmSlot = '[Phòng ban]';
+        if (data.buyer_map) {
+           const slotKey = Object.keys(data.buyer_map).find(k => data.buyer_map[k] === 'decision_maker');
+           if (slotKey) {
+             const labels: Record<string, string> = { ceo: 'Board/CEO', cfo: 'Finance', procurement: 'Purchasing', technical: 'Technical', users: 'Operations', admin: 'Admin' };
+             dmSlot = labels[slotKey] || slotKey;
+           }
+        }
+
         setFormData({
-          targetMarket: data.target_market || '[Quốc gia]',
-          icpCompanySize: data.icp?.company_size || '[Quy mô/Phân khúc]',
-          competitor1: data.competitors?.[0]?.name || '[Tên đối thủ]'
+          targetMarket: data.market_scan?.target_market || '[Quốc gia]',
+          decisionMaker: dmSlot,
+          painPoints: data.discovery_line?.zone1_ice_breaking?.pain_points || '[Nỗi đau]'
         });
       }
     }, 1000);
     return () => clearInterval(interval);
   }, [getModuleData]);
 
-  const dynamicPrompt = `"Tôi đang muốn xuất khẩu sản phẩm sang thị trường ${formData.targetMarket}. Khách hàng mục tiêu của tôi là ${formData.icpCompanySize}. Hãy phân tích điểm mạnh và điểm yếu của đối thủ ${formData.competitor1} tại thị trường này để tôi có chiến lược cạnh tranh tốt hơn."`;
+  const dynamicPrompt = `"Tôi đang phân tích thị trường ${formData.targetMarket}. Thông qua Drag & Drop Buyer Map, tôi xác định Decision Maker của mình nằm ở bộ phận ${formData.decisionMaker}. Trong giai đoạn Ice-breaking, nỗi đau lớn nhất của họ là: '${formData.painPoints}'. Hãy đóng vai chuyên gia B2B Sales, viết cho tôi một kịch bản Cold Email/LinkedIn Outreach nhắm thẳng vào nỗi đau này."`;
 
   const handleCopyPrompt = async () => {
     try {

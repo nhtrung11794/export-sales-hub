@@ -3,42 +3,81 @@
 import React, { useEffect, useState } from 'react';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { createClient } from '@/lib/supabase/client';
-
 import { useModuleStore } from '@/store/useModuleStore';
+import { CheckCircle, AlertCircle, Search, Lightbulb, Users, Map } from 'lucide-react';
+
+// --- DATA STRUCTURE ---
+interface DiscoveryZone {
+  pain_points: string;
+  needs: string;
+  current_solution: string;
+  gap: string;
+}
 
 interface M2FormData {
-  target_market: string;
-  market_reason: string;
-  icp: {
-    company_size: string;
-    needs: string;
-    pain_points: string;
+  market_scan: {
+    target_market: string;
+    source_url: string;
+    intelligence_result: string;
   };
-  competitors: {
-    name: string;
-    strength: string;
-    weakness: string;
-  }[];
+  buyer_map: Record<string, string | null>;
+  discovery_line: Record<string, DiscoveryZone>;
 }
 
 const initialData: M2FormData = {
-  target_market: '',
-  market_reason: '',
-  icp: {
-    company_size: '',
-    needs: '',
-    pain_points: ''
+  market_scan: {
+    target_market: '',
+    source_url: '',
+    intelligence_result: ''
   },
-  competitors: [
-    { name: '', strength: '', weakness: '' },
-    { name: '', strength: '', weakness: '' }
-  ]
+  buyer_map: {
+    'ceo': null,
+    'cfo': null,
+    'procurement': null,
+    'technical': null,
+    'users': null,
+    'admin': null
+  },
+  discovery_line: {
+    'zone1_ice_breaking': { pain_points: '', needs: '', current_solution: '', gap: '' },
+    'zone2_qualification': { pain_points: '', needs: '', current_solution: '', gap: '' },
+    'zone3_pitching': { pain_points: '', needs: '', current_solution: '', gap: '' },
+    'zone4_objection': { pain_points: '', needs: '', current_solution: '', gap: '' },
+    'zone5_closing': { pain_points: '', needs: '', current_solution: '', gap: '' }
+  }
 };
+
+const BUYER_TYPES = [
+  { id: 'decision_maker', label: 'Decision Maker', color: '#ef4444' }, // Red
+  { id: 'economic_buyer', label: 'Economic Buyer', color: '#f59e0b' }, // Orange
+  { id: 'influencer', label: 'Influencer', color: '#3b82f6' }, // Blue
+  { id: 'end_user', label: 'End User', color: '#10b981' }, // Green
+  { id: 'champion', label: 'Champion', color: '#8b5cf6' }, // Purple
+  { id: 'gatekeeper', label: 'Gatekeeper', color: '#6b7280' } // Gray
+];
+
+const ORG_SLOTS = [
+  { id: 'ceo', label: 'Board / CEO' },
+  { id: 'cfo', label: 'Finance / CFO' },
+  { id: 'procurement', label: 'Procurement' },
+  { id: 'technical', label: 'Technical Dept' },
+  { id: 'users', label: 'Operations / Users' },
+  { id: 'admin', label: 'Admin / Assistant' }
+];
+
+const ZONES = [
+  { id: 'zone1_ice_breaking', label: 'Ice Breaking' },
+  { id: 'zone2_qualification', label: 'Qualification' },
+  { id: 'zone3_pitching', label: 'Solution Pitch' },
+  { id: 'zone4_objection', label: 'Objection' },
+  { id: 'zone5_closing', label: 'Closing' }
+];
 
 export default function M2_MarketForm() {
   const supabase = createClient();
-  const { isInitialized } = useModuleStore();
+  const { isInitialized, isOnline } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
+  const [activeZone, setActiveZone] = useState('zone1_ice_breaking');
 
   useEffect(() => {
     async function loadData() {
@@ -51,6 +90,14 @@ export default function M2_MarketForm() {
   const handleSave = async (formData: M2FormData) => {
     if (!userId) return;
     
+    // Fact-check URL Validation (Server-side defense concept)
+    if (formData.market_scan.source_url) {
+       const urlPattern = /^https?:\/\/.+/i;
+       if (!urlPattern.test(formData.market_scan.source_url)) {
+         throw new Error('URL must start with http:// or https://');
+       }
+    }
+
     const { error } = await supabase
       .from('module_submissions')
       .upsert({
@@ -61,10 +108,7 @@ export default function M2_MarketForm() {
         last_saved_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       
-    if (error) {
-      console.error('Error saving to Supabase:', error);
-      throw error;
-    }
+    if (error) throw error;
   };
 
   const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M2FormData>(
@@ -94,167 +138,255 @@ export default function M2_MarketForm() {
     }
   }, [status, lastSaved]);
 
-  const updateIcp = (field: keyof M2FormData['icp'], value: string) => {
-    setData((prev) => ({
-      ...prev,
-      icp: {
-        ...prev.icp,
-        [field]: value,
+  // Fallback for partial data
+  const safeData = {
+    market_scan: data?.market_scan || initialData.market_scan,
+    buyer_map: data?.buyer_map || initialData.buyer_map,
+    discovery_line: data?.discovery_line || initialData.discovery_line
+  };
+
+  // URL validation check for UI
+  const urlPattern = /^https?:\/\/.+/i;
+  const isValidUrl = !safeData.market_scan.source_url || urlPattern.test(safeData.market_scan.source_url);
+
+  // Drag and Drop Handlers
+  const onDragStart = (e: React.DragEvent, buyerId: string) => {
+    if (!isOnline) return e.preventDefault();
+    e.dataTransfer.setData('buyerId', buyerId);
+  };
+
+  const onDrop = (e: React.DragEvent, slotId: string) => {
+    if (!isOnline) return;
+    e.preventDefault();
+    const buyerId = e.dataTransfer.getData('buyerId');
+    if (buyerId) {
+      // Find if this buyer is already in another slot, and clear it
+      const newBuyerMap = { ...safeData.buyer_map };
+      for (const key in newBuyerMap) {
+        if (newBuyerMap[key] === buyerId) newBuyerMap[key] = null;
       }
-    }));
+      newBuyerMap[slotId] = buyerId;
+      setData(prev => ({ ...prev, buyer_map: newBuyerMap }));
+      // Trigger save immediately for D&D to feel responsive
+      handleBlur(); 
+    }
   };
 
-  const updateCompetitor = (index: number, field: keyof M2FormData['competitors'][0], value: string) => {
-    setData((prev) => {
-      const newCompetitors = [...prev.competitors];
-      newCompetitors[index] = {
-        ...newCompetitors[index],
-        [field]: value
-      };
-      return { ...prev, competitors: newCompetitors };
-    });
+  const onDragOver = (e: React.DragEvent) => {
+    if (!isOnline) return;
+    e.preventDefault();
   };
 
-  if (!isInitialized) {
-    return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu bài làm từ Global Store...</div>;
-  }
+  if (!isInitialized) return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu...</div>;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
-      {/* PHẦN 1: THỊ TRƯỜNG MỤC TIÊU */}
-      <section>
-        <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>1. Lựa chọn Thị trường Mục tiêu</h3>
-        
+      {!isOnline && (
+        <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px dashed var(--accent-danger)', padding: '16px', borderRadius: '12px', color: '#fca5a5' }}>
+          <strong>⚠️ MẤT KẾT NỐI MẠNG:</strong> Dữ liệu đã bị khóa. Vui lòng kiểm tra internet.
+        </div>
+      )}
+
+      {/* TOOL 1: MARKET SCAN BOX */}
+      <section className="glass-panel" style={{ padding: '24px' }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--accent-primary)' }}>
+          <Search size={20} /> Tool 1: Market Scan Box
+        </h3>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+          👉 Hãy tham khảo <a href="https://gemini.google.com" target="_blank" rel="noreferrer" style={{color: 'var(--accent-warning)', textDecoration: 'underline'}}>AI Agent Gemini</a> với Prompt sau: <i>"Đóng vai Giám đốc phát triển thị trường, phân tích nhanh quy mô và rào cản của thị trường [Quốc gia]."</i>
+        </p>
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Quốc gia / Khu vực
-            </label>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Thị trường Mục tiêu</label>
             <input 
-              type="text"
-              className="form-input"
-              placeholder="Ví dụ: Mỹ, EU, Nhật Bản..."
-              value={data.target_market}
-              onChange={(e) => setData({ ...data, target_market: e.target.value })}
+              type="text" className="form-input" disabled={!isOnline}
+              value={safeData.market_scan.target_market}
+              onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, target_market: e.target.value } }))}
               onBlur={handleBlur}
             />
           </div>
+
           <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Lý do lựa chọn (Lợi thế cạnh tranh của sản phẩm)
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
+              <span>URL Nguồn tham khảo (Fact-check Validation)</span>
+              {!isValidUrl && <span style={{ color: 'var(--accent-danger)' }}>Invalid URL (must start with http)</span>}
+              {isValidUrl && safeData.market_scan.source_url && <span style={{ color: 'var(--accent-success)' }}>Valid URL</span>}
             </label>
-            <textarea 
-              className="form-input"
-              rows={3}
-              placeholder="Ví dụ: Thuế quan ưu đãi, Tiêu chuẩn kỹ thuật phù hợp với nhà máy..."
-              value={data.market_reason}
-              onChange={(e) => setData({ ...data, market_reason: e.target.value })}
+            <input 
+              type="text" 
+              className="form-input" 
+              disabled={!isOnline}
+              style={{ borderColor: !isValidUrl ? 'var(--accent-danger)' : undefined }}
+              value={safeData.market_scan.source_url}
+              onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, source_url: e.target.value } }))}
               onBlur={handleBlur}
+              placeholder="https://..."
+            />
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Kết quả Market Intelligence (Từ AI Agent)</label>
+            <textarea 
+              className="form-input" rows={4} disabled={!isOnline}
+              value={safeData.market_scan.intelligence_result}
+              onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, intelligence_result: e.target.value } }))}
+              onBlur={handleBlur}
+              placeholder="Dán kết quả phân tích thị trường từ Gemini vào đây..."
             />
           </div>
         </div>
       </section>
 
-      {/* PHẦN 2: CHÂN DUNG KHÁCH HÀNG (ICP) */}
-      <section>
-        <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>2. Chân dung Khách hàng B2B (ICP)</h3>
-        
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Quy mô & Phân khúc
-            </label>
-            <input 
-              type="text"
-              className="form-input"
-              placeholder="Ví dụ: Nhà nhập khẩu sỉ, Doanh thu > 5 triệu USD..."
-              value={data.icp.company_size}
-              onChange={(e) => updateIcp('company_size', e.target.value)}
-              onBlur={handleBlur}
-            />
+      {/* TOOL 2: DRAG & DROP BUYER MAP */}
+      <section className="glass-panel" style={{ padding: '24px' }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--accent-primary)' }}>
+          <Users size={20} /> Tool 2: Drag & Drop Buyer Map
+        </h3>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+          Kéo thẻ Buyer Type (bên trái) và Thả vào Phòng ban tương ứng trong sơ đồ tổ chức (bên phải).
+        </p>
+
+        <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+          
+          {/* DRAG POOL */}
+          <div style={{ flex: '1', minWidth: '200px', background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px' }}>
+            <h4 style={{ marginBottom: '12px', fontSize: '0.9rem', color: 'var(--text-muted)' }}>Buyer Types (Kéo thẻ)</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {BUYER_TYPES.map(buyer => {
+                // If this buyer is already mapped to a slot, we fade it out
+                const isMapped = Object.values(safeData.buyer_map).includes(buyer.id);
+                return (
+                  <div
+                    key={buyer.id}
+                    draggable={!isOnline ? false : true}
+                    onDragStart={(e) => onDragStart(e, buyer.id)}
+                    style={{
+                      padding: '10px 16px',
+                      background: isMapped ? 'rgba(255,255,255,0.05)' : buyer.color,
+                      color: isMapped ? 'var(--text-muted)' : '#fff',
+                      borderRadius: '6px',
+                      cursor: isOnline ? (isMapped ? 'default' : 'grab') : 'not-allowed',
+                      opacity: isMapped ? 0.4 : 1,
+                      fontWeight: 'bold',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    {buyer.label}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Nhu cầu / Mong muốn cốt lõi
-            </label>
-            <textarea 
-              className="form-input"
-              rows={2}
-              placeholder="Ví dụ: Nguồn cung ổn định, Chứng chỉ xanh..."
-              value={data.icp.needs}
-              onChange={(e) => updateIcp('needs', e.target.value)}
-              onBlur={handleBlur}
-            />
-          </div>
-          <div>
-            <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-              Nỗi đau (Pain points) lớn nhất
-            </label>
-            <textarea 
-              className="form-input"
-              rows={2}
-              placeholder="Ví dụ: Chi phí logistics tăng cao, Nhà cung cấp cũ giao hàng chậm..."
-              value={data.icp.pain_points}
-              onChange={(e) => updateIcp('pain_points', e.target.value)}
-              onBlur={handleBlur}
-            />
+
+          {/* DROP TARGETS */}
+          <div style={{ flex: '2', minWidth: '300px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            {ORG_SLOTS.map(slot => {
+              const assignedBuyerId = safeData.buyer_map[slot.id];
+              const assignedBuyer = BUYER_TYPES.find(b => b.id === assignedBuyerId);
+
+              return (
+                <div
+                  key={slot.id}
+                  onDrop={(e) => onDrop(e, slot.id)}
+                  onDragOver={onDragOver}
+                  style={{
+                    border: '1px dashed rgba(255,255,255,0.2)',
+                    background: assignedBuyer ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.02)',
+                    padding: '16px',
+                    borderRadius: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '80px',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>{slot.label}</span>
+                  {assignedBuyer ? (
+                    <div 
+                      draggable={!isOnline ? false : true}
+                      onDragStart={(e) => onDragStart(e, assignedBuyer.id)}
+                      style={{ background: assignedBuyer.color, color: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', cursor: isOnline ? 'grab' : 'not-allowed' }}
+                    >
+                      {assignedBuyer.label}
+                    </div>
+                  ) : (
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Thả thẻ vào đây</span>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      {/* PHẦN 3: ĐỐI THỦ CẠNH TRANH */}
-      <section>
-        <h3 style={{ marginBottom: '16px', color: 'var(--text-primary)' }}>3. Phân tích Đối thủ Cạnh tranh</h3>
+      {/* TOOL 3: DISCOVERY MAPPING LINE */}
+      <section className="glass-panel" style={{ padding: '24px' }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--accent-primary)' }}>
+          <Map size={20} /> Tool 3: Discovery Mapping Line
+        </h3>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {data.competitors.map((comp, index) => (
-            <div key={index} style={{ padding: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--accent-primary)', marginBottom: '8px', fontWeight: 'bold' }}>
-                  Đối thủ {index + 1}
-                </label>
-                <input 
-                  type="text"
-                  className="form-input"
-                  placeholder="Tên công ty đối thủ..."
-                  value={comp.name}
-                  onChange={(e) => updateCompetitor(index, 'name', e.target.value)}
-                  onBlur={handleBlur}
-                />
-              </div>
-              
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                    Điểm mạnh
-                  </label>
-                  <textarea 
-                    className="form-input"
-                    rows={2}
-                    value={comp.strength}
-                    onChange={(e) => updateCompetitor(index, 'strength', e.target.value)}
-                    onBlur={handleBlur}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-                    Điểm yếu (Cơ hội của bạn)
-                  </label>
-                  <textarea 
-                    className="form-input"
-                    rows={2}
-                    value={comp.weakness}
-                    onChange={(e) => updateCompetitor(index, 'weakness', e.target.value)}
-                    onBlur={handleBlur}
-                  />
-                </div>
-              </div>
+        {/* Horizontal Stepper */}
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px' }}>
+          {ZONES.map((zone, index) => (
+            <button
+              key={zone.id}
+              onClick={() => setActiveZone(zone.id)}
+              style={{
+                flex: 1,
+                minWidth: '100px',
+                padding: '12px 8px',
+                background: activeZone === zone.id ? 'var(--accent-primary)' : 'rgba(255,255,255,0.05)',
+                color: activeZone === zone.id ? '#fff' : 'var(--text-secondary)',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                fontWeight: activeZone === zone.id ? 'bold' : 'normal',
+                whiteSpace: 'nowrap',
+                position: 'relative'
+              }}
+            >
+              {index + 1}. {zone.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 4 Layers for the Active Zone */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+          {['pain_points', 'needs', 'current_solution', 'gap'].map(layer => (
+            <div key={layer}>
+              <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
+                {layer.replace('_', ' ')}
+              </label>
+              <textarea
+                className="form-input"
+                rows={3}
+                disabled={!isOnline}
+                value={(safeData.discovery_line[activeZone] as any)?.[layer] || ''}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setData(p => ({
+                    ...p,
+                    discovery_line: {
+                      ...p.discovery_line,
+                      [activeZone]: {
+                        ...p.discovery_line[activeZone],
+                        [layer]: val
+                      }
+                    }
+                  }))
+                }}
+                onBlur={handleBlur}
+              />
             </div>
           ))}
         </div>
-      </section>
 
+      </section>
     </div>
   );
 }
