@@ -6,6 +6,7 @@ import M1_CompetencyForm from '@/components/modules/m01/M1_CompetencyForm';
 import { supabase } from '@/lib/supabase';
 import { useModuleStore } from '@/store/useModuleStore';
 import { Copy, Check, Play, BookOpen, X } from 'lucide-react';
+import { Rnd } from 'react-rnd';
 
 export default function M01Page() {
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
@@ -203,49 +204,61 @@ export default function M01Page() {
 
       {/* FLOATING PIP VIDEO PLAYER */}
       {pipVideoUrl && (
-        <div style={{
-          position: 'fixed',
-          bottom: '24px',
-          right: '24px',
-          width: '400px',
-          height: '225px', // 16:9 aspect ratio
-          background: 'black',
-          borderRadius: '12px',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
-          zIndex: 9999,
-          overflow: 'hidden',
-          border: '2px solid var(--accent-primary)',
-          display: 'flex',
-          flexDirection: 'column'
-        }}>
-          {/* PiP Header (Nắm kéo / Nút Đóng) */}
+        <Rnd
+          default={{
+            x: window.innerWidth - 424 - 24, // 400px width + 24px padding + 24px scrollbar approx
+            y: window.innerHeight - 225 - 24, // 225px height + 24px padding
+            width: 400,
+            height: 225,
+          }}
+          minWidth={320}
+          minHeight={180}
+          bounds="window"
+          dragHandleClassName="drag-handle"
+          style={{ zIndex: 9999 }}
+        >
           <div style={{
-            background: 'var(--bg-secondary)',
-            height: '32px',
+            width: '100%',
+            height: '100%',
+            background: 'black',
+            borderRadius: '12px',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+            overflow: 'hidden',
+            border: '2px solid var(--accent-primary)',
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 12px',
-            cursor: 'move' // Placeholder for future drag feature
+            flexDirection: 'column'
           }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>▶️ Video Bài Giảng</span>
-            <button 
-              onClick={() => setPipVideoUrl(null)}
-              style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-            >
-              <X size={16} />
-            </button>
+            {/* PiP Header (Nắm kéo / Nút Đóng) */}
+            <div className="drag-handle" style={{
+              background: 'var(--bg-secondary)',
+              height: '32px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0 12px',
+              cursor: 'move' // Nắm vào đây để kéo
+            }}>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>▶️ Video Bài Giảng</span>
+              <button 
+                onClick={() => setPipVideoUrl(null)}
+                onMouseDown={(e) => e.stopPropagation()} // Ngăn sự kiện drag khi bấm nút X
+                onTouchStart={(e) => e.stopPropagation()}
+                style={{ background: 'none', border: 'none', color: 'var(--text-primary)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {/* PiP Body (Iframe Video) */}
+            <div style={{ flex: 1, position: 'relative' }}>
+              <iframe 
+                src={pipVideoUrl} 
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </div>
-          {/* PiP Body (Iframe Video) */}
-          <div style={{ flex: 1 }}>
-            <iframe 
-              src={pipVideoUrl} 
-              style={{ width: '100%', height: '100%', border: 'none' }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        </div>
+        </Rnd>
       )}
 
     </div>
