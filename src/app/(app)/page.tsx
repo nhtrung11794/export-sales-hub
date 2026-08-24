@@ -100,40 +100,40 @@ export default function Dashboard() {
     { 
       id: 'm01',
       storeId: 'M01' as const,
-      name: 'Module 01: Hồ sơ năng lực', 
-      desc: 'Đánh giá năng lực cốt lõi và tư duy B2B Sales', 
+      name: 'Module 01: Mindset nền tảng', 
+      desc: 'Dịch chuyển tư duy và đánh giá năng lực B2B Sales', 
       totalLessons: 2,
       status: hasData('M01') ? 'completed' : 'active' 
     },
     { 
       id: 'm02',
       storeId: 'M02' as const,
-      name: 'Module 02: Phân tích Thị trường', 
-      desc: 'Chọn thị trường và chân dung khách hàng (ICP)', 
+      name: 'Module 02: Thị trường & Khách hàng', 
+      desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
       totalLessons: 3,
       status: hasData('M02') ? 'completed' : (hasData('M01') ? 'active' : 'locked')
     },
     { 
       id: 'm03',
       storeId: 'M03' as const,
-      name: 'Module 03: Hiểu người Mua', 
-      desc: 'Phân tích hành vi mua hàng và nhu cầu', 
+      name: 'Module 03: Cơ hội & Quản trị rủi ro', 
+      desc: 'Chấm điểm khách hàng và phòng ngừa rủi ro pháp lý', 
       totalLessons: 3,
       status: hasData('M03') ? 'completed' : (hasData('M02') ? 'active' : 'locked')
     },
     { 
       id: 'm04',
       storeId: 'M04' as const,
-      name: 'Module 04: Quy trình Bán hàng', 
-      desc: 'Xây dựng phễu và kỹ năng chốt sale', 
+      name: 'Module 04: Giao tiếp & Chốt sale', 
+      desc: 'Kỹ năng đàm phán, cán cân thương lượng và chốt deal', 
       totalLessons: 4,
       status: 'locked' 
     },
     { 
       id: 'm05',
       storeId: 'M05' as const,
-      name: 'Module 05: Kế hoạch Hành động', 
-      desc: 'Lên kế hoạch 90 ngày thực chiến', 
+      name: 'Module 05: Thực thi & Sau bán hàng', 
+      desc: 'Báo cáo thực chiến, kế hoạch 90 ngày và quản trị khủng hoảng', 
       totalLessons: 3,
       status: 'locked' 
     },
