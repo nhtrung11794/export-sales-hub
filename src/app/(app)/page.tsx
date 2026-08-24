@@ -178,7 +178,7 @@ export default function Dashboard() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            EXPORT SALES HUB
+            EXPORT SALES STUDY HUB
           </h1>
         </div>
 
@@ -215,7 +215,7 @@ export default function Dashboard() {
         {/* Nội dung giới thiệu */}
         <div style={{ flex: 1 }}>
           <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '16px' }}>
-            Chào mừng trở lại, {userName}!
+            Xin chào các bạn học viên,
           </h1>
           <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '16px', fontSize: '1.05rem' }}>
             Website này là không gian học tập tổng hợp dành cho học viên khóa Sales xuất khẩu chuyên sâu. Tại đây, học viên có thể xem lại nội dung từng buổi, ôn tập theo module, tải tài liệu, hoàn thiện workbook, làm bài tập và nộp bài để phục vụ quá trình đánh giá cuối khóa.
