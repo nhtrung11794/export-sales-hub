@@ -7,11 +7,12 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Responsi
 
 interface M1FormData {
   competency_radar: {
-    market_research: number;
-    negotiation: number;
-    b2b_sales_process: number;
-    cultural_understanding: number;
-    english_communication: number;
+    market_and_icp: number;
+    prospecting_discovery: number;
+    pricing_negotiation: number;
+    risk_management: number;
+    internal_claim: number;
+    crm_growth: number;
   };
   goals_90d: string;
   mindset_shift: string;
@@ -19,11 +20,12 @@ interface M1FormData {
 
 const initialData: M1FormData = {
   competency_radar: {
-    market_research: 3,
-    negotiation: 3,
-    b2b_sales_process: 3,
-    cultural_understanding: 3,
-    english_communication: 3,
+    market_and_icp: 3,
+    prospecting_discovery: 3,
+    pricing_negotiation: 3,
+    risk_management: 3,
+    internal_claim: 3,
+    crm_growth: 3,
   },
   goals_90d: '',
   mindset_shift: '',
@@ -75,7 +77,15 @@ export default function M1_CompetencyForm() {
         }
 
         if (data && data.form_data) {
-          setData(data.form_data as M1FormData);
+          const fetchedData = data.form_data as any;
+          setData({
+            ...initialData,
+            ...fetchedData,
+            competency_radar: {
+              ...initialData.competency_radar,
+              ...fetchedData.competency_radar,
+            }
+          });
         }
       } catch (err: any) {
         console.error('Initial fetch error:', err);
@@ -159,11 +169,12 @@ export default function M1_CompetencyForm() {
 
   // Định dạng dữ liệu cho Radar Chart của Recharts
   const radarData = [
-    { subject: 'Nghiên cứu Thị trường', A: data.competency_radar.market_research, fullMark: 5 },
-    { subject: 'Sales Process B2B', A: data.competency_radar.b2b_sales_process, fullMark: 5 },
-    { subject: 'Đàm phán & Xử lý từ chối', A: data.competency_radar.negotiation, fullMark: 5 },
-    { subject: 'Văn hóa KD Quốc tế', A: data.competency_radar.cultural_understanding, fullMark: 5 },
-    { subject: 'Tiếng Anh TM', A: data.competency_radar.english_communication, fullMark: 5 },
+    { subject: 'Đọc Thị trường & ICP', A: data.competency_radar?.market_and_icp ?? 3, fullMark: 5 },
+    { subject: 'Prospecting & Discovery', A: data.competency_radar?.prospecting_discovery ?? 3, fullMark: 5 },
+    { subject: 'Báo giá & Đàm phán', A: data.competency_radar?.pricing_negotiation ?? 3, fullMark: 5 },
+    { subject: 'Kiểm soát rủi ro thanh toán', A: data.competency_radar?.risk_management ?? 3, fullMark: 5 },
+    { subject: 'Phối hợp nội bộ & Xử lý Claim', A: data.competency_radar?.internal_claim ?? 3, fullMark: 5 },
+    { subject: 'Kỷ luật CRM & Growth', A: data.competency_radar?.crm_growth ?? 3, fullMark: 5 },
   ];
 
   return (
@@ -201,11 +212,12 @@ export default function M1_CompetencyForm() {
           {/* Cột Trái: Thanh Kéo Điểm (Sliders) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {[
-              { id: 'market_research', label: 'Nghiên cứu thị trường & Tìm kiếm Lead' },
-              { id: 'b2b_sales_process', label: 'Quy trình Sales B2B & Chốt deal' },
-              { id: 'negotiation', label: 'Đàm phán & Xử lý từ chối' },
-              { id: 'cultural_understanding', label: 'Am hiểu văn hóa kinh doanh quốc tế' },
-              { id: 'english_communication', label: 'Tiếng Anh thương mại' },
+              { id: 'market_and_icp', label: 'Đọc Thị trường & ICP' },
+              { id: 'prospecting_discovery', label: 'Prospecting & Discovery' },
+              { id: 'pricing_negotiation', label: 'Báo giá & Đàm phán' },
+              { id: 'risk_management', label: 'Kiểm soát rủi ro thanh toán' },
+              { id: 'internal_claim', label: 'Phối hợp nội bộ & Xử lý Claim' },
+              { id: 'crm_growth', label: 'Kỷ luật CRM & Account Growth' },
             ].map((skill) => (
               <div key={skill.id} style={{ 
                   display: 'flex', flexDirection: 'column', gap: '8px', 
@@ -219,14 +231,14 @@ export default function M1_CompetencyForm() {
                       color: 'var(--accent-primary)',
                       background: 'rgba(59, 130, 246, 0.1)', padding: '4px 12px', borderRadius: '20px'
                   }}>
-                    {data.competency_radar[skill.id as keyof M1FormData['competency_radar']]} / 5
+                    {(data.competency_radar as any)?.[skill.id] ?? 3} / 5
                   </span>
                 </div>
                 <input 
                   type="range" 
                   min="1" 
                   max="5" 
-                  value={data.competency_radar[skill.id as keyof M1FormData['competency_radar']]}
+                  value={(data.competency_radar as any)?.[skill.id] ?? 3}
                   onChange={(e) => handleRadarChange(skill.id as keyof M1FormData['competency_radar'], parseInt(e.target.value))}
                   onBlur={handleBlur}
                   disabled={!isOnline}
