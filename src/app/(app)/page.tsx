@@ -10,8 +10,8 @@ export default function Dashboard() {
 
   const modules = [
     { id: 'm01', name: 'Module 01: Hồ sơ năng lực', desc: 'Đánh giá năng lực cốt lõi và tư duy B2B Sales', status: 'completed' },
-    { id: 'm02', name: 'Module 02: Phân tích Thị trường', desc: 'Chọn thị trường và chân dung khách hàng (ICP)', status: 'active' },
-    { id: 'm03', name: 'Module 03: Hiểu người Mua', desc: 'Phân tích hành vi mua hàng và nhu cầu', status: 'locked' },
+    { id: 'm02', name: 'Module 02: Phân tích Thị trường', desc: 'Chọn thị trường và chân dung khách hàng (ICP)', status: 'completed' },
+    { id: 'm03', name: 'Module 03: Hiểu người Mua', desc: 'Phân tích hành vi mua hàng và nhu cầu', status: 'active' },
     { id: 'm04', name: 'Module 04: Quy trình Bán hàng', desc: 'Xây dựng phễu và kỹ năng chốt sale', status: 'locked' },
     { id: 'm05', name: 'Module 05: Kế hoạch Hành động', desc: 'Lên kế hoạch 90 ngày thực chiến', status: 'locked' },
   ];
