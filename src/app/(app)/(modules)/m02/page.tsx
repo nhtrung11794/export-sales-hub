@@ -17,7 +17,19 @@ export default function Module02Page() {
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   
   const [isCopied, setIsCopied] = useState(false);
-  const { getModuleData } = useModuleStore();
+  const { getModuleData, submitModule, submissions } = useModuleStore();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+
+  // Hook to check auth user id (needed for submit)
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) setUserId(data.user.id);
+    });
+  }, []);
 
   const [formData, setFormData] = useState({
     targetMarket: '[Quốc gia]',
@@ -31,6 +43,11 @@ export default function Module02Page() {
   useEffect(() => {
     const interval = setInterval(() => {
       const data = getModuleData('M02');
+      const submission = submissions['M02'];
+      if (submission) {
+        setIsLocked(submission.is_locked);
+      }
+
       if (data) {
         let dmSlot = '[Phòng ban]';
         if (data.buyer_map) {
@@ -48,10 +65,28 @@ export default function Module02Page() {
           decisionMaker: dmSlot,
           painPoints: data.discovery_line?.zone1_ice_breaking?.pain_points || '[Nỗi đau]'
         });
+
+        // Validation: Basic fields must not be empty
+        const isDraftValid = data.market_scan?.target_market && data.market_scan.target_market.trim().length > 0 &&
+                             data.market_scan?.market_signal && data.market_scan.market_signal.trim().length > 0 &&
+                             data.icp?.segment && data.icp.segment.trim().length > 0;
+        setIsValid(!!isDraftValid);
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [getModuleData]);
+  }, [getModuleData, submissions]);
+
+  const handleSubmit = async () => {
+    if (!userId || !isValid || isLocked) return;
+    setIsSubmitting(true);
+    const success = await submitModule('M02', userId);
+    if (success) {
+      alert('Nộp bài thành công! Module 03 đã được mở khóa.');
+    } else {
+      alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+    }
+    setIsSubmitting(false);
+  };
 
   const dynamicPrompt = `"Tôi đang phân tích thị trường ${formData.targetMarket} vì ${formData.marketSignal}. Phân khúc khách hàng mục tiêu của tôi là ${formData.icpSegment}. Thông qua sơ đồ Buyer Map, tôi xác định Decision Maker nằm ở bộ phận ${formData.decisionMaker}. Trong giai đoạn Ice-breaking, nỗi đau lớn nhất của họ là: '${formData.painPoints}'. Hãy đóng vai chuyên gia B2B Sales, viết cho tôi một kịch bản Cold Email nhắm thẳng vào nỗi đau này."`;
 
@@ -248,13 +283,34 @@ export default function Module02Page() {
         <p style={{ color: 'var(--text-secondary)' }}>Phân tích Thị trường & Chân dung Khách hàng B2B (ICP)</p>
       </header>
 
-      <ModuleLayout 
-        moduleTitle="Module 02: Thị trường & Khách hàng"
+      <ModuleLayout
+        moduleTitle="M02: Thị trường & Khách hàng"
         learningContent={learningContent}
         formContent={<M2_MarketForm />}
         aiTutorContent={aiTutorContent}
         previewUrl={previewUrl}
         onClosePreview={() => setPreviewUrl(null)}
+        headerActionNode={
+          <button
+            onClick={handleSubmit}
+            disabled={!isValid || isLocked || isSubmitting}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              background: isLocked ? 'var(--accent-success)' : (isValid ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)'),
+              color: isValid || isLocked ? '#fff' : 'rgba(255,255,255,0.3)',
+              cursor: (!isValid || isLocked) ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            {isSubmitting ? 'Đang nộp...' : (isLocked ? <><Check size={16} /> Đã nộp bài</> : 'Xác nhận Nộp bài')}
+          </button>
+        }
       />
 
       {/* FLOATING PIP VIDEO PLAYER */}

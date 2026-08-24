@@ -19,6 +19,7 @@ interface ModuleStore {
   // Actions
   fetchAllSubmissions: (userId: string) => Promise<void>;
   updateSubmissionLocal: (moduleId: ModuleId, data: any) => void;
+  submitModule: (moduleId: ModuleId, userId: string) => Promise<boolean>;
   getModuleData: (moduleId: ModuleId) => any;
 }
 
@@ -81,6 +82,38 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
         }
       };
     });
+  },
+
+  submitModule: async (moduleId: ModuleId, userId: string) => {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('module_submissions')
+        .update({ is_locked: true, last_saved_at: new Date().toISOString() })
+        .eq('user_id', userId)
+        .eq('module_id', moduleId);
+
+      if (error) throw error;
+
+      // Cập nhật local state
+      set((state) => {
+        const existing = state.submissions[moduleId];
+        if (!existing) return state;
+        return {
+          submissions: {
+            ...state.submissions,
+            [moduleId]: {
+              ...existing,
+              is_locked: true
+            }
+          }
+        };
+      });
+      return true;
+    } catch (error) {
+      console.error('Error submitting module:', error);
+      return false;
+    }
   },
 
   getModuleData: (moduleId: ModuleId) => {

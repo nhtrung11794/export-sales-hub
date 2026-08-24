@@ -33,10 +33,14 @@ const initialData: M1FormData = {
 
 export default function M1_CompetencyForm() {
   const supabase = createClient();
+  const { isInitialized, submissions } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
   const [debugError, setDebugError] = useState<string | null>(null);
+
+  const isLocked = submissions['M01']?.is_locked || false;
+  const isDisabled = !isOnline || isLocked;
 
   // Lắng nghe trạng thái mạng
   useEffect(() => {
@@ -181,7 +185,7 @@ export default function M1_CompetencyForm() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
       {errorBanner}
       
-      {!isOnline && (
+      {(!isOnline || isLocked) && (
         <div style={{ 
           background: 'rgba(239, 68, 68, 0.15)', 
           border: '1px dashed var(--accent-danger)', 
@@ -193,7 +197,7 @@ export default function M1_CompetencyForm() {
           gap: '12px',
           boxShadow: '0 4px 20px rgba(239, 68, 68, 0.1)'
         }}>
-          <strong>⚠️ MẤT KẾT NỐI MẠNG:</strong> Toàn bộ dữ liệu đã được tự động khóa (Read-only) để bảo vệ an toàn thông tin. Vui lòng kiểm tra lại đường truyền internet.
+          <strong>⚠️ {isLocked ? 'BÀI LÀM ĐÃ KHÓA' : 'MẤT KẾT NỐI MẠNG'}:</strong> {isLocked ? 'Bài làm của bạn đã được nộp. Chế độ xem chỉ đọc.' : 'Toàn bộ dữ liệu đã được tự động khóa (Read-only) để bảo vệ an toàn thông tin.'}
         </div>
       )}
 
@@ -241,8 +245,8 @@ export default function M1_CompetencyForm() {
                   value={(data.competency_radar as any)?.[skill.id] ?? 3}
                   onChange={(e) => handleRadarChange(skill.id as keyof M1FormData['competency_radar'], parseInt(e.target.value))}
                   onBlur={handleBlur}
-                  disabled={!isOnline}
-                  style={{ width: '100%', cursor: !isOnline ? 'not-allowed' : 'pointer', accentColor: !isOnline ? '#6b7280' : 'var(--accent-primary)', opacity: !isOnline ? 0.5 : 1 }}
+                  disabled={isDisabled}
+                  style={{ width: '100%', cursor: isDisabled ? 'not-allowed' : 'pointer', accentColor: isDisabled ? '#6b7280' : 'var(--accent-primary)', opacity: isDisabled ? 0.5 : 1 }}
                 />
               </div>
             ))}
@@ -305,8 +309,8 @@ export default function M1_CompetencyForm() {
           value={data.mindset_shift}
           onChange={(e) => setData({ ...data, mindset_shift: e.target.value })}
           onBlur={handleBlur}
-          disabled={!isOnline}
-          style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: !isOnline ? 0.6 : 1, cursor: !isOnline ? 'not-allowed' : 'text' }}
+          disabled={isDisabled}
+          style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: isDisabled ? 0.6 : 1, cursor: isDisabled ? 'not-allowed' : 'text' }}
         />
       </section>
 
@@ -325,8 +329,8 @@ export default function M1_CompetencyForm() {
           value={data.goals_90d}
           onChange={(e) => setData({ ...data, goals_90d: e.target.value })}
           onBlur={handleBlur}
-          disabled={!isOnline}
-          style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: !isOnline ? 0.6 : 1, cursor: !isOnline ? 'not-allowed' : 'text' }}
+          disabled={isDisabled}
+          style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: isDisabled ? 0.6 : 1, cursor: isDisabled ? 'not-allowed' : 'text' }}
         />
       </section>
 

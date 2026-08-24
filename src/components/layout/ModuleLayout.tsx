@@ -9,6 +9,7 @@ interface ModuleLayoutProps {
   aiTutorContent: React.ReactNode;
   previewUrl?: string | null;
   onClosePreview?: () => void;
+  headerActionNode?: React.ReactNode; // Thêm prop này
 }
 
 export default function ModuleLayout({
@@ -17,7 +18,8 @@ export default function ModuleLayout({
   formContent,
   aiTutorContent,
   previewUrl,
-  onClosePreview
+  onClosePreview,
+  headerActionNode
 }: ModuleLayoutProps) {
   const [isOnline, setIsOnline] = useState(true);
 
@@ -83,8 +85,11 @@ export default function ModuleLayout({
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <h2 style={{ color: !isOnline ? 'var(--accent-danger)' : 'var(--accent-primary)' }}>Thực thi & Làm bài</h2>
-          <div id="status-bar" style={{ fontSize: '0.875rem', color: !isOnline ? 'var(--accent-danger)' : 'var(--text-muted)' }}>
-            {!isOnline ? 'MẤT KẾT NỐI' : 'Trạng thái: Đang tải...'}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div id="status-bar" style={{ fontSize: '0.875rem', color: !isOnline ? 'var(--accent-danger)' : 'var(--text-muted)' }}>
+              {!isOnline ? 'MẤT KẾT NỐI' : 'Trạng thái: Đang tải...'}
+            </div>
+            {headerActionNode}
           </div>
         </div>
         <div style={{ flex: 1, position: 'relative' }}>

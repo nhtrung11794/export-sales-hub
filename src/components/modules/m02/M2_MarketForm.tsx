@@ -87,11 +87,13 @@ const ZONES = [
 
 export default function M2_MarketForm() {
   const supabase = createClient();
-  const { isInitialized } = useModuleStore();
+  const { isInitialized, submissions } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
   const [activeZone, setActiveZone] = useState('zone1_ice_breaking');
   
   const [isOnline, setIsOnline] = useState(true);
+  const isLocked = submissions['M02']?.is_locked || false;
+  const isDisabled = !isOnline || isLocked;
 
   useEffect(() => {
     // Add network listeners
@@ -184,16 +186,21 @@ export default function M2_MarketForm() {
   const urlPattern = /^https?:\/\/.+/i;
   const isValidUrl = !safeData.market_scan.source_url || urlPattern.test(safeData.market_scan.source_url);
 
-  // Drag and Drop Handlers
+  // Handle events based on isDisabled instead of just isOnline
   const onDragStart = (e: React.DragEvent, buyerId: string) => {
-    if (!isOnline) return e.preventDefault();
-    e.dataTransfer.setData('buyerId', buyerId);
+    if (isDisabled) return e.preventDefault();
+    e.dataTransfer.setData('buyer_id', buyerId);
+  };
+
+  const onDragOver = (e: React.DragEvent) => {
+    if (isDisabled) return;
+    e.preventDefault();
   };
 
   const onDrop = (e: React.DragEvent, slotId: string) => {
-    if (!isOnline) return;
+    if (isDisabled) return;
     e.preventDefault();
-    const buyerId = e.dataTransfer.getData('buyerId');
+    const buyerId = e.dataTransfer.getData('buyer_id');
     if (buyerId) {
       // Find if this buyer is already in another slot, and clear it
       const newBuyerMap = { ...safeData.buyer_map };
@@ -207,19 +214,19 @@ export default function M2_MarketForm() {
     }
   };
 
-  const onDragOver = (e: React.DragEvent) => {
-    if (!isOnline) return;
-    e.preventDefault();
-  };
-
   if (!isInitialized) return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu...</div>;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
       
       {!isOnline && (
-        <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px dashed var(--accent-danger)', padding: '16px', borderRadius: '12px', color: '#fca5a5' }}>
-          <strong>⚠️ MẤT KẾT NỐI MẠNG:</strong> Dữ liệu đã bị khóa. Vui lòng kiểm tra internet.
+        <div style={{ padding: '8px', background: 'var(--accent-danger)', color: 'white', textAlign: 'center', fontSize: '0.875rem' }}>
+          Đã mất kết nối mạng. Dữ liệu sẽ được lưu tạm và đồng bộ khi có mạng.
+        </div>
+      )}
+      {isLocked && (
+        <div style={{ padding: '8px', background: 'var(--accent-success)', color: 'white', textAlign: 'center', fontSize: '0.875rem' }}>
+          Bài làm đã được nộp và khóa cứng. Chế độ Read-only.
         </div>
       )}
 
@@ -236,7 +243,7 @@ export default function M2_MarketForm() {
           <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Thị trường Mục tiêu</label>
             <input 
-              type="text" className="form-input" disabled={!isOnline}
+              type="text" className="form-input" disabled={isDisabled}
               value={safeData.market_scan.target_market}
               onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, target_market: e.target.value } }))}
               onBlur={handleBlur}
@@ -246,7 +253,7 @@ export default function M2_MarketForm() {
           <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Lý do lựa chọn / Market Signal</label>
             <textarea 
-              className="form-input" rows={2} disabled={!isOnline}
+              className="form-input" rows={2} disabled={isDisabled}
               value={safeData.market_scan.market_signal}
               onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, market_signal: e.target.value } }))}
               onBlur={handleBlur}
@@ -263,7 +270,7 @@ export default function M2_MarketForm() {
             <input 
               type="text" 
               className="form-input" 
-              disabled={!isOnline}
+              disabled={isDisabled}
               style={{ borderColor: !isValidUrl ? 'var(--accent-danger)' : undefined }}
               value={safeData.market_scan.source_url}
               onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, source_url: e.target.value } }))}
@@ -275,7 +282,7 @@ export default function M2_MarketForm() {
           <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Kết quả Market Intelligence (Từ AI Agent)</label>
             <textarea 
-              className="form-input" rows={4} disabled={!isOnline}
+              className="form-input" rows={4} disabled={isDisabled}
               value={safeData.market_scan.intelligence_result}
               onChange={(e) => setData(p => ({ ...p, market_scan: { ...p.market_scan, intelligence_result: e.target.value } }))}
               onBlur={handleBlur}
@@ -295,7 +302,7 @@ export default function M2_MarketForm() {
           <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Segment (Phân khúc)</label>
             <input 
-              type="text" className="form-input" disabled={!isOnline}
+              type="text" className="form-input" disabled={isDisabled}
               value={safeData.icp.segment}
               onChange={(e) => setData(p => ({ ...p, icp: { ...p.icp, segment: e.target.value } }))}
               onBlur={handleBlur}
@@ -305,7 +312,7 @@ export default function M2_MarketForm() {
           <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Company Size (Quy mô)</label>
             <input 
-              type="text" className="form-input" disabled={!isOnline}
+              type="text" className="form-input" disabled={isDisabled}
               value={safeData.icp.company_size}
               onChange={(e) => setData(p => ({ ...p, icp: { ...p.icp, company_size: e.target.value } }))}
               onBlur={handleBlur}
@@ -315,7 +322,7 @@ export default function M2_MarketForm() {
           <div>
             <label style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Tiêu chí chọn lọc (Criteria)</label>
             <input 
-              type="text" className="form-input" disabled={!isOnline}
+              type="text" className="form-input" disabled={isDisabled}
               value={safeData.icp.selection_criteria}
               onChange={(e) => setData(p => ({ ...p, icp: { ...p.icp, selection_criteria: e.target.value } }))}
               onBlur={handleBlur}
@@ -340,14 +347,14 @@ export default function M2_MarketForm() {
                 return (
                   <div
                     key={buyer.id}
-                    draggable={!isOnline ? false : true}
+                    draggable={isDisabled ? false : true}
                     onDragStart={(e) => onDragStart(e, buyer.id)}
                     style={{
                       padding: '10px 16px',
                       background: isMapped ? 'rgba(255,255,255,0.05)' : buyer.color,
                       color: isMapped ? 'var(--text-muted)' : '#fff',
                       borderRadius: '6px',
-                      cursor: isOnline ? (isMapped ? 'default' : 'grab') : 'not-allowed',
+                      cursor: isDisabled ? 'not-allowed' : (isMapped ? 'default' : 'grab'),
                       opacity: isMapped ? 0.4 : 1,
                       fontWeight: 'bold',
                       fontSize: '0.85rem'
@@ -387,9 +394,9 @@ export default function M2_MarketForm() {
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>{slot.label}</span>
                   {assignedBuyer ? (
                     <div 
-                      draggable={!isOnline ? false : true}
+                      draggable={isDisabled ? false : true}
                       onDragStart={(e) => onDragStart(e, assignedBuyer.id)}
-                      style={{ background: assignedBuyer.color, color: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', cursor: isOnline ? 'grab' : 'not-allowed' }}
+                      style={{ background: assignedBuyer.color, color: '#fff', padding: '4px 12px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold', cursor: isDisabled ? 'not-allowed' : 'grab' }}
                     >
                       {assignedBuyer.label}
                     </div>
@@ -445,7 +452,7 @@ export default function M2_MarketForm() {
               <textarea
                 className="form-input"
                 rows={3}
-                disabled={!isOnline}
+                disabled={isDisabled}
                 value={(safeData.discovery_line[activeZone] as any)?.[layer] || ''}
                 onChange={(e) => {
                   const val = e.target.value;

@@ -24,7 +24,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const [isHovered, setIsHovered] = useState(false);
 
-  const { fetchAllSubmissions, isLoading: isStoreLoading } = useModuleStore();
+  const { fetchAllSubmissions, isLoading: isStoreLoading, submissions } = useModuleStore();
+
+  const isUnlocked = (moduleId: string) => {
+    if (moduleId === 'DASHBOARD' || moduleId === 'M01') return true;
+    if (moduleId === 'M02') return submissions['M01']?.is_locked === true;
+    if (moduleId === 'M03') return submissions['M02']?.is_locked === true;
+    if (moduleId === 'M04') return submissions['M03']?.is_locked === true;
+    if (moduleId === 'M05') return submissions['M04']?.is_locked === true;
+    return true;
+  };
 
   useEffect(() => {
     const initStore = async () => {
@@ -43,12 +52,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   const navItems = [
-    { name: 'Tổng quan (Dashboard)', path: '/', icon: <LayoutDashboard size={20} /> },
-    { name: 'Module 01: Mindset nền tảng Sales XK', path: '/m01', icon: <UserCircle size={20} /> },
-    { name: 'Module 02: Thị trường & Khách hàng', path: '/m02', icon: <Globe2 size={20} /> },
-    { name: 'Module 03: Cơ hội & Quản trị Pipeline', path: '/m03', icon: <Users size={20} /> },
-    { name: 'Module 04: Giao tiếp & Chốt giao dịch', path: '/m04', icon: <GitMerge size={20} /> },
-    { name: 'Module 05: Thực thi & Sau bán', path: '/m05', icon: <Rocket size={20} /> },
+    { id: 'DASHBOARD', name: 'Tổng quan (Dashboard)', path: '/', icon: <LayoutDashboard size={20} /> },
+    { id: 'M01', name: 'Module 01: Mindset nền tảng Sales XK', path: '/m01', icon: <UserCircle size={20} /> },
+    { id: 'M02', name: 'Module 02: Thị trường & Khách hàng', path: '/m02', icon: <Globe2 size={20} /> },
+    { id: 'M03', name: 'Module 03: Cơ hội & Quản trị Pipeline', path: '/m03', icon: <Users size={20} /> },
+    { id: 'M04', name: 'Module 04: Giao tiếp & Chốt giao dịch', path: '/m04', icon: <GitMerge size={20} /> },
+    { id: 'M05', name: 'Module 05: Thực thi & Sau bán', path: '/m05', icon: <Rocket size={20} /> },
   ];
 
   return (
@@ -120,22 +129,29 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           
           {navItems.map((item) => {
             const isActive = pathname === item.path;
+            const unlocked = isUnlocked(item.id);
+            
+            const ItemWrapper = unlocked ? Link : 'div';
+            const extraProps = unlocked ? { href: item.path } : { onClick: () => alert('Vui lòng làm bài và nhấn XÁC NHẬN NỘP BÀI ở Module trước đó để mở khóa Module này!') };
+
             return (
-              <Link 
+              <ItemWrapper 
                 key={item.path} 
-                href={item.path}
+                {...extraProps}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   padding: '12px 14px',
                   borderRadius: '8px',
                   textDecoration: 'none',
-                  color: isActive ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  color: !unlocked ? 'rgba(255,255,255,0.2)' : (isActive ? 'var(--accent-primary)' : 'var(--text-secondary)'),
                   background: isActive ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
                   fontWeight: isActive ? 'bold' : 'normal',
                   transition: 'all 0.2s ease',
                   borderLeft: isActive ? '3px solid var(--accent-primary)' : '3px solid transparent',
-                  whiteSpace: 'nowrap'
+                  whiteSpace: 'nowrap',
+                  cursor: !unlocked ? 'not-allowed' : 'pointer',
+                  position: 'relative'
                 }}
                 title={!isHovered ? item.name : undefined}
               >
@@ -146,11 +162,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   marginLeft: '16px', 
                   opacity: isHovered ? 1 : 0,
                   transition: 'opacity 0.2s',
-                  display: isHovered ? 'inline-block' : 'none'
+                  display: isHovered ? 'inline-block' : 'none',
+                  flex: 1
                 }}>
                   {item.name}
                 </span>
-              </Link>
+                
+                {/* Ổ khóa nếu bị khóa */}
+                {!unlocked && isHovered && (
+                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', opacity: 0.5 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </div>
+                )}
+              </ItemWrapper>
             );
           })}
 

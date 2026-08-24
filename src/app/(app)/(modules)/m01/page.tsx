@@ -17,7 +17,19 @@ export default function M01Page() {
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   
   const [isCopied, setIsCopied] = useState(false);
-  const { getModuleData } = useModuleStore();
+  const { getModuleData, submitModule, submissions } = useModuleStore();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
+
+  // Hook to check auth user id (needed for submit)
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) setUserId(data.user.id);
+    });
+  }, []);
 
   const [radarScores, setRadarScores] = useState({
     market: 3,
@@ -31,19 +43,43 @@ export default function M01Page() {
   useEffect(() => {
     const interval = setInterval(() => {
       const data = getModuleData('M01');
-      if (data?.competency_radar) {
-        setRadarScores({
-          market: data.competency_radar.market_and_icp || 3,
-          prospecting: data.competency_radar.prospecting_discovery || 3,
-          pricing: data.competency_radar.pricing_negotiation || 3,
-          risk: data.competency_radar.risk_management || 3,
-          internal: data.competency_radar.internal_claim || 3,
-          crm: data.competency_radar.crm_growth || 3
-        });
+      const submission = submissions['M01'];
+      if (submission) {
+        setIsLocked(submission.is_locked);
+      }
+      
+      if (data) {
+        if (data.competency_radar) {
+          setRadarScores({
+            market: data.competency_radar.market_and_icp || 3,
+            prospecting: data.competency_radar.prospecting_discovery || 3,
+            pricing: data.competency_radar.pricing_negotiation || 3,
+            risk: data.competency_radar.risk_management || 3,
+            internal: data.competency_radar.internal_claim || 3,
+            crm: data.competency_radar.crm_growth || 3
+          });
+        }
+        
+        // Validation: goals_90d and mindset_shift must not be empty
+        const isDraftValid = data.goals_90d && data.goals_90d.trim().length > 0 &&
+                             data.mindset_shift && data.mindset_shift.trim().length > 0;
+        setIsValid(!!isDraftValid);
       }
     }, 1000);
     return () => clearInterval(interval);
-  }, [getModuleData]);
+  }, [getModuleData, submissions]);
+
+  const handleSubmit = async () => {
+    if (!userId || !isValid || isLocked) return;
+    setIsSubmitting(true);
+    const success = await submitModule('M01', userId);
+    if (success) {
+      alert('Nộp bài thành công! Module 02 đã được mở khóa.');
+    } else {
+      alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+    }
+    setIsSubmitting(false);
+  };
 
   const dynamicPrompt = `"Dựa vào hồ sơ năng lực tôi vừa tự đánh giá (Market & ICP: ${radarScores.market}/5, Prospecting: ${radarScores.prospecting}/5, Pricing: ${radarScores.pricing}/5, Risk: ${radarScores.risk}/5, Internal: ${radarScores.internal}/5, CRM: ${radarScores.crm}/5), hãy đề xuất cho tôi 3 mục tiêu 90 ngày thiết thực nhất để cải thiện các điểm yếu dưới 3 điểm của tôi trong đàm phán B2B."`;
 
@@ -212,12 +248,33 @@ export default function M01Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 01: Mindset nền tảng Sales XK"
+        moduleTitle="M01: Lộ trình & Năng lực lõi"
         learningContent={learningContent}
         formContent={<M1_CompetencyForm />}
         aiTutorContent={aiTutorContent}
         previewUrl={previewUrl}
         onClosePreview={() => setPreviewUrl(null)}
+        headerActionNode={
+          <button
+            onClick={handleSubmit}
+            disabled={!isValid || isLocked || isSubmitting}
+            style={{
+              padding: '6px 16px',
+              borderRadius: '6px',
+              border: 'none',
+              background: isLocked ? 'var(--accent-success)' : (isValid ? 'var(--accent-primary)' : 'rgba(255,255,255,0.1)'),
+              color: isValid || isLocked ? '#fff' : 'rgba(255,255,255,0.3)',
+              cursor: (!isValid || isLocked) ? 'not-allowed' : 'pointer',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              transition: 'all 0.2s'
+            }}
+          >
+            {isSubmitting ? 'Đang nộp...' : (isLocked ? <><Check size={16} /> Đã nộp bài</> : 'Xác nhận Nộp bài')}
+          </button>
+        }
       />
 
       {/* FLOATING PIP VIDEO PLAYER */}
