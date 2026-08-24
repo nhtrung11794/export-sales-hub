@@ -201,81 +201,84 @@ export default function Dashboard() {
       </header>
 
       {/* TẦNG 1: GIỚI THIỆU GIẢNG VIÊN & KHÓA HỌC */}
-      <div className="glass-panel" style={{ padding: '32px', display: 'flex', gap: '32px', marginBottom: '32px', alignItems: 'flex-start' }}>
-        {/* Hình ảnh giảng viên */}
-        <div style={{ width: '250px', height: '320px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, position: 'relative', border: '2px solid var(--accent-primary)' }}>
-          <Image 
-            src="/images/instructor.png" 
-            alt="GV. Trung" 
-            fill 
-            style={{ objectFit: 'cover' }}
-          />
+      <div className="glass-panel" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '32px' }}>
+        
+        {/* Hàng 1: Hình ảnh và Giới thiệu chung */}
+        <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          {/* Hình ảnh giảng viên */}
+          <div style={{ width: '220px', height: '280px', borderRadius: '12px', overflow: 'hidden', flexShrink: 0, position: 'relative', border: '2px solid var(--accent-primary)' }}>
+            <Image 
+              src="/images/instructor.png" 
+              alt="GV. Trung" 
+              fill 
+              style={{ objectFit: 'cover' }}
+            />
+          </div>
+          
+          {/* Nội dung giới thiệu */}
+          <div style={{ flex: 1, minWidth: '300px' }}>
+            <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '16px' }}>
+              Xin chào các bạn học viên,
+            </h1>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '16px', fontSize: '1.05rem' }}>
+              Website này là không gian học tập tổng hợp dành cho học viên khóa Sales xuất khẩu chuyên sâu. Tại đây, học viên có thể xem lại nội dung từng buổi, ôn tập theo module, tải tài liệu, hoàn thiện workbook, làm bài tập và nộp bài để phục vụ quá trình đánh giá cuối khóa.
+            </p>
+            <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '16px', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)' }}>
+              <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Mục tiêu cốt lõi:</strong>
+              <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+                Giúp học viên không chỉ "học xong buổi học", mà có thể quay lại ôn tập, thực hành bằng toolset và từng bước áp dụng vào công việc sales xuất khẩu thực tế.
+              </span>
+            </div>
+          </div>
         </div>
         
-        {/* Nội dung giới thiệu */}
-        <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '16px' }}>
-            Xin chào các bạn học viên,
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: '1.7', marginBottom: '16px', fontSize: '1.05rem' }}>
-            Website này là không gian học tập tổng hợp dành cho học viên khóa Sales xuất khẩu chuyên sâu. Tại đây, học viên có thể xem lại nội dung từng buổi, ôn tập theo module, tải tài liệu, hoàn thiện workbook, làm bài tập và nộp bài để phục vụ quá trình đánh giá cuối khóa.
-          </p>
-          <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '16px', borderRadius: '8px', borderLeft: '4px solid var(--accent-primary)', marginBottom: '24px' }}>
-            <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '8px' }}>Mục tiêu cốt lõi:</strong>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-              Giúp học viên không chỉ "học xong buổi học", mà có thể quay lại ôn tập, thực hành bằng toolset và từng bước áp dụng vào công việc sales xuất khẩu thực tế.
-            </span>
-          </div>
-          
-          {/* COUNTDOWN TIMER */}
-          <div style={{ 
-            background: 'rgba(0,0,0,0.4)', 
-            padding: '16px 24px', 
-            borderRadius: '12px', 
-            border: '1px solid rgba(220, 38, 38, 0.3)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            boxShadow: '0 4px 20px rgba(220, 38, 38, 0.1)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-danger)', marginBottom: '4px', fontWeight: 'bold' }}>
-                  <Clock size={18} />
-                  THỜI GIAN KHÓA SỔ CÒN LẠI (GRACE PERIOD)
-                </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Hãy hoàn thành tiến độ trước khi khóa truy cập bài tập.</div>
+        {/* Hàng 2: COUNTDOWN TIMER (FULL WIDTH) */}
+        <div style={{ 
+          background: 'rgba(0,0,0,0.4)', 
+          padding: '16px 24px', 
+          borderRadius: '12px', 
+          border: '1px solid rgba(220, 38, 38, 0.3)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '12px',
+          boxShadow: '0 4px 20px rgba(220, 38, 38, 0.1)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--accent-danger)', marginBottom: '4px', fontWeight: 'bold' }}>
+                <Clock size={18} />
+                THỜI GIAN KHÓA SỔ CÒN LẠI (GRACE PERIOD)
               </div>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                {[
-                  { label: 'Ngày', value: timeLeft.days },
-                  { label: 'Giờ', value: timeLeft.hours },
-                  { label: 'Phút', value: timeLeft.mins },
-                  { label: 'Giây', value: timeLeft.secs }
-                ].map((item, idx) => (
-                  <div key={idx} style={{ textAlign: 'center' }}>
-                    <div style={{ 
-                      fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)',
-                      background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px',
-                      minWidth: '50px'
-                    }}>
-                      {item.value.toString().padStart(2, '0')}
-                    </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Hãy hoàn thành tiến độ trước khi khóa truy cập bài tập.</div>
             </div>
-            {/* Hiển thị lỗi Supabase để Debug */}
-            {debugError && (
-              <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px dashed #ef4444', padding: '8px', borderRadius: '6px', fontSize: '0.8rem', color: '#fca5a5' }}>
-                <strong>⚠️ Debug:</strong> {debugError}
-              </div>
-            )}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              {[
+                { label: 'Ngày', value: timeLeft.days },
+                { label: 'Giờ', value: timeLeft.hours },
+                { label: 'Phút', value: timeLeft.mins },
+                { label: 'Giây', value: timeLeft.secs }
+              ].map((item, idx) => (
+                <div key={idx} style={{ textAlign: 'center' }}>
+                  <div style={{ 
+                    fontSize: '1.5rem', fontWeight: 900, color: 'var(--text-primary)',
+                    background: 'rgba(255,255,255,0.05)', padding: '8px', borderRadius: '8px',
+                    minWidth: '50px'
+                  }}>
+                    {item.value.toString().padStart(2, '0')}
+                  </div>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', textTransform: 'uppercase' }}>
+                    {item.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          
+          {/* Hiển thị lỗi Supabase để Debug */}
+          {debugError && (
+            <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px dashed #ef4444', padding: '8px', borderRadius: '6px', fontSize: '0.8rem', color: '#fca5a5' }}>
+              <strong>⚠️ Debug:</strong> {debugError}
+            </div>
+          )}
         </div>
       </div>
 
