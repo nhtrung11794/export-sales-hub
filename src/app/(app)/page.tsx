@@ -23,12 +23,18 @@ export default function Dashboard() {
         setUserName(user.email?.split('@')[0] || 'Nhà xuất khẩu');
         
         // Fetch dữ liệu batch_end_date từ bảng profiles
-        const { data: profileData } = await supabase
+        const { data: profileData, error } = await supabase
           .from('profiles')
           .select('batch_end_date')
           .eq('id', user.id)
           .single();
           
+        if (error) {
+          console.error("Lỗi khi lấy dữ liệu Supabase:", error.message);
+        } else {
+          console.log("Dữ liệu Supabase lấy được:", profileData);
+        }
+
         if (profileData && profileData.batch_end_date) {
           const endDate = new Date(profileData.batch_end_date).getTime();
           
