@@ -45,16 +45,16 @@ export default function Dashboard() {
 
       setUserName(user.email?.split('@')[0] || 'Nhà xuất khẩu');
       
-      // Fetch dữ liệu batch_end_date từ bảng profiles
+      // Fetch dữ liệu batch_end_date từ bảng users (thay vì profiles)
       const { data: profileData, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('batch_end_date')
         .eq('id', user.id)
         .single();
         
       if (error) {
         console.error("Lỗi khi lấy dữ liệu Supabase:", error.message);
-        setDebugError(`Lỗi query bảng profiles: ${error.message} (Có thể do RLS hoặc thiếu row của user id: ${user.id})`);
+        setDebugError(`Lỗi query bảng users: ${error.message} (Có thể do RLS hoặc thiếu row của user id: ${user.id})`);
         startMockupTimer(); // Lỗi RLS hoặc không có profile -> Chạy mockup
         return;
       }
