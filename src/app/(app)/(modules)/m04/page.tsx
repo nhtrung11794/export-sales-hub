@@ -211,7 +211,7 @@ export default function M04Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 04: Giao tiếp, đề xuất, chốt giao dịch quốc tế"
+        moduleTitle="Module 04: Đàm phán & Chốt Deal"
         learningContent={learningContent}
         formContent={<M04_B12_RiskPayment />}
         aiTutorContent={aiTutorContent}

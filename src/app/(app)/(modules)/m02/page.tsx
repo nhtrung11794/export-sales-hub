@@ -205,7 +205,7 @@ export default function M02Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 02: Thị trường và khách hàng xuất khẩu - Học tập"
+        moduleTitle="Module 02: Thị trường & Khách hàng (ICP)"
         learningContent={learningContent}
         formContent={<M02_CombinedForm />}
         aiTutorContent={<GeminiSparkCard />}

@@ -100,7 +100,7 @@ export default function Dashboard() {
     { 
       id: 'm01',
       storeId: 'M01' as const,
-      name: 'Module 01: Lộ trình & Năng lực lõi', 
+      name: 'Module 01: BANI & Năng lực cốt lõi', 
       desc: 'Dịch chuyển tư duy và đánh giá năng lực B2B Sales', 
       totalLessons: 2,
       status: hasData('M01') ? 'completed' : 'active' 
@@ -108,7 +108,7 @@ export default function Dashboard() {
     { 
       id: 'm02',
       storeId: 'M02' as const,
-      name: 'Module 02: Thị trường & Khách hàng xuất khẩu', 
+      name: 'Module 02: Thị trường & Khách hàng (ICP)', 
       desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
       totalLessons: 3,
       status: 'active'
@@ -116,7 +116,7 @@ export default function Dashboard() {
     { 
       id: 'm03',
       storeId: 'M03' as const,
-      name: 'Module 03: Cơ hội & Quản trị rủi ro', 
+      name: 'Module 03: Quản trị Cơ hội (Pipeline)', 
       desc: 'Chấm điểm khách hàng và phòng ngừa rủi ro pháp lý', 
       totalLessons: 3,
       status: 'active'
@@ -124,7 +124,7 @@ export default function Dashboard() {
     { 
       id: 'm04',
       storeId: 'M04' as const,
-      name: 'Module 04: Giao tiếp & Chốt sale', 
+      name: 'Module 04: Đàm phán & Chốt Deal', 
       desc: 'Kỹ năng đàm phán, cán cân thương lượng và chốt deal', 
       totalLessons: 4,
       status: 'active' 
@@ -132,7 +132,7 @@ export default function Dashboard() {
     { 
       id: 'm05',
       storeId: 'M05' as const,
-      name: 'Module 05: Thực thi & Sau bán hàng', 
+      name: 'Module 05: Vận hành Sau bán (Post-sales)', 
       desc: 'Báo cáo thực chiến, kế hoạch 90 ngày và quản trị khủng hoảng', 
       totalLessons: 3,
       status: 'active' 

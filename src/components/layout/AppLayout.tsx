@@ -56,11 +56,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { id: 'DASHBOARD', name: 'Tổng quan (Dashboard)', path: '/', icon: <LayoutDashboard size={20} /> },
-    { id: 'M01', name: 'Module 01: Lộ trình & Năng lực lõi', path: '/m01', icon: <UserCircle size={20} /> },
-    { id: 'M02', name: 'Module 02: Thị trường & khách hàng XK', path: '/m02', icon: <Globe2 size={20} /> },
-    { id: 'M03', name: 'Module 03: Cơ hội & Quản trị Pipeline', path: '/m03', icon: <Users size={20} /> },
-    { id: 'M04', name: 'Module 04: Giao tiếp & Chốt giao dịch', path: '/m04', icon: <GitMerge size={20} /> },
-    { id: 'M05', name: 'Module 05: Thực thi & Sau bán', path: '/m05', icon: <Rocket size={20} /> },
+    { id: 'M01', name: 'Module 01: BANI & Năng lực cốt lõi', path: '/m01', icon: <UserCircle size={20} /> },
+    { id: 'M02', name: 'Module 02: Thị trường & Khách hàng (ICP)', path: '/m02', icon: <Globe2 size={20} /> },
+    { id: 'M03', name: 'Module 03: Quản trị Cơ hội (Pipeline)', path: '/m03', icon: <Users size={20} /> },
+    { id: 'M04', name: 'Module 04: Đàm phán & Chốt Deal', path: '/m04', icon: <GitMerge size={20} /> },
+    { id: 'M05', name: 'Module 05: Vận hành Sau bán (Post-sales)', path: '/m05', icon: <Rocket size={20} /> },
   ];
 
   return (

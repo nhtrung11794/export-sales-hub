@@ -263,7 +263,7 @@ export default function M01Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="M01: Lộ trình & Năng lực lõi - Học tập"
+        moduleTitle="Module 01: BANI & Năng lực cốt lõi"
         learningContent={learningContent}
         formContent={<M1_CompetencyForm />}
         aiTutorContent={aiTutorContent}

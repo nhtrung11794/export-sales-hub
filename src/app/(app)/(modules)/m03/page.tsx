@@ -176,7 +176,7 @@ export default function M03Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 03: Phát triển cơ hội và quản trị Pipeline"
+        moduleTitle="Module 03: Quản trị Cơ hội (Pipeline)"
         learningContent={learningContent}
         formContent={<M03_CombinedForm />}
         aiTutorContent={aiTutorContent}
