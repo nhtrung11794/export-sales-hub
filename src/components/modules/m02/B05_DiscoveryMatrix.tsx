@@ -86,8 +86,8 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
     
     // Kiểm tra hàng trước đó đã có ít nhất 1 ô Insight (hoặc Giả thuyết) được điền chưa
     const prevRowKey = ROW_CONFIG[index - 1].key;
-    const prevRowData = data.discovery_matrix[prevRowKey];
-    return (prevRowData.surface_signal.trim().length > 0 || prevRowData.approach_strategy.trim().length > 0);
+    const prevRowData = data.discovery_matrix[prevRowKey] || {};
+    return ((prevRowData.surface_signal || '').trim().length > 0 || (prevRowData.approach_strategy || '').trim().length > 0);
   };
 
   if (!isB03Completed) {
@@ -153,7 +153,7 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
               <textarea
                 className="form-input"
                 placeholder={row.placeholders.surface_signal}
-                value={rowData.surface_signal}
+                value={rowData.surface_signal || ''}
                 onChange={(e) => handleFieldChange(row.key, 'surface_signal', e.target.value)}
                 onBlur={handleBlur}
                 disabled={!unlocked || isDisabled}
@@ -165,7 +165,7 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
               <textarea
                 className="form-input"
                 placeholder={row.placeholders.core_hypothesis}
-                value={rowData.core_hypothesis}
+                value={rowData.core_hypothesis || ''}
                 onChange={(e) => handleFieldChange(row.key, 'core_hypothesis', e.target.value)}
                 onBlur={handleBlur}
                 disabled={!unlocked || isDisabled}
@@ -177,7 +177,7 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
               <textarea
                 className="form-input"
                 placeholder={row.placeholders.approach_strategy}
-                value={rowData.approach_strategy}
+                value={rowData.approach_strategy || ''}
                 onChange={(e) => handleFieldChange(row.key, 'approach_strategy', e.target.value)}
                 onBlur={handleBlur}
                 disabled={!unlocked || isDisabled}
