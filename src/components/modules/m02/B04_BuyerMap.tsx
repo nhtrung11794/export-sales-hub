@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { M02FormData } from './M02_CombinedForm';
-import { DndContext, useDraggable, useDroppable, DragEndEvent } from '@dnd-kit/core';
+import { DndContext, useDraggable, useDroppable, DragEndEvent, DragOverlay, closestCenter, DragStartEvent } from '@dnd-kit/core';
 import { Users, Building, ShieldAlert } from 'lucide-react';
 
 interface B04Props {
@@ -28,24 +28,21 @@ const BUYING_ROLES = [
   { id: 'role-gate-keeper', label: 'Gate Keeper', color: '#a78bfa' }
 ];
 
-function DraggableRole({ role, disabled }: { role: { id: string; label: string }, disabled: boolean }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+function DraggableRole({ role, disabled, isOverlay = false }: { role: { id: string; label: string }, disabled: boolean, isOverlay?: boolean }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: role.id,
     data: role,
     disabled
   });
 
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-    zIndex: 1000,
-    opacity: 0.9,
-  } : undefined;
+  // If it's not the overlay and it is being dragged, we fade it out in the original list
+  const opacity = (isDragging && !isOverlay) ? 0.3 : 1;
 
   return (
     <div 
-      ref={setNodeRef} 
-      {...listeners} 
-      {...attributes}
+      ref={!isOverlay ? setNodeRef : undefined} 
+      {...(!isOverlay ? listeners : {})} 
+      {...(!isOverlay ? attributes : {})}
       className={`role-card ${disabled ? 'disabled' : ''}`}
       style={{
         padding: '10px 16px',
@@ -53,10 +50,12 @@ function DraggableRole({ role, disabled }: { role: { id: string; label: string }
         border: '1px solid var(--border-color)',
         borderRadius: '8px',
         fontSize: '0.875rem',
-        cursor: disabled ? 'not-allowed' : 'grab',
-        boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+        cursor: disabled ? 'not-allowed' : (isDragging ? 'grabbing' : 'grab'),
+        boxShadow: isOverlay ? '0 10px 20px rgba(0,0,0,0.4)' : '0 2px 5px rgba(0,0,0,0.2)',
         color: 'var(--text-primary)',
-        ...style
+        opacity,
+        transform: isOverlay ? 'scale(1.05)' : 'none',
+        pointerEvents: isOverlay ? 'none' : 'auto'
       }}
     >
       {role.label}
@@ -126,12 +125,18 @@ function DroppableZone({ zone, assignedRoles, onRemove, disabled }: {
 
 export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: B04Props) {
   const isB03Completed = data.target_market && data.route_to_market && data.strategic_reason;
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   const handleFieldChange = (field: keyof M02FormData, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
     const { active, over } = event;
     if (over && active.data.current) {
       const roleId = active.id as string;
@@ -228,7 +233,11 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
             <Users size={20} color="var(--accent-warning)" /> Sơ đồ mua hàng (Buyer Map)
           </h3>
           
-          <DndContext onDragEnd={handleDragEnd}>
+          <DndContext 
+            onDragStart={handleDragStart} 
+            onDragEnd={handleDragEnd}
+            collisionDetection={closestCenter}
+          >
             <div style={{ display: 'flex', gap: '24px' }}>
               
               {/* Cột Role Cards */}
@@ -253,6 +262,19 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
               </div>
               
             </div>
+
+            <DragOverlay dropAnimation={{
+              duration: 200,
+              easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+            }}>
+              {activeId ? (
+                <DraggableRole 
+                  role={ROLES.find(r => r.id === activeId) || { id: activeId, label: 'Role' }} 
+                  disabled={isDisabled} 
+                  isOverlay 
+                />
+              ) : null}
+            </DragOverlay>
           </DndContext>
           <p style={{ marginTop: '16px', fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
             * Sơ đồ này sẽ giúp bạn hiểu rõ Ai là người ra quyết định, Ai là người chặn (Blocker) trong quá trình chốt Deal.
