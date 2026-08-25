@@ -13,9 +13,10 @@ export default function Dashboard() {
   const supabase = createClient();
   const { getModuleData } = useModuleStore();
 
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, mins: 0, secs: 0 });
-  const [userName, setUserName] = useState('Nhà xuất khẩu');
+  const [timeLeft, setTimeLeft] = useState<{ days: number, hours: number, mins: number, secs: number }>({ days: 0, hours: 0, mins: 0, secs: 0 });
+  const [userName, setUserName] = useState<string>('Nhà xuất khẩu');
   const [debugError, setDebugError] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -45,12 +46,16 @@ export default function Dashboard() {
 
       setUserName(user.email?.split('@')[0] || 'Nhà xuất khẩu');
       
-      // Fetch dữ liệu batch_end_date từ bảng users (thay vì profiles)
+      // Fetch dữ liệu batch_end_date và role từ bảng users
       const { data: profileData, error } = await supabase
         .from('users')
-        .select('batch_end_date')
+        .select('batch_end_date, role')
         .eq('id', user.id)
         .single();
+        
+      if (profileData?.role === 'admin') {
+        setIsAdmin(true);
+      }
         
       if (error) {
         console.error("Lỗi khi lấy dữ liệu Supabase:", error.message);
@@ -119,7 +124,7 @@ export default function Dashboard() {
       name: 'Module 03: Prospecting & Opportunity Management',
       desc: 'Quản trị cơ hội, sàng lọc lead và vòng đời sales pipeline', 
       totalLessons: 3,
-      status: 'active'
+      status: isAdmin ? 'active' : 'locked'
     },
     { 
       id: 'm04',
@@ -127,7 +132,7 @@ export default function Dashboard() {
       name: 'Module 04: Proposal, Negotiation & Safe Closing',
       desc: 'Kỹ năng đàm phán, cán cân thương lượng và chốt deal', 
       totalLessons: 4,
-      status: 'active' 
+      status: isAdmin ? 'active' : 'locked' 
     },
     { 
       id: 'm05',
@@ -135,7 +140,7 @@ export default function Dashboard() {
       name: 'Module 05: Execution, Recovery & Account Growth',
       desc: 'Báo cáo thực chiến, kế hoạch 90 ngày và quản trị khủng hoảng', 
       totalLessons: 3,
-      status: 'active' 
+      status: isAdmin ? 'active' : 'locked' 
     },
   ];
 
@@ -338,14 +343,31 @@ export default function Dashboard() {
               </div>
               
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                Tiến độ: <strong style={{ color: 'var(--text-primary)' }}>{completedLessons}/{mod.totalLessons} Bài</strong>
+                {isLocked ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px', color: 'var(--text-muted)' }}>
+                    🔒 Sắp ra mắt
+                  </span>
+                ) : (
+                  <>Tiến độ: <strong style={{ color: 'var(--text-primary)' }}>{completedLessons}/{mod.totalLessons} Bài</strong></>
+                )}
               </div>
 
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '24px', flex: 1 }}>
                 {mod.desc}
               </p>
 
-              {!isLocked && (
+              {isLocked ? (
+                <button 
+                  className="btn btn-secondary"
+                  style={{ width: '100%', fontSize: '0.9rem', padding: '8px', opacity: 0.6, cursor: 'not-allowed' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alert('Module này đang được hoàn thiện và sẽ sớm mở trong các buổi học tiếp theo!');
+                  }}
+                >
+                  Chưa mở
+                </button>
+              ) : (
                 <button 
                   className={isActive ? "btn btn-primary" : "btn btn-secondary"}
                   style={{ width: '100%', fontSize: '0.9rem', padding: '8px' }}

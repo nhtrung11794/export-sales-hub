@@ -30,15 +30,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { fetchAllSubmissions, isLoading: isStoreLoading, submissions } = useModuleStore();
 
   const isUnlocked = (moduleId: string) => {
-    if (moduleId === 'DASHBOARD' || moduleId === 'M01') return true;
-    
-    // Yêu cầu: Tạm khóa toàn bộ các Module còn lại (để hoàn thiện nội dung sau)
-    if (moduleId === 'M02') return true;
-    if (moduleId === 'M03') return true;
-    if (moduleId === 'M04') return true;
-    if (moduleId === 'M05') return true;
-    
-    return true;
+    if (isAdmin) return true;
+    if (moduleId === 'DASHBOARD' || moduleId === 'M01' || moduleId === 'M02') return true;
+    return false; // M03, M04, M05 tạm khóa với học viên
   };
 
   useEffect(() => {
@@ -69,6 +63,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           
           if (userData.role === 'admin') {
             setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+            // Nếu là học viên mà truy cập trực tiếp URL của module bị khóa -> Đẩy về trang chủ
+            if (pathname === '/m03' || pathname === '/m04' || pathname === '/m05' || pathname === '/capstone') {
+              alert('Module này đang được hoàn thiện và sẽ sớm mở trong các buổi học tiếp theo!');
+              router.push('/');
+            }
           }
         }
 
@@ -232,9 +233,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               );
             } else {
               // Module bị khóa
-              const alertMsg = (item.id !== 'M02') 
-                ? 'Module này đang được xây dựng và sẽ sớm ra mắt!' 
-                : 'Module này đang được xây dựng và sẽ sớm ra mắt!';
+              const alertMsg = 'Module này đang được hoàn thiện và sẽ sớm mở trong các buổi học tiếp theo!';
 
               return (
                 <div key={item.path} onClick={() => alert(alertMsg)} style={sharedStyle} title={!isHovered ? item.name : undefined}>
