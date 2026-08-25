@@ -7,6 +7,11 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 
 interface M1FormData {
+  mad_libs: {
+    input1: string;
+    input2: string;
+    input3: string;
+  };
   competency_radar: {
     market_and_icp: number;
     prospecting_discovery: number;
@@ -16,10 +21,14 @@ interface M1FormData {
     crm_growth: number;
   };
   goals_90d: string;
-  mindset_shift: string;
 }
 
 const initialData: M1FormData = {
+  mad_libs: {
+    input1: '',
+    input2: '',
+    input3: ''
+  },
   competency_radar: {
     market_and_icp: 3,
     prospecting_discovery: 3,
@@ -29,7 +38,6 @@ const initialData: M1FormData = {
     crm_growth: 3,
   },
   goals_90d: '',
-  mindset_shift: '',
 };
 
 export default function M1_CompetencyForm() {
@@ -58,7 +66,7 @@ export default function M1_CompetencyForm() {
     };
   }, []);
 
-  // Khởi tạo và Load dữ liệu cũ nếu có
+  // Khởi tạo và Load dữ liệu cũ
   useEffect(() => {
     async function loadData() {
       try {
@@ -86,9 +94,13 @@ export default function M1_CompetencyForm() {
           setData({
             ...initialData,
             ...fetchedData,
+            mad_libs: {
+              ...initialData.mad_libs,
+              ...(fetchedData.mad_libs || {})
+            },
             competency_radar: {
               ...initialData.competency_radar,
-              ...fetchedData.competency_radar,
+              ...(fetchedData.competency_radar || {})
             }
           });
         }
@@ -158,6 +170,16 @@ export default function M1_CompetencyForm() {
     }));
   };
 
+  const handleMadLibsChange = (field: keyof M1FormData['mad_libs'], value: string) => {
+    setData((prev) => ({
+      ...prev,
+      mad_libs: {
+        ...prev.mad_libs,
+        [field]: value,
+      },
+    }));
+  };
+
   if (isInitializing) {
     return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu bài làm...</div>;
   }
@@ -172,7 +194,6 @@ export default function M1_CompetencyForm() {
     </div>
   );
 
-  // Định dạng dữ liệu cho Radar Chart của Recharts
   const radarData = [
     { subject: 'Đọc Thị trường & ICP', A: data.competency_radar?.market_and_icp ?? 3, fullMark: 5 },
     { subject: 'Prospecting & Discovery', A: data.competency_radar?.prospecting_discovery ?? 3, fullMark: 5 },
@@ -202,17 +223,90 @@ export default function M1_CompetencyForm() {
         </div>
       )}
 
-      {/* PHẦN 1: ĐÁNH GIÁ NĂNG LỰC CỐT LÕI */}
-      <section>
-        <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>
-          1. Đánh giá năng lực cốt lõi (1 - 5)
-        </h3>
-        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-          Tự đánh giá chân thực mức độ thành thạo của bạn. Biểu đồ Radar bên cạnh sẽ cho bạn thấy "lỗ hổng" kỹ năng của chính mình.
+      {/* BÀI 01 */}
+      <section className="glass-panel" style={{ padding: '32px' }}>
+        <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
+          Bài 01 - BANI/VUCA, Tư duy Customer-centric
+        </h2>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+          Dịch chuyển tư duy và nhận diện các ngộ nhận cũ trong B2B Sales bằng cách điền vào chỗ trống.
+        </p>
+
+        <div style={{ 
+          background: 'rgba(15, 23, 42, 0.4)', 
+          border: '1px solid rgba(255,255,255,0.05)', 
+          padding: '24px', 
+          borderRadius: '12px',
+          lineHeight: '2.4',
+          fontSize: '1.05rem',
+          color: 'var(--text-primary)'
+        }}>
+          Trong quá khứ, tôi thường nghĩ khách hàng B2B ưu tiên 
+          <input 
+            type="text" 
+            className="form-input inline-input" 
+            placeholder="nhập yếu tố..."
+            value={data.mad_libs?.input1 || ''}
+            onChange={(e) => handleMadLibsChange('input1', e.target.value)}
+            onBlur={handleBlur}
+            disabled={isDisabled}
+            style={{ 
+              display: 'inline-block', width: '200px', margin: '0 8px', 
+              padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid var(--accent-primary)', borderRadius: '6px',
+              color: 'var(--accent-primary)', fontWeight: 'bold',
+              opacity: isDisabled ? 0.6 : 1
+            }}
+          />
+          nhất, nhưng thực tế yếu tố quyết định là
+          <input 
+            type="text" 
+            className="form-input inline-input" 
+            placeholder="nhập yếu tố..."
+            value={data.mad_libs?.input2 || ''}
+            onChange={(e) => handleMadLibsChange('input2', e.target.value)}
+            onBlur={handleBlur}
+            disabled={isDisabled}
+            style={{ 
+              display: 'inline-block', width: '200px', margin: '0 8px', 
+              padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid var(--accent-primary)', borderRadius: '6px',
+              color: 'var(--accent-primary)', fontWeight: 'bold',
+              opacity: isDisabled ? 0.6 : 1
+            }}
+          />
+          . Khi thị trường biến động (VUCA), rào cản lớn nhất của tôi là
+          <input 
+            type="text" 
+            className="form-input inline-input" 
+            placeholder="nhập khó khăn..."
+            value={data.mad_libs?.input3 || ''}
+            onChange={(e) => handleMadLibsChange('input3', e.target.value)}
+            onBlur={handleBlur}
+            disabled={isDisabled}
+            style={{ 
+              display: 'inline-block', width: '300px', margin: '0 8px', 
+              padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
+              border: '1px solid var(--accent-primary)', borderRadius: '6px',
+              color: 'var(--accent-primary)', fontWeight: 'bold',
+              opacity: isDisabled ? 0.6 : 1
+            }}
+          />
+          chứ không phải giá cả.
+        </div>
+      </section>
+
+      {/* BÀI 02 */}
+      <section className="glass-panel" style={{ padding: '32px' }}>
+        <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
+          Bài 02 - 5 Phase sales, 4 Trụ cột năng lực
+        </h2>
+        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '32px' }}>
+          Đánh giá năng lực cốt lõi thông qua 6 trục tiêu chuẩn. Hãy thành thật với bản thân!
         </p>
 
         {/* Chức năng: Chia làm 2 cột cho Desktop, 1 cột cho Mobile */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px', alignItems: 'center' }}>
           
           {/* Cột Trái: Thanh Kéo Điểm (Sliders) */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -255,7 +349,7 @@ export default function M1_CompetencyForm() {
 
           {/* Cột Phải: Biểu đồ Radar Chart */}
           <div style={{ 
-              height: '400px', width: '100%', 
+              height: '420px', width: '100%', 
               background: 'rgba(15, 23, 42, 0.6)', 
               backdropFilter: 'blur(12px)',
               borderRadius: '24px', 
@@ -293,46 +387,26 @@ export default function M1_CompetencyForm() {
           </div>
 
         </div>
-      </section>
 
-      {/* PHẦN 2: THAY ĐỔI TƯ DUY */}
-      <section className="glass-panel" style={{ padding: '24px' }}>
-        <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>
-          2. Mindset Shift (Chuyển đổi Tư duy)
-        </h3>
-        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-          Bạn nhận ra mình đã tư duy sai lầm ở đâu trong quá khứ sau khi học xong Module 1?
-        </p>
-        <textarea 
-          className="form-input"
-          rows={4}
-          placeholder="Ví dụ: Trước đây tôi nghĩ Sales XK chỉ là gửi email hàng loạt để chào hàng (spam), giờ tôi hiểu nó là nghệ thuật tư vấn và xây dựng quan hệ chiến lược (Consultative Selling)..."
-          value={data.mindset_shift}
-          onChange={(e) => setData({ ...data, mindset_shift: e.target.value })}
-          onBlur={handleBlur}
-          disabled={isDisabled}
-          style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: isDisabled ? 0.6 : 1, cursor: isDisabled ? 'not-allowed' : 'text' }}
-        />
-      </section>
-
-      {/* PHẦN 3: MỤC TIÊU 90 NGÀY */}
-      <section className="glass-panel" style={{ padding: '24px' }}>
-        <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>
-          3. Mục tiêu 90 ngày (90-Day Goals)
-        </h3>
-        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-          Để lấp đầy các "điểm lõm" trên biểu đồ năng lực, bạn cam kết đạt được điều gì trong 3 tháng tới?
-        </p>
-        <textarea 
-          className="form-input"
-          rows={4}
-          placeholder="Ví dụ: Tìm được 30 Leads chất lượng tại thị trường Mỹ, và setup thành công 5 cuộc họp Online..."
-          value={data.goals_90d}
-          onChange={(e) => setData({ ...data, goals_90d: e.target.value })}
-          onBlur={handleBlur}
-          disabled={isDisabled}
-          style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: isDisabled ? 0.6 : 1, cursor: isDisabled ? 'not-allowed' : 'text' }}
-        />
+        {/* Mục tiêu 90 ngày (Vẫn thuộc Bài 02) */}
+        <div style={{ marginTop: '32px' }}>
+          <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>
+            Mục tiêu 90 ngày (90-Day Goals)
+          </h3>
+          <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
+            Để lấp đầy các "điểm lõm" trên biểu đồ năng lực, bạn cam kết đạt được điều gì trong 3 tháng tới?
+          </p>
+          <textarea 
+            className="form-input"
+            rows={4}
+            placeholder="Ví dụ: Tìm được 30 Leads chất lượng tại thị trường Mỹ, và setup thành công 5 cuộc họp Online..."
+            value={data.goals_90d || ''}
+            onChange={(e) => setData({ ...data, goals_90d: e.target.value })}
+            onBlur={handleBlur}
+            disabled={isDisabled}
+            style={{ width: '100%', resize: 'none', background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)', opacity: isDisabled ? 0.6 : 1, cursor: isDisabled ? 'not-allowed' : 'text' }}
+          />
+        </div>
       </section>
 
     </div>

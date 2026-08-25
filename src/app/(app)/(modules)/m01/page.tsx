@@ -61,9 +61,11 @@ export default function M01Page() {
           });
         }
         
-        // Validation: goals_90d and mindset_shift must not be empty
+        // Validation: mad_libs inputs and goals_90d must not be empty
         const isDraftValid = data.goals_90d && data.goals_90d.trim().length > 0 &&
-                             data.mindset_shift && data.mindset_shift.trim().length > 0;
+                             data.mad_libs && data.mad_libs.input1?.trim().length > 0 &&
+                             data.mad_libs.input2?.trim().length > 0 &&
+                             data.mad_libs.input3?.trim().length > 0;
         setIsValid(!!isDraftValid);
       }
     }, 1000);

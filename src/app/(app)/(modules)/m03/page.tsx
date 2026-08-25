@@ -96,7 +96,7 @@ export default function M03Page() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 05 - Thu hút khách hàng (Lead Generation)
+          Bài 06 - Cold Email Generator
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Cách tìm kiếm và thu hút khách hàng thông qua đa kênh B2B.
@@ -123,7 +123,7 @@ export default function M03Page() {
 
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 06 - Quản trị Pipeline
+          Bài 07 - F-N-A-C-M Simulator
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Kỹ năng chấm điểm (Fit Score) và sàng lọc Pipeline để không lãng phí nguồn lực.
