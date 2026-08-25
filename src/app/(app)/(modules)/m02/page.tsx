@@ -18,7 +18,7 @@ export default function Module02Page() {
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   
   const [isCopied, setIsCopied] = useState(false);
-  const { getModuleData, submitModule, submissions } = useModuleStore();
+  const { getModuleData, submitModule, unlockModule, submissions } = useModuleStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValid, setIsValid] = useState(false);
@@ -85,6 +85,18 @@ export default function Module02Page() {
       alert('Nộp bài thành công! Module 03 đã được mở khóa.');
     } else {
       alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleUnlock = async () => {
+    if (!userId) return;
+    setIsSubmitting(true);
+    const result = await unlockModule('M02', userId);
+    if (result.success) {
+      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
+    } else {
+      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
     }
     setIsSubmitting(false);
   };
@@ -292,25 +304,47 @@ export default function Module02Page() {
         previewUrl={previewUrl}
         onClosePreview={() => setPreviewUrl(null)}
         headerActionNode={
-          <button
-            onClick={handleSubmit}
-            disabled={!isValid || isLocked || isSubmitting}
-            style={{
-              padding: '10px 20px',
-              backgroundColor: isLocked ? 'var(--bg-tertiary)' : (isValid ? 'var(--accent-primary)' : 'var(--bg-tertiary)'),
-              color: isLocked ? 'var(--text-muted)' : (isValid ? '#fff' : 'var(--text-muted)'),
-              border: isValid && !isLocked ? 'none' : '1px solid var(--border-color)',
-              borderRadius: '8px',
-              cursor: isValid && !isLocked ? 'pointer' : 'not-allowed',
-              opacity: isSubmitting ? 0.7 : 1,
-              fontSize: '1rem',
-              fontWeight: 'bold',
-              boxShadow: isValid && !isLocked ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
-              transition: 'all 0.2s ease'
-            }}
-          >
-            {isSubmitting ? 'Đang nộp...' : isLocked ? 'Đã Nộp Bài' : 'Xác nhận Nộp bài'}
-          </button>
+          isLocked ? (
+            <button
+              onClick={handleUnlock}
+              disabled={isSubmitting}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: 'var(--accent-warning)',
+                color: '#1e293b',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                opacity: isSubmitting ? 0.7 : 1,
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {isSubmitting ? 'Đang mở khóa...' : 'Mở Khóa để Sửa'}
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={!isValid || isSubmitting}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: isValid ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                color: isValid ? '#fff' : 'var(--text-muted)',
+                border: isValid ? 'none' : '1px solid var(--border-color)',
+                borderRadius: '8px',
+                cursor: isValid ? 'pointer' : 'not-allowed',
+                opacity: isSubmitting ? 0.7 : 1,
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                boxShadow: isValid ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}
+            </button>
+          )
         }
       />
 

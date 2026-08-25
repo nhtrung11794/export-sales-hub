@@ -13,17 +13,27 @@ export default function Module03Page() {
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Trạng thái cho Video PiP
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   
   const [isCopied, setIsCopied] = useState(false);
-  const { getModuleData } = useModuleStore();
+  const { getModuleData, submitModule, unlockModule, submissions } = useModuleStore();
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) setUserId(data.user.id);
+    });
+  }, []);
 
   const [formData, setFormData] = useState({
     score: 0,
     justification: ''
   });
+
+  const isLocked = submissions['M03']?.status === 'submitted';
+  const isValid = formData.score > 0;
 
   // Quét dữ liệu từ Store mỗi 1 giây
   useEffect(() => {
@@ -42,6 +52,30 @@ export default function Module03Page() {
   }, [getModuleData]);
 
   const dynamicPrompt = `"Tôi đang đánh giá cơ hội B2B này. Fit Score hiện tại của tôi là ${formData.score}/100. ${formData.justification ? 'Lý do giải trình của tôi là: ' + formData.justification : 'Điểm còn khá thấp.'} Đóng vai Giám đốc Mua hàng (Buyer), hãy phân biện giúp tôi xem tôi đang gặp rủi ro gì và tôi nên làm rõ (clarify) những câu hỏi gì ở buổi gặp tiếp theo?"`;
+
+  const handleSubmit = async () => {
+    if (!userId || !isValid || isLocked) return;
+    setIsSubmitting(true);
+    const result = await submitModule('M03', userId);
+    if (result.success) {
+      alert('Nộp bài thành công!');
+    } else {
+      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    }
+    setIsSubmitting(false);
+  };
+
+  const handleUnlock = async () => {
+    if (!userId) return;
+    setIsSubmitting(true);
+    const result = await unlockModule('M03', userId);
+    if (result.success) {
+      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
+    } else {
+      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
+    }
+    setIsSubmitting(false);
+  };
 
   const handleCopyPrompt = async () => {
     try {
@@ -241,6 +275,49 @@ export default function Module03Page() {
         learningContent={learningContent}
         formContent={<M3_FitScoreForm />}
         aiTutorContent={aiTutorContent}
+        headerActionNode={
+          isLocked ? (
+            <button
+              onClick={handleUnlock}
+              disabled={isSubmitting}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: 'var(--accent-warning)',
+                color: '#1e293b',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                opacity: isSubmitting ? 0.7 : 1,
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {isSubmitting ? 'Đang mở khóa...' : 'Mở Khóa để Sửa'}
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={!isValid || isSubmitting}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: isValid ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
+                color: isValid ? '#fff' : 'var(--text-muted)',
+                border: isValid ? 'none' : '1px solid var(--border-color)',
+                borderRadius: '8px',
+                cursor: isValid ? 'pointer' : 'not-allowed',
+                opacity: isSubmitting ? 0.7 : 1,
+                fontSize: '1rem',
+                fontWeight: 'bold',
+                boxShadow: isValid ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}
+            </button>
+          )
+        }
         previewUrl={previewUrl}
         onClosePreview={() => setPreviewUrl(null)}
       />

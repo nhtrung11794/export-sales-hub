@@ -21,6 +21,7 @@ interface ModuleStore {
   fetchAllSubmissions: (userId: string) => Promise<void>;
   updateSubmissionLocal: (moduleId: ModuleId, data: any) => void;
   submitModule: (moduleId: ModuleId, userId: string) => Promise<{ success: boolean; error?: string }>;
+  unlockModule: (moduleId: ModuleId, userId: string) => Promise<{ success: boolean; error?: string }>;
   getModuleData: (moduleId: ModuleId) => any;
 }
 
@@ -116,6 +117,37 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
       return { success: true };
     } catch (error: any) {
       console.error('Error submitting module:', error);
+      return { success: false, error: error.message || JSON.stringify(error) };
+    }
+  },
+
+  unlockModule: async (moduleId: ModuleId, userId: string) => {
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('module_submissions')
+        .update({ status: 'draft', updated_at: new Date().toISOString() })
+        .eq('user_id', userId)
+        .eq('module_id', moduleId);
+
+      if (error) throw error;
+
+      set((state) => {
+        const existing = state.submissions[moduleId];
+        if (!existing) return state;
+        return {
+          submissions: {
+            ...state.submissions,
+            [moduleId]: {
+              ...existing,
+              is_locked: false
+            }
+          }
+        };
+      });
+      return { success: true };
+    } catch (error: any) {
+      console.error('Error unlocking module:', error);
       return { success: false, error: error.message || JSON.stringify(error) };
     }
   },
