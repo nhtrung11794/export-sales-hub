@@ -206,7 +206,7 @@ export default function M04Page() {
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 04: Đàm phán & Chốt Deal</h1>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 04: Proposal, Negotiation & Safe Closing</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Kỹ thuật đàm phán, chốt hợp đồng và quản trị rủi ro thanh toán</p>
       </header>
 

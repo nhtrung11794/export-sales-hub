@@ -171,7 +171,7 @@ export default function M03Page() {
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 03: Quản trị Cơ hội (Pipeline)</h1>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 03: Prospecting & Opportunity Management</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Kỹ năng Prospecting, Lead Generation và quản lý vòng đời Sales Pipeline</p>
       </header>
 
