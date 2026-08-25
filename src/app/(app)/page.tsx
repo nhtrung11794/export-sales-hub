@@ -119,7 +119,7 @@ export default function Dashboard() {
       name: 'Module 03: Cơ hội & Quản trị rủi ro', 
       desc: 'Chấm điểm khách hàng và phòng ngừa rủi ro pháp lý', 
       totalLessons: 3,
-      status: 'locked'
+      status: 'active'
     },
     { 
       id: 'm04',
@@ -127,7 +127,7 @@ export default function Dashboard() {
       name: 'Module 04: Giao tiếp & Chốt sale', 
       desc: 'Kỹ năng đàm phán, cán cân thương lượng và chốt deal', 
       totalLessons: 4,
-      status: 'locked' 
+      status: 'active' 
     },
     { 
       id: 'm05',
@@ -135,7 +135,7 @@ export default function Dashboard() {
       name: 'Module 05: Thực thi & Sau bán hàng', 
       desc: 'Báo cáo thực chiến, kế hoạch 90 ngày và quản trị khủng hoảng', 
       totalLessons: 3,
-      status: 'locked' 
+      status: 'active' 
     },
   ];
 
