@@ -9,7 +9,7 @@ interface B05Props {
   isDisabled: boolean;
 }
 
-type MatrixRowKey = 'need' | 'pain' | 'criteria' | 'risk' | 'concern';
+type MatrixRowKey = 'context' | 'need' | 'pain' | 'criteria' | 'risk_concern';
 type MatrixColKey = 'surface_signal' | 'core_hypothesis' | 'approach_strategy';
 
 const ROW_CONFIG: { 
@@ -18,8 +18,17 @@ const ROW_CONFIG: {
   placeholders: { surface_signal: string; core_hypothesis: string; approach_strategy: string } 
 }[] = [
   { 
+    key: 'context', 
+    label: '1. Context (Bối cảnh)', 
+    placeholders: { 
+      surface_signal: 'Họ nói gì về tình hình hiện tại?\n(VD: Đang mua hàng từ Trung Quốc)', 
+      core_hypothesis: 'Bối cảnh thực sự là gì?\n(VD: Supplier bị áp thuế, cước biển tăng cao)', 
+      approach_strategy: 'Cách khai thác bối cảnh?\n(VD: Đặt câu hỏi về khó khăn vận hành/giá)' 
+    } 
+  },
+  { 
     key: 'need', 
-    label: '1. Need (Nhu cầu thực)', 
+    label: '2. Need (Nhu cầu thực)', 
     placeholders: { 
       surface_signal: 'Khách nói gì/Hỏi gì?\n(VD: Yêu cầu hàng giá rẻ)', 
       core_hypothesis: 'Thực chất họ cần gì?\n(VD: Cần hàng cấp thấp để phủ thị trường ngách)', 
@@ -28,7 +37,7 @@ const ROW_CONFIG: {
   },
   { 
     key: 'pain', 
-    label: '2. Pain (Nỗi đau)', 
+    label: '3. Pain (Nỗi đau)', 
     placeholders: { 
       surface_signal: 'Họ phàn nàn điều gì?\n(VD: Hàng giao hay bị trễ)', 
       core_hypothesis: 'Hậu quả thực sự là gì?\n(VD: Bị phạt hợp đồng với siêu thị)', 
@@ -37,7 +46,7 @@ const ROW_CONFIG: {
   },
   { 
     key: 'criteria', 
-    label: '3. Criteria (Tiêu chí)', 
+    label: '4. Criteria (Tiêu chí)', 
     placeholders: { 
       surface_signal: 'Đòi hỏi trên giấy tờ?\n(VD: Đòi chứng chỉ Organic)', 
       core_hypothesis: 'Ưu tiên ẩn đằng sau?\n(VD: Sợ rủi ro bị thu hồi sản phẩm)', 
@@ -45,21 +54,12 @@ const ROW_CONFIG: {
     } 
   },
   { 
-    key: 'risk', 
-    label: '4. Risk (Rủi ro)', 
+    key: 'risk_concern', 
+    label: '5. Risk/Concern (Rủi ro/Rào cản)', 
     placeholders: { 
-      surface_signal: 'Sự e ngại thể hiện ra?\n(VD: Ngại mua từ VN)', 
-      core_hypothesis: 'Rủi ro họ gánh chịu?\n(VD: Sợ NCC lừa đảo thanh toán)', 
-      approach_strategy: 'Chiến lược giảm rủi ro?\n(VD: Đề xuất thanh toán L/C)' 
-    } 
-  },
-  { 
-    key: 'concern', 
-    label: '5. Concern (Mối bận tâm)', 
-    placeholders: { 
-      surface_signal: 'Thái độ khi đàm phán?\n(VD: Đọc email nhưng im lặng)', 
-      core_hypothesis: 'Rào cản nội bộ của họ?\n(VD: Sếp chưa duyệt ngân sách)', 
-      approach_strategy: 'Kịch bản Follow-up?\n(VD: Cung cấp Market Insight để nuôi dưỡng)' 
+      surface_signal: 'Sự e ngại/thái độ thể hiện ra?\n(VD: Ngại mua từ VN, đọc email im lặng)', 
+      core_hypothesis: 'Rủi ro/Rào cản thực sự của họ?\n(VD: Sợ NCC lừa đảo, Sếp chưa duyệt)', 
+      approach_strategy: 'Chiến lược giảm rủi ro/Follow-up?\n(VD: Đề xuất thanh toán L/C, gửi Insight)' 
     } 
   },
 ];

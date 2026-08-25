@@ -23,11 +23,11 @@ export interface M02FormData {
 
   // B05
   discovery_matrix: {
+    context: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
     need: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
     pain: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
     criteria: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
-    risk: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
-    concern: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
+    risk_concern: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
   };
 }
 
@@ -42,11 +42,11 @@ const initialData: M02FormData = {
   buyer_map_roles: [],
 
   discovery_matrix: {
+    context: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
     need: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
     pain: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
     criteria: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
-    risk: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
-    concern: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
+    risk_concern: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
   }
 };
 
