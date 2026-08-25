@@ -80,11 +80,11 @@ export default function Module02Page() {
   const handleSubmit = async () => {
     if (!userId || !isValid || isLocked) return;
     setIsSubmitting(true);
-    const success = await submitModule('M02', userId);
-    if (success) {
+    const result = await submitModule('M02', userId);
+    if (result.success) {
       alert('Nộp bài thành công! Module 03 đã được mở khóa.');
     } else {
-      alert('Có lỗi xảy ra khi nộp bài. Vui lòng thử lại.');
+      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
     }
     setIsSubmitting(false);
   };

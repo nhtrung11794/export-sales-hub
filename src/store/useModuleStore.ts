@@ -19,7 +19,7 @@ interface ModuleStore {
   // Actions
   fetchAllSubmissions: (userId: string) => Promise<void>;
   updateSubmissionLocal: (moduleId: ModuleId, data: any) => void;
-  submitModule: (moduleId: ModuleId, userId: string) => Promise<boolean>;
+  submitModule: (moduleId: ModuleId, userId: string) => Promise<{ success: boolean; error?: string }>;
   getModuleData: (moduleId: ModuleId) => any;
 }
 
@@ -109,10 +109,10 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
           }
         };
       });
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error('Error submitting module:', error);
-      return false;
+      return { success: false, error: error.message || JSON.stringify(error) };
     }
   },
 
