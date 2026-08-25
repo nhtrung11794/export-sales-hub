@@ -23,6 +23,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const supabase = createClient();
   const [isHovered, setIsHovered] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   const { fetchAllSubmissions, isLoading: isStoreLoading, submissions } = useModuleStore();
 
@@ -40,13 +43,41 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const initStore = async () => {
+      setIsCheckingAuth(true);
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user?.id) {
+        
+        // Fetch user data
+        const { data: userData, error } = await supabase
+          .from('users')
+          .select('approval_status, role')
+          .eq('id', session.user.id)
+          .single();
+          
+        if (userData) {
+          if (userData.approval_status === 'pending') {
+            setIsPending(true);
+            if (pathname !== '/pending-approval') {
+              router.push('/pending-approval');
+            }
+          } else {
+            setIsPending(false);
+            if (pathname === '/pending-approval') {
+              router.push('/');
+            }
+          }
+          
+          if (userData.role === 'admin') {
+            setIsAdmin(true);
+          }
+        }
+
         await fetchAllSubmissions(session.user.id);
       }
+      setIsCheckingAuth(false);
     };
     initStore();
-  }, [supabase, fetchAllSubmissions]);
+  }, [supabase, fetchAllSubmissions, pathname, router]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -62,6 +93,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { id: 'M04', name: 'Module 04: Proposal, Negotiation & Safe Closing', path: '/m04', icon: <GitMerge size={20} /> },
     { id: 'M05', name: 'Module 05: Execution, Recovery & Account Growth', path: '/m05', icon: <Rocket size={20} /> },
   ];
+  
+  if (isAdmin) {
+    navItems.push({ id: 'ADMIN', name: 'Quản trị viên (Admin)', path: '/admin', icon: <Sparkles size={20} /> });
+  }
+
+  // Khóa giao diện nếu đang check hoặc bị pending (redirecting)
+  if (isCheckingAuth) {
+    return <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}></div>;
+  }
+  
+  if (isPending || pathname === '/pending-approval') {
+    return (
+      <div style={{ minHeight: '100vh', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-primary)' }}>

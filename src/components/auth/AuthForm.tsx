@@ -10,6 +10,8 @@ export default function AuthForm() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<'login' | 'register'>('login');
+  
   
   const router = useRouter();
 
@@ -26,11 +28,42 @@ export default function AuthForm() {
       
       if (error) throw error;
       
-      // Đăng nhập thành công, chuyển hướng vào Module 01
-      router.push('/m01');
+      // Đăng nhập thành công, chuyển hướng vào trang chủ (AppLayout sẽ tự kiểm tra approval_status)
+      router.push('/');
       router.refresh();
     } catch (err: any) {
       setError(err.message || 'Sai email hoặc mật khẩu');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+      
+      if (error) throw error;
+      
+      // Nếu đăng ký thành công và auto-login (tắt xác minh email)
+      if (data.session) {
+        // Tự động chèn bản ghi vào bảng users (nếu chưa có trigger)
+        await supabase.from('users').insert([{ id: data.user?.id, email, approval_status: 'pending', role: 'user' }]).select();
+        
+        router.push('/');
+        router.refresh();
+      } else {
+        // Trường hợp yêu cầu xác minh email (dù anh nói là tắt, nhưng dự phòng)
+        setError('Đăng ký thành công! Vui lòng kiểm tra email để xác nhận (nếu có).');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Đăng ký thất bại');
     } finally {
       setLoading(false);
     }
@@ -42,7 +75,7 @@ export default function AuthForm() {
         Đăng nhập Hệ thống
       </h2>
       
-      <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }} onSubmit={mode === 'login' ? handleSignIn : handleSignUp}>
         <div>
           <label style={{ display: 'block', marginBottom: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
             Email
@@ -77,16 +110,39 @@ export default function AuthForm() {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginTop: '8px', flexDirection: 'column' }}>
           <button 
-            type="button" 
-            onClick={handleSignIn}
+            type="submit" 
             disabled={loading}
             className="btn btn-primary" 
             style={{ width: '100%' }}
           >
-            {loading ? 'Đang xử lý...' : 'Đăng nhập'}
+            {loading ? 'Đang xử lý...' : (mode === 'login' ? 'Đăng nhập' : 'Đăng ký')}
           </button>
+          
+          <div style={{ textAlign: 'center', marginTop: '8px' }}>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+              {mode === 'login' ? 'Chưa có tài khoản? ' : 'Đã có tài khoản? '}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setMode(mode === 'login' ? 'register' : 'login');
+                setError(null);
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--accent-primary)',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                padding: 0,
+                fontSize: '0.9rem'
+              }}
+            >
+              {mode === 'login' ? 'Đăng ký ngay' : 'Đăng nhập'}
+            </button>
+          </div>
         </div>
       </form>
     </div>
