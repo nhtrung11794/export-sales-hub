@@ -229,71 +229,30 @@ export default function M1_CompetencyForm() {
           Bài 01: Tư duy Sales xuất khẩu trong bối cảnh thị trường thay đổi
         </h2>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-          Dịch chuyển tư duy và nhận diện các ngộ nhận cũ trong B2B Sales bằng cách điền vào chỗ trống.
+          Dịch chuyển tư duy và nhận diện các ngộ nhận cũ trong B2B Sales. Hãy viết tự do những suy nghĩ và rào cản của bạn.
         </p>
 
-        <div style={{ 
-          background: 'rgba(15, 23, 42, 0.4)', 
-          border: '1px solid rgba(255,255,255,0.05)', 
-          padding: '24px', 
-          borderRadius: '12px',
-          lineHeight: '2.4',
-          fontSize: '1.05rem',
-          color: 'var(--text-primary)'
-        }}>
-          Trong quá khứ, tôi thường nghĩ khách hàng B2B ưu tiên 
-          <input 
-            type="text" 
-            className="form-input inline-input" 
-            placeholder="nhập yếu tố..."
-            value={data.mad_libs?.input1 || ''}
-            onChange={(e) => handleMadLibsChange('input1', e.target.value)}
-            onBlur={handleBlur}
-            disabled={isDisabled}
-            style={{ 
-              display: 'inline-block', width: '200px', margin: '0 8px', 
-              padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
-              border: '1px solid var(--accent-primary)', borderRadius: '6px',
-              color: 'var(--accent-primary)', fontWeight: 'bold',
-              opacity: isDisabled ? 0.6 : 1
-            }}
-          />
-          nhất, nhưng thực tế yếu tố quyết định là
-          <input 
-            type="text" 
-            className="form-input inline-input" 
-            placeholder="nhập yếu tố..."
-            value={data.mad_libs?.input2 || ''}
-            onChange={(e) => handleMadLibsChange('input2', e.target.value)}
-            onBlur={handleBlur}
-            disabled={isDisabled}
-            style={{ 
-              display: 'inline-block', width: '200px', margin: '0 8px', 
-              padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
-              border: '1px solid var(--accent-primary)', borderRadius: '6px',
-              color: 'var(--accent-primary)', fontWeight: 'bold',
-              opacity: isDisabled ? 0.6 : 1
-            }}
-          />
-          . Khi thị trường biến động (VUCA), rào cản lớn nhất của tôi là
-          <input 
-            type="text" 
-            className="form-input inline-input" 
-            placeholder="nhập khó khăn..."
-            value={data.mad_libs?.input3 || ''}
-            onChange={(e) => handleMadLibsChange('input3', e.target.value)}
-            onBlur={handleBlur}
-            disabled={isDisabled}
-            style={{ 
-              display: 'inline-block', width: '300px', margin: '0 8px', 
-              padding: '4px 12px', background: 'rgba(255,255,255,0.05)', 
-              border: '1px solid var(--accent-primary)', borderRadius: '6px',
-              color: 'var(--accent-primary)', fontWeight: 'bold',
-              opacity: isDisabled ? 0.6 : 1
-            }}
-          />
-          chứ không phải giá cả.
-        </div>
+        <textarea 
+          className="form-input" 
+          placeholder="Ví dụ: Trong quá khứ, tôi thường nghĩ khách hàng ưu tiên giá cả, nhưng thực tế..."
+          value={data.mad_libs?.input1 || ''}
+          onChange={(e) => handleMadLibsChange('input1', e.target.value)}
+          onBlur={handleBlur}
+          disabled={isDisabled}
+          rows={6}
+          style={{ 
+            width: '100%', 
+            padding: '16px', 
+            background: 'rgba(15, 23, 42, 0.4)', 
+            border: '1px solid rgba(255,255,255,0.1)', 
+            borderRadius: '12px',
+            color: 'var(--text-primary)', 
+            fontSize: '1rem',
+            lineHeight: '1.6',
+            resize: 'vertical',
+            opacity: isDisabled ? 0.6 : 1
+          }}
+        />
       </section>
 
       {/* BÀI 02 */}
