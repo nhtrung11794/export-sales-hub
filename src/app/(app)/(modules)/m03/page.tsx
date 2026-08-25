@@ -96,7 +96,7 @@ export default function M03Page() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 06 - Cold Email Generator
+          Bài 06: Tìm kiếm khách hàng và mở đầu Prospecting
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Cách tìm kiếm và thu hút khách hàng thông qua đa kênh B2B.
@@ -123,7 +123,7 @@ export default function M03Page() {
 
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 07 - F-N-A-C-M Simulator
+          Bài 07: Qualify Lead và Phát triển Cơ hội
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Kỹ năng chấm điểm (Fit Score) và sàng lọc Pipeline để không lãng phí nguồn lực.
@@ -171,7 +171,7 @@ export default function M03Page() {
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 03: Phát triển cơ hội và quản trị Pipeline</h1>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 03: Quản trị Cơ hội (Pipeline)</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Kỹ năng Prospecting, Lead Generation và quản lý vòng đời Sales Pipeline</p>
       </header>
 

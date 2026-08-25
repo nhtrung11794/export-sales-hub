@@ -116,7 +116,7 @@ export default function M04Page() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 11 - Bàn cân Đàm phán (Balance Scale)
+          Bài 11: Negotiation & Objection Diagnosis
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Nguyên tắc Có đi - Có lại. Không bao giờ nhượng bộ mà không đòi lại một điều khoản khác.
@@ -143,7 +143,7 @@ export default function M04Page() {
 
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 12 - Quản trị Rủi ro Thanh toán
+          Bài 12: Payment Risk & Safe Order Confirmation
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Phân tích các phương thức T/T, L/C, D/P, D/A, CAD, O/A.
@@ -206,7 +206,7 @@ export default function M04Page() {
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 04: Giao tiếp, đề xuất, chốt giao dịch quốc tế</h1>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 04: Đàm phán & Chốt Deal</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Kỹ thuật đàm phán, chốt hợp đồng và quản trị rủi ro thanh toán</p>
       </header>
 

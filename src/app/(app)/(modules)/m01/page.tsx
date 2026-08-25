@@ -150,7 +150,7 @@ export default function M01Page() {
       {/* BÀI 01 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 01 - BANI/VUCA, Tư duy Customer-centric
+          Bài 01: Tư duy Sales xuất khẩu trong bối cảnh thị trường thay đổi
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Dịch chuyển tư duy (Mindset Shift) từ bán hàng truyền thống sang tư vấn. Hiểu rõ bối cảnh thị trường BANI/VUCA để xây dựng sự thấu cảm (Customer-centric) với khách hàng B2B.
@@ -178,7 +178,7 @@ export default function M01Page() {
       {/* BÀI 02 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 02 - 5 Phase sales, 4 Trụ cột năng lực
+          Bài 02: Bản chất nghề Sales xuất khẩu
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Nắm vững 5 giai đoạn của một chu trình Sales B2B tiêu chuẩn và tự đánh giá bản thân qua 4 trụ cột năng lực cốt lõi để vẽ nên Radar Chart của riêng bạn.
@@ -258,7 +258,7 @@ export default function M01Page() {
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 01</h1>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 01: BANI & Năng lực cốt lõi</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Mindset nền tảng Sales Xuất khẩu & Hồ sơ năng lực</p>
       </header>
 

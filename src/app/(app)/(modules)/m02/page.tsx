@@ -114,7 +114,7 @@ export default function M02Page() {
       {/* BÀI 03 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 03 - Phân tích, lựa chọn thị trường XK & ICP
+          Bài 03: Market Intelligence cho Sales xuất khẩu
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Xác định bối cảnh thị trường (Market Fact-Check) và vẽ chân dung khách hàng lý tưởng (ICP) phù hợp với quy mô và năng lực doanh nghiệp.
@@ -142,7 +142,7 @@ export default function M02Page() {
       {/* BÀI 04 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 04 - Sơ đồ mua hàng (Buyer Map)
+          Bài 04: Phân khúc khách hàng và Buyer Logic
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
           Thiết lập sơ đồ tổ chức, người ra quyết định và quy trình mua hàng để có chiến lược tiếp cận phù hợp.
@@ -170,7 +170,7 @@ export default function M02Page() {
       {/* BÀI 05 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 05 - Discovery Insight Note (5 Tabs UI)
+          Bài 05: Discovery nền tảng trước khi phát triển cơ hội
         </h3>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.9rem', lineHeight: '1.5' }}>
           Phân tích các Tab: Need, Pain, Criteria, Risk, Concern. Bóc tách từ Nỗi đau bề mặt thành câu hỏi cốt lõi.
@@ -200,7 +200,7 @@ export default function M02Page() {
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 02: Thị trường và khách hàng xuất khẩu</h1>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 02: Thị trường & Khách hàng (ICP)</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Phân tích định vị thị trường, thiết lập sơ đồ mua hàng và xác định ICP cốt lõi</p>
       </header>
 

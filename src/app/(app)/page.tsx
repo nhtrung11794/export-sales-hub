@@ -117,7 +117,7 @@ export default function Dashboard() {
       id: 'm03',
       storeId: 'M03' as const,
       name: 'Module 03: Quản trị Cơ hội (Pipeline)', 
-      desc: 'Chấm điểm khách hàng và phòng ngừa rủi ro pháp lý', 
+      desc: 'Quản trị cơ hội, sàng lọc lead và vòng đời sales pipeline', 
       totalLessons: 3,
       status: 'active'
     },

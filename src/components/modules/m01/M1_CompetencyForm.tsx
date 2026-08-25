@@ -226,7 +226,7 @@ export default function M1_CompetencyForm() {
       {/* BÀI 01 */}
       <section className="glass-panel" style={{ padding: '32px' }}>
         <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
-          Bài 01 - BANI/VUCA, Tư duy Customer-centric
+          Bài 01: Tư duy Sales xuất khẩu trong bối cảnh thị trường thay đổi
         </h2>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
           Dịch chuyển tư duy và nhận diện các ngộ nhận cũ trong B2B Sales bằng cách điền vào chỗ trống.
@@ -299,7 +299,7 @@ export default function M1_CompetencyForm() {
       {/* BÀI 02 */}
       <section className="glass-panel" style={{ padding: '32px' }}>
         <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
-          Bài 02 - 5 Phase sales, 4 Trụ cột năng lực
+          Bài 02: Bản chất nghề Sales xuất khẩu
         </h2>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '32px' }}>
           Đánh giá năng lực cốt lõi thông qua 6 trục tiêu chuẩn. Hãy thành thật với bản thân!
