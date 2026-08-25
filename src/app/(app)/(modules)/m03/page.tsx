@@ -88,7 +88,7 @@ export default function M03Page() {
       await navigator.clipboard.writeText(dynamicPrompt);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-      window.open('https://spark.gemini.google.com', '_blank');
+      window.open('https://gemini.google.com/app', '_blank');
     } catch (err) {}
   };
 

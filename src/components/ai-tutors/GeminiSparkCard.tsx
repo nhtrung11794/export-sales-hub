@@ -13,7 +13,7 @@ export default function GeminiSparkCard() {
       await navigator.clipboard.writeText(dynamicPrompt);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-      window.open('https://spark.gemini.google.com', '_blank');
+      window.open('https://gemini.google.com/app', '_blank');
     } catch (err) {
       console.error('Failed to copy: ', err);
     }
