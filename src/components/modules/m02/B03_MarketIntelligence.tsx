@@ -11,6 +11,11 @@ interface B03Props {
 
 export default function B03_MarketIntelligence({ data, setData, handleBlur, isDisabled }: B03Props) {
   const [activeTab, setActiveTab] = useState<'scan' | 'lens' | 'pestel'>('scan');
+  
+  const [isOtherMarket, setIsOtherMarket] = useState(() => {
+    const standardMarkets = ['US', 'EU', 'JP', 'KR', 'CN', 'ASEAN', ''];
+    return data.target_market ? !standardMarkets.includes(data.target_market) : false;
+  });
 
   const handleFieldChange = (field: keyof M02FormData, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -140,11 +145,19 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
               </label>
               <select 
                 className="form-input"
-                value={data.target_market || ''}
-                onChange={(e) => handleFieldChange('target_market', e.target.value)}
+                value={isOtherMarket ? 'OTHER' : (data.target_market || '')}
+                onChange={(e) => {
+                  if (e.target.value === 'OTHER') {
+                    setIsOtherMarket(true);
+                    handleFieldChange('target_market', '');
+                  } else {
+                    setIsOtherMarket(false);
+                    handleFieldChange('target_market', e.target.value);
+                  }
+                }}
                 onBlur={handleBlur}
                 disabled={isDisabled}
-                style={{ width: '100%', padding: '10px' }}
+                style={{ width: '100%', padding: '10px', marginBottom: isOtherMarket ? '8px' : '0' }}
               >
                 <option value="" disabled>-- Lựa chọn --</option>
                 <option value="US">Mỹ (US)</option>
@@ -155,6 +168,19 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                 <option value="ASEAN">Đông Nam Á (ASEAN)</option>
                 <option value="OTHER">Khác (Tự định nghĩa)</option>
               </select>
+
+              {isOtherMarket && (
+                <input 
+                  type="text"
+                  className="form-input"
+                  placeholder="Nhập tên thị trường mục tiêu..."
+                  value={data.target_market || ''}
+                  onChange={(e) => handleFieldChange('target_market', e.target.value)}
+                  onBlur={handleBlur}
+                  disabled={isDisabled}
+                  style={{ width: '100%', padding: '10px' }}
+                />
+              )}
             </div>
 
             <div>
