@@ -18,24 +18,18 @@ export default function M04_B12_RiskPayment() {
   const m04Data = getModuleData('M04') || {};
   const m03Data = getModuleData('M03') || {};
   
-  // Lấy điểm Fit Score từ M03 (giả lập 0 nếu chưa làm M03)
   const m03FitScore = typeof m03Data.fit_score === 'number' ? m03Data.fit_score : 0;
-  
-  // Logic Gate 2: Nếu điểm < 50, khóa các phương thức rủi ro cao (D/P, CAD, O/A)
   const isHighRiskBlocked = m03FitScore < 50;
 
   const [paymentMethod, setPaymentMethod] = useState<string>(m04Data.payment_method || '');
   const [justification, setJustification] = useState<string>(m04Data.payment_justification || '');
 
   useEffect(() => {
-    // Nếu người dùng lỡ lưu D/P từ trước nhưng sau đó sửa M03 làm điểm rớt < 50
-    // Ta phải reset lựa chọn thanh toán về rỗng để ép chọn lại.
     if (isHighRiskBlocked && ['dp', 'cad', 'oa'].includes(paymentMethod)) {
       setPaymentMethod('');
     }
   }, [isHighRiskBlocked, paymentMethod]);
 
-  // Auto-save debounce
   useEffect(() => {
     const handler = setTimeout(() => {
       updateSubmissionLocal('M04', { 
@@ -48,41 +42,49 @@ export default function M04_B12_RiskPayment() {
   }, [paymentMethod, justification, updateSubmissionLocal, m04Data]);
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex flex-col h-full">
-      <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100">
-        <div className="flex items-center gap-3">
-          <div className="bg-orange-100 p-2 rounded-lg text-orange-600">
-            <CreditCard size={20} />
+    <div className="glass-panel" style={{ padding: '24px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ background: 'rgba(249, 115, 22, 0.1)', padding: '8px', borderRadius: '8px', color: '#f97316' }}>
+            <CreditCard size={24} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-800">B12: Risk Payment (Logic Gate 2)</h2>
-            <p className="text-sm text-slate-500">Quyết định phương thức thanh toán an toàn</p>
+            <h2 style={{ fontSize: '1.2rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>B12: Risk Payment (Logic Gate 2)</h2>
+            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>Quyết định phương thức thanh toán an toàn</p>
           </div>
         </div>
         
         {/* Fit Score Indicator */}
-        <div className={`px-3 py-1.5 rounded-full text-xs font-bold border ${isHighRiskBlocked ? 'bg-red-50 border-red-200 text-red-600' : 'bg-green-50 border-green-200 text-green-600'}`}>
+        <div style={{
+          padding: '6px 12px', borderRadius: '20px', fontSize: '0.75rem', fontWeight: 'bold',
+          background: isHighRiskBlocked ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+          border: isHighRiskBlocked ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(16, 185, 129, 0.3)',
+          color: isHighRiskBlocked ? 'var(--accent-danger)' : 'var(--accent-success)'
+        }}>
           Fit Score M03: {m03FitScore}đ
         </div>
       </div>
 
-      <div className="flex-1 space-y-6">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '24px' }}>
         
         {isHighRiskBlocked && (
-          <div className="bg-red-50 p-4 rounded-lg border border-red-100 flex items-start gap-3">
-            <ShieldAlert className="text-red-500 mt-0.5 shrink-0" size={18} />
+          <div style={{ 
+            background: 'rgba(239, 68, 68, 0.1)', padding: '16px', borderRadius: '12px', 
+            border: '1px dashed var(--accent-danger)', display: 'flex', alignItems: 'flex-start', gap: '12px'
+          }}>
+            <ShieldAlert color="var(--accent-danger)" size={20} style={{ marginTop: '2px', flexShrink: 0 }} />
             <div>
-              <h4 className="text-sm font-bold text-red-800">Khóa rủi ro thanh toán (Cognitive Friction)</h4>
-              <p className="text-sm text-red-700 mt-1">
+              <h4 style={{ fontSize: '0.875rem', fontWeight: 'bold', color: 'var(--accent-danger)' }}>Khóa rủi ro thanh toán (Cognitive Friction)</h4>
+              <p style={{ fontSize: '0.875rem', color: '#fca5a5', marginTop: '4px', lineHeight: '1.5' }}>
                 Do điểm khách hàng tiềm năng (Fit Score ở M03) của bạn thấp hơn 50đ. Hệ thống nghiêm cấm sử dụng các phương thức trả sau như D/P, CAD, O/A để tránh rủi ro quỵt tiền. Hãy chọn L/C hoặc T/T Advance!
               </p>
             </div>
           </div>
         )}
 
-        <div className="space-y-3">
-          <label className="block text-sm font-semibold text-slate-700">Chọn phương thức thanh toán xuất khẩu</label>
-          <div className="grid grid-cols-1 gap-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <label style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>Chọn phương thức thanh toán xuất khẩu</label>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {PAYMENT_METHODS.map((method) => {
               const isDisabled = isHighRiskBlocked && method.riskLevel === 'high';
               const isSelected = paymentMethod === method.id;
@@ -90,12 +92,26 @@ export default function M04_B12_RiskPayment() {
               return (
                 <label 
                   key={method.id}
-                  className={`
-                    relative flex items-center p-4 border rounded-lg cursor-pointer transition-all
-                    ${isDisabled ? 'opacity-50 bg-slate-50 cursor-not-allowed border-slate-200' : ''}
-                    ${isSelected && !isDisabled ? 'border-orange-500 bg-orange-50 ring-1 ring-orange-500' : ''}
-                    ${!isSelected && !isDisabled ? 'hover:border-orange-300 hover:bg-orange-50/50' : ''}
-                  `}
+                  style={{
+                    position: 'relative', display: 'flex', alignItems: 'center', padding: '16px',
+                    borderRadius: '12px', cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    background: isSelected && !isDisabled ? 'rgba(249, 115, 22, 0.1)' : 'rgba(255,255,255,0.02)',
+                    border: isSelected && !isDisabled ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.1)',
+                    opacity: isDisabled ? 0.4 : 1, transition: 'all 0.2s ease',
+                    boxShadow: isSelected && !isDisabled ? '0 0 10px rgba(249, 115, 22, 0.2)' : 'none'
+                  }}
+                  onMouseOver={(e) => {
+                    if (!isSelected && !isDisabled) {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                      e.currentTarget.style.border = '1px solid rgba(255,255,255,0.2)';
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (!isSelected && !isDisabled) {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.02)';
+                      e.currentTarget.style.border = '1px solid rgba(255,255,255,0.1)';
+                    }
+                  }}
                 >
                   <input 
                     type="radio" 
@@ -104,28 +120,31 @@ export default function M04_B12_RiskPayment() {
                     disabled={isDisabled}
                     checked={isSelected}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="sr-only"
+                    style={{ position: 'absolute', opacity: 0, width: 0, height: 0 }}
                   />
-                  <div className="flex-1">
-                    <span className={`block text-sm font-medium ${isDisabled ? 'text-slate-500' : 'text-slate-900'}`}>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: isDisabled ? 'var(--text-muted)' : 'var(--text-primary)' }}>
                       {method.label}
                     </span>
                   </div>
-                  
-                  {isSelected && <CheckCircle2 className="text-orange-500" size={20} />}
+                  {isSelected && <CheckCircle2 color="var(--accent-primary)" size={20} />}
                 </label>
               );
             })}
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold text-slate-700">Giải trình bảo vệ rủi ro (Nội bộ)</label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label style={{ fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>Giải trình bảo vệ rủi ro (Nội bộ)</label>
           <textarea
             value={justification}
             onChange={(e) => setJustification(e.target.value)}
             placeholder="Tại sao bạn lại chọn phương thức thanh toán này? Nếu khách đòi D/P, làm sao bạn đàm phán ngược lại thành L/C?"
-            className="w-full h-24 p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm resize-none"
+            className="form-input"
+            style={{ 
+              width: '100%', height: '100px', resize: 'none', 
+              background: 'rgba(15, 23, 42, 0.5)', border: '1px solid rgba(255,255,255,0.1)' 
+            }}
           />
         </div>
       </div>

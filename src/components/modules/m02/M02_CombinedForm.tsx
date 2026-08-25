@@ -7,10 +7,12 @@ import M02_B05_DiscoveryNote from '../M02_B05_DiscoveryNote';
 
 export default function M02_CombinedForm() {
   return (
-    <div className="space-y-6">
-      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-        <h3 className="text-sm font-bold text-slate-800 mb-2">Hướng dẫn Module 02:</h3>
-        <p className="text-sm text-slate-600 leading-relaxed">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      <div className="glass-panel" style={{ padding: '24px' }}>
+        <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)', fontSize: '1.2rem', fontWeight: 'bold' }}>
+          Hướng dẫn Module 02:
+        </h3>
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
           Hãy hoàn thành lần lượt các bước dưới đây để xác thực thông tin thị trường mục tiêu, 
           xây dựng chân dung khách hàng lý tưởng (ICP) và định hình nhu cầu cốt lõi. 
           Các thông tin bạn nhập sẽ tự động được lưu trữ (Auto-save) và kế thừa cho Module 03.

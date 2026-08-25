@@ -30,10 +30,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (moduleId === 'DASHBOARD' || moduleId === 'M01') return true;
     
     // Yêu cầu: Tạm khóa toàn bộ các Module còn lại (để hoàn thiện nội dung sau)
-    if (moduleId === 'M02') return true; // Tạm mở khóa vô điều kiện để test
-    if (moduleId === 'M03') return false; // submissions['M02']?.is_locked === true;
-    if (moduleId === 'M04') return false; // submissions['M03']?.is_locked === true;
-    if (moduleId === 'M05') return false; // submissions['M04']?.is_locked === true;
+    if (moduleId === 'M02') return true;
+    if (moduleId === 'M03') return true;
+    if (moduleId === 'M04') return true;
+    if (moduleId === 'M05') return true;
     
     return true;
   };

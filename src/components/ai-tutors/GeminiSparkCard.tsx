@@ -1,61 +1,55 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Copy, ExternalLink, Check } from 'lucide-react';
-import { useModuleStore } from '@/store/useModuleStore';
+import { Sparkles, Check, Copy } from 'lucide-react';
 
 export default function GeminiSparkCard() {
-  const { getModuleData } = useModuleStore();
   const [isCopied, setIsCopied] = useState(false);
 
-  const handleCopyAndOpen = async () => {
-    const m02Data = getModuleData('M02') || {};
-    const marketIntel = m02Data.market_intel || '[Chưa điền thông tin thị trường]';
+  const dynamicPrompt = `"Đóng vai một chuyên gia tư vấn chiến lược B2B, hãy đánh giá mức độ hấp dẫn của thị trường mục tiêu mà tôi vừa nhập, đồng thời chỉ ra 3 rủi ro ẩn giấu nếu tôi muốn đánh vào ngách này."`;
 
-    const prompt = `Tôi là một quản lý Sales B2B xuất khẩu. Dưới đây là thông tin thị trường tôi vừa thu thập được:\n\n"""\n${marketIntel}\n"""\n\nHãy đóng vai một chuyên gia phân tích thị trường quốc tế khó tính. Hãy Fact-check tính chính xác của các thông tin trên và chỉ ra 3 rủi ro ẩn giấu mà tôi có thể đã bỏ qua khi đánh giá thị trường này. Trình bày ngắn gọn dạng Bullet points.`;
-
+  const handleCopyPrompt = async () => {
     try {
-      await navigator.clipboard.writeText(prompt);
+      await navigator.clipboard.writeText(dynamicPrompt);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-      
-      // Open Gemini Spark in a new tab
       window.open('https://spark.gemini.google.com', '_blank');
     } catch (err) {
-      console.error('Failed to copy prompt: ', err);
-      alert('Không thể tự động copy Prompt. Trình duyệt của bạn có thể đang chặn quyền Clipboard.');
+      console.error('Failed to copy: ', err);
     }
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 rounded-xl border border-indigo-100 shadow-sm">
-      <div className="flex items-center gap-2 mb-3">
-        <Sparkles size={20} className="text-indigo-600" />
-        <h3 className="text-base font-bold text-indigo-900">Fact-Check với AI</h3>
-      </div>
+    <div className="glass-panel" style={{ padding: '24px', position: 'relative', overflow: 'hidden' }}>
+      {/* Ambient background glow for AI tutor */}
+      <div style={{ position: 'absolute', top: 0, right: 0, width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(0,0,0,0) 70%)', filter: 'blur(30px)', zIndex: 0, pointerEvents: 'none' }}></div>
       
-      <p className="text-sm text-indigo-800/80 mb-5 leading-relaxed">
-        Sử dụng Gemini Spark để phân tích chéo và phản biện các ngộ nhận thị trường (Market Intel) mà bạn vừa nhập ở B03.
-      </p>
-
-      <button
-        onClick={handleCopyAndOpen}
-        className="w-full relative group overflow-hidden bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm py-2.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow"
-      >
-        {isCopied ? (
-          <>
-            <Check size={16} /> Đã sao chép Prompt
-          </>
-        ) : (
-          <>
-            <Copy size={16} /> Copy Prompt & Mở Gemini Spark
-          </>
-        )}
-      </button>
-
-      <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-indigo-500 font-medium">
-        <span>Tự động tạo câu lệnh từ bài làm B03</span>
-        <ExternalLink size={12} />
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+          <Sparkles size={20} color="#a855f7" />
+          <h3 style={{ fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-primary)' }}>AI Discovery Tutor</h3>
+        </div>
+        
+        <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', marginBottom: '24px', lineHeight: '1.5' }}>
+          Bí ý tưởng khi đánh giá rủi ro thị trường? Hãy sao chép câu lệnh dưới đây và nhờ Gemini phân tích giúp bạn!
+        </p>
+        
+        <button
+          onClick={handleCopyPrompt}
+          style={{
+            width: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+            background: 'linear-gradient(135deg, rgba(168,85,247,0.8), rgba(59,130,246,0.8))',
+            color: '#fff', padding: '12px 16px', borderRadius: '8px', border: 'none',
+            fontSize: '0.875rem', fontWeight: 'bold', cursor: 'pointer',
+            boxShadow: '0 4px 12px rgba(168, 85, 247, 0.2)',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
+          onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+        >
+          {isCopied ? <><Check size={16} /> Đã copy thành công</> : <><Copy size={16} /> Copy Prompt & Mở AI</>}
+        </button>
       </div>
     </div>
   );
