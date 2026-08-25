@@ -166,6 +166,34 @@ export default function M02Page() {
           </button>
         </div>
       </div>
+
+      {/* BÀI 05 */}
+      <div className="glass-panel" style={{ padding: '20px' }}>
+        <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
+          Bài 05 - Discovery Insight Note (5 Tabs UI)
+        </h3>
+        <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.9rem', lineHeight: '1.5' }}>
+          Phân tích các Tab: Need, Pain, Criteria, Risk, Concern. Bóc tách từ Nỗi đau bề mặt thành câu hỏi cốt lõi.
+        </p>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button 
+            onClick={() => handleOpenDocument('M02_Bai05.pdf')}
+            disabled={loadingFile === 'M02_Bai05.pdf'}
+            className="btn btn-secondary" 
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
+          >
+            <BookOpen size={16}/> {loadingFile === 'M02_Bai05.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+          </button>
+          <button 
+            onClick={() => handleOpenVideo('M02_Video05.mp4')}
+            disabled={loadingVideo === 'M02_Video05.mp4'}
+            className="btn btn-primary" 
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
+          >
+            <Play size={16}/> {loadingVideo === 'M02_Video05.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 
@@ -177,7 +205,7 @@ export default function M02Page() {
       </header>
 
       <ModuleLayout 
-        moduleTitle="Module 02: Thị trường và khách hàng xuất khẩu"
+        moduleTitle="Module 02: Thị trường và khách hàng xuất khẩu - Học tập"
         learningContent={learningContent}
         formContent={<M02_CombinedForm />}
         aiTutorContent={<GeminiSparkCard />}
