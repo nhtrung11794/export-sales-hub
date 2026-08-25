@@ -25,5 +25,11 @@ Khi User yêu cầu chuẩn hóa một Module cụ thể (ví dụ: `@[Chuẩn h
 - **CỰC KỲ QUAN TRỌNG:** Nếu cấu trúc dữ liệu bị đổi theo PRD, bạn phải sửa Interface Data (`src/types/...` hoặc ngay trong file component) và dùng Optional Chaining (`?.`) để làm Fallback an toàn.
 - Sửa lại câu lệnh nội suy của thẻ AI Prompt ở Cột 3 để biến số được cập nhật khớp với dữ liệu mới.
 
-## Bước 5: Báo cáo
-Sau khi hoàn thành, hãy trả lời User: "✅ Đã tự động chuẩn hóa [Tên Module] theo đúng PRD_Master và b2b-frontend-mindset. Hãy lưu lại bằng lệnh git commit."
+## Bước 5: Cơ chế Nộp bài & Khóa Tuần tự (Progression Lock)
+- Thêm logic kiểm tra tính hợp lệ của dữ liệu (Validation) trong file `page.tsx`. Chỉ những trường cực kỳ quan trọng mới bắt buộc khác rỗng.
+- Import và nhúng Nút "Xác nhận Nộp bài" thông qua prop `headerActionNode` của `ModuleLayout`.
+- Lắng nghe trạng thái `isLocked` từ `useModuleStore`. Khi `isLocked === true`, tự động vô hiệu hóa toàn bộ Input, Slider, Drag & Drop trong Cột 2 (Giống hệt trạng thái `!isOnline`).
+- Cập nhật logic `isUnlocked` trong `AppLayout.tsx` và `page.tsx` (Dashboard) để đảm bảo Module này chỉ mở khi Module trước đó đã được nộp.
+
+## Bước 6: Báo cáo
+Sau khi hoàn thành, hãy trả lời User: "✅ Đã tự động chuẩn hóa [Tên Module] theo đúng PRD_Master, b2b-frontend-mindset và cơ chế Progression Lock. Hãy lưu lại bằng lệnh git commit."

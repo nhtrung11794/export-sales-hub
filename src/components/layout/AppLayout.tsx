@@ -30,7 +30,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (moduleId === 'DASHBOARD' || moduleId === 'M01') return true;
     
     // Yêu cầu: Tạm khóa toàn bộ các Module còn lại (để hoàn thiện nội dung sau)
-    if (moduleId === 'M02') return false; // submissions['M01']?.is_locked === true;
+    if (moduleId === 'M02') return true; // Tạm mở khóa vô điều kiện để test
     if (moduleId === 'M03') return false; // submissions['M02']?.is_locked === true;
     if (moduleId === 'M04') return false; // submissions['M03']?.is_locked === true;
     if (moduleId === 'M05') return false; // submissions['M04']?.is_locked === true;
@@ -240,7 +240,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </span>
           </a>
           <a 
-            href="https://notebooklm.google.com/"
+            href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14"
             target="_blank"
             rel="noopener noreferrer"
             style={{

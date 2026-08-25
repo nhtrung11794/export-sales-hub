@@ -214,7 +214,7 @@ export default function Module03Page() {
       </div>
       
       <a 
-        href="https://notebooklm.google.com/" 
+        href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="btn" 
