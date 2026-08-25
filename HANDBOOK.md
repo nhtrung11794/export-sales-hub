@@ -1,46 +1,55 @@
 # 📘 CẨM NANG BÀN GIAO (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS)
-**Ngày cập nhật:** 24/08/2026 (Chốt hạ Đội ngũ Nhân sự v5.0)
+**Ngày cập nhật:** 25/08/2026 (Chốt hạ Module 02 & Hệ thống Phân quyền Học viên/Admin)
 
 Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ Tư duy, Kết quả và Kế hoạch để bạn (hoặc bất kỳ AI Agent nào trong phiên tiếp theo) có thể tiếp nối dự án ngay lập tức mà không bị đứt gãy mạch logic.
 
 ---
 
 ## 1. 🏆 NHỮNG ĐIỂM ĐÃ LÀM ĐƯỢC (ACCOMPLISHED)
-1. **Kiến trúc Cốt lõi (Master PRD v5.0):**
-   - Đã chuẩn hóa kiến trúc Next.js App Router + Supabase (JSONB).
-   - Chốt sử dụng **Server Actions** thay vì REST API.
-   - Chốt sử dụng **Client-side PDF (html2pdf)** thay vì Vercel Chromium.
-2. **Giao diện & Logic (UI/UX):**
-   - Xây dựng thành công Global Store (`useModuleStore.ts`) và hook `useAutoSave` (Debounce 3s) liên kết mượt mà với Supabase.
-   - **(Đột phá M01 v5.0):** 
-     - **Cognitive Simulation:** Tích hợp thành công thư viện `recharts` cho Biểu đồ Radar động (real-time).
-     - **Interactive Workspace:** Thiết kế lại Cột 1 với nút "Giáo án PDF" (Iframe) và "Video Tổng kết" (PiP `<Rnd>`).
-     - **Dynamic AI Tutor:** Cột 3 chứa AI Prompt tự động lấy điểm từ Cột 2 (Zustand).
-     - **UX Rành mạch:** Sidebar và Tiêu đề Cột giữa luôn bắt buộc phải gọi tên đầy đủ theo PRD (Ví dụ: `Module 01: Mindset nền tảng Sales XK`) thay vì chỉ hiện tên ngắn.
-   - Hoàn thiện luồng logic cơ bản của **Module 02 và 03** (Fit Score).
-3. **Định nghĩa Đội ngũ (Agent Roles v5.0):**
-   - **Dev Agents:** FE-01 (Frontend), DB-02 (Backend/JSONB), DevOps-03.
-   - **AI Tutors:** 
-     - *NotebookLM Agent:* Dùng cơ chế Click-to-copy prompt và nhảy tab (Miễn phí, an toàn).
-     - *Sanity Check Agent:* Thuật toán Frontend/Backend. Nếu gõ rác (<50 từ) thì vẫn cho Auto-save nhưng sẽ **khóa nút xuất PDF** ở chặng cuối.
+1. **Kiến trúc Cốt lõi & Phân quyền (Auth & RBAC v6.0):**
+   - **Tự đăng ký & Phê duyệt (Self-signup with Admin Approval):** Người dùng tự đăng ký không cần xác thực email. Tài khoản mới tạo mặc định mang trạng thái `approval_status = 'pending'` và bị điều hướng sang trang chuyên biệt `/pending-approval` (ẩn toàn bộ thanh công cụ học tập).
+   - **Admin Dashboard (`/admin`):** Trang quản trị riêng biệt cho `role = 'admin'` với giao diện duyệt/từ chối học viên đăng ký mới bằng một cú click.
+   - **Chế độ Khóa Module cho Học viên (Student Pilot Lock):**
+     - Mở khóa hoàn toàn **M01 và M02** cho học viên thử nghiệm.
+     - Tạm khóa **M03, M04, M05** đối với học viên (`role = 'user'`), hiển thị huy hiệu `🔒 Sắp ra mắt` trên Dashboard & Sidebar, chặn click và tự động đẩy về trang chủ nếu gõ trực tiếp URL.
+     - Tài khoản **Admin** vẫn mở khóa toàn bộ 5 Module để tiếp tục lập trình và nghiệm thu.
+
+2. **Giao diện & Logic Module 02 (Hoàn thiện 100%):**
+   - **B03 (Target Market & Route to Market):** Nhập liệu ma trận 6 cột, đồng bộ dữ liệu vào Zustand store.
+   - **B04 (Buyer Map Org Chart):** Tích hợp kéo thả `@dnd-kit` mượt mà, hỗ trợ flex-wrap tự co giãn kích thước thẻ phòng ban.
+   - **B05 (Discovery Insight Matrix):** 
+     - 5 lớp thông tin chuẩn: *Context, Need, Pain, Criteria, Risk/Concern*.
+     - **Dynamic Design:** Hiệu ứng `:focus-within` làm sáng viền Primary và đổ bóng Glow khi gõ; tự động thu gọn hiệu ứng khi đã hoàn thành; làm mờ các hàng đang khóa.
+     - **Typography:** Căn giữa các cột nhập liệu, font-size nhãn lớp thông tin chuẩn `1rem` cân đối.
+
+3. **Chống sập ứng dụng (Graceful Degradation):**
+   - Áp dụng triệt để cơ chế Fallback `(data || '').trim()` trên toàn bộ Form và Matrix, giải quyết dứt điểm lỗi crash trang trắng khi schema thay đổi.
+
+---
 
 ## 2. ⏳ NHỮNG ĐIỂM CHƯA LÀM ĐƯỢC (NEXT STEPS/PENDING)
 *Đây là các Task ưu tiên cao nhất cho Sprint tiếp theo:*
-- **[Sprint 1.1c] Chuẩn hóa M02 & M03:** Nhân bản kiến trúc UI (PiP Video, PDF Iframe, Dynamic AI Prompt) từ M01 sang M02 và M03.
-- **[Sprint 1.2] Khóa Rủi ro M04:** Chặn thanh toán (D/P, CAD) nếu Fit Score ở M03 thấp. Ép học viên phải chọn L/C an toàn.
-- **[Sprint 1.3] System (Reverse-flow Edit):** Viết Logic tạo Snapshot history khi học viên sửa data M02 cũ để không làm gãy data M03, M04.
+- **[Sprint 2.1] Chuẩn hóa UI/UX Module 03 (Pipeline & Fit Score):** Áp dụng Skill `module-ui-architect` để xây dựng giao diện chấm điểm Fit Score và quản trị cơ hội theo chuẩn M02.
+- **[Sprint 2.2] Xây dựng Module 04 (Proposal, Negotiation & L/C Guard):** Lập trình cơ chế chặn rủi ro thanh toán nếu Fit Score M03 thấp.
+- **[Sprint 2.3] Xây dựng Module 05 (Execution & Capstone PDF):** Tích hợp công cụ xuất báo cáo PDF cuối khóa.
+- **[Sprint 2.4] Tích hợp AI Gemini Spark:** Kết nối API Gemini thật cho các nút gợi ý AI trong form.
+
+---
 
 ## 3. 🧠 TƯ DUY & Ý TƯỞNG CỐT LÕI (CORE MINDSET)
-Bất kỳ AI nào code dự án này đều phải thấm nhuần:
-1. **Cognitive Simulation (Mô phỏng tư duy):** Form không chỉ để điền chữ. Hệ thống phải liên tục "làm khó" học viên bằng các rào cản nghiệp vụ dựa trên dữ liệu họ đã nhập.
-2. **Data Inheritance (Kế thừa Non-destructive):** Dữ liệu chảy từ M01 -> M05. Nếu M02 sửa đổi, tuyệt đối không xóa bài tự luận của học viên ở M03, chỉ hiện Cờ đỏ cảnh báo.
-3. **JSONB Agility:** Toàn bộ form được lưu trong cột `form_data` (JSONB) của bảng `module_submissions`.
+Bất kỳ AI nào code dự án này đều phải tuân thủ nghiêm ngặt:
+1. **Dynamic Design (Giao diện sống động & Phản hồi xúc giác):** Mọi tương tác nhập liệu đều phải có phản hồi thị giác (Focus Glow, Dimming, Status Badges).
+2. **Strict RBAC & Non-intrusive Guard:** Phân tách rõ ràng giữa Admin và Học viên. Mọi cơ chế khóa phải có thông báo thân thiện và chuyển hướng an toàn.
+3. **Data Inheritance & Graceful Fallbacks:** Dữ liệu kế thừa xuyên suốt qua Zustand store, luôn có giá trị mặc định để chống sập giao diện.
+
+---
 
 ## 4. 🛠️ BỘ CÔNG CỤ TỰ ĐỘNG (SKILLS & TOOLS)
-Hãy tham khảo file **`AI_TOOLS_LIBRARY.md`** ở thư mục gốc để lấy các câu lệnh thần chú (System Commands) kích hoạt các AI Agents. Nổi bật nhất là lệnh:
-> `[RUN_TOOL: @standardize-prd]` - Tự động cập nhật PRD_Master nếu bạn sửa file Word.
+Hệ thống đã được tích hợp sẵn 2 công cụ chuyên biệt trong thư mục `.agents/skills/`:
+- **`@standardize-prd`:** Tự động đồng bộ PRD_Master từ file DOCX.
+- **`@module-ui-architect`:** Tự động thiết kế, lập trình và chuẩn hóa UI/UX cho các Module (M03, M04, M05) theo đúng triết lý Dynamic Design và State Management đã chốt ở Module 02.
 
 ---
 **💡 CÂU LỆNH MỞ ĐẦU CHO SPRINT TIẾP THEO:**
-> *"Hãy đóng vai `FE-01` và `DB-02`, bắt đầu code Giao diện và Logic cho Module 04. Nhớ áp dụng cơ chế chặn rủi ro thanh toán nếu Fit Score M03 thấp nhé!"*
+> *"Hãy sử dụng skill `@module-ui-architect` để bắt đầu thiết kế và lập trình giao diện chuẩn cho Module 03 (Bài 06 và Bài 07) nhé!"*
