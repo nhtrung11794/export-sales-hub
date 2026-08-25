@@ -40,9 +40,12 @@ export default function M02Page() {
         setIsLocked(submission.is_locked);
       }
       
-      // Simple validation for M02: URL Source (B03) is required
+      // Simple validation for M02: Form Quyết định (B03) is required + at least 1 insight in B05
       if (data) {
-        const isDraftValid = data.url_source && data.url_source.trim().length > 0;
+        const isDraftValid = data.target_market?.trim().length > 0 && 
+                             data.route_to_market?.trim().length > 0 && 
+                             data.strategic_reason?.trim().length > 0 && 
+                             (data.discovery_matrix?.need?.hypothesis?.trim().length > 0 || data.discovery_matrix?.need?.insight?.trim().length > 0);
         setIsValid(!!isDraftValid);
       }
     }, 1000);
