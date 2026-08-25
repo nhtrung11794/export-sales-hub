@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import ModuleLayout from '@/components/layout/ModuleLayout';
-import M2_MarketForm from '@/components/modules/m02/M2_MarketForm';
+import M02_CombinedForm from '@/components/modules/m02/M02_CombinedForm';
+import GeminiSparkCard from '@/components/ai-tutors/GeminiSparkCard';
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
-import { Copy, Check, Play, BookOpen, X } from 'lucide-react';
+import { Play, BookOpen, X } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
-export default function Module02Page() {
+export default function M02Page() {
   const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
@@ -17,30 +18,20 @@ export default function Module02Page() {
   // Trạng thái cho Video PiP
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   
-  const [isCopied, setIsCopied] = useState(false);
   const { getModuleData, submitModule, unlockModule, submissions } = useModuleStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
 
-  // Hook to check auth user id (needed for submit)
+  // Hook to check auth user id
   const [userId, setUserId] = useState<string | null>(null);
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) setUserId(data.user.id);
     });
-  }, []);
+  }, [supabase.auth]);
 
-  const [formData, setFormData] = useState({
-    targetMarket: '[Quốc gia]',
-    marketSignal: '[Lý do chọn]',
-    icpSegment: '[Phân khúc]',
-    decisionMaker: '[Phòng ban]',
-    painPoints: '[Nỗi đau]'
-  });
-
-  // Quét dữ liệu từ Store mỗi 1 giây
   useEffect(() => {
     const interval = setInterval(() => {
       const data = getModuleData('M02');
@@ -48,29 +39,10 @@ export default function Module02Page() {
       if (submission) {
         setIsLocked(submission.is_locked);
       }
-
+      
+      // Simple validation for M02: URL Source (B03) is required
       if (data) {
-        let dmSlot = '[Phòng ban]';
-        if (data.buyer_map) {
-           const slotKey = Object.keys(data.buyer_map).find(k => data.buyer_map[k] === 'decision_maker');
-           if (slotKey) {
-             const labels: Record<string, string> = { ceo: 'Board/CEO', cfo: 'Finance', procurement: 'Purchasing', technical: 'Technical', users: 'Operations', admin: 'Admin' };
-             dmSlot = labels[slotKey] || slotKey;
-           }
-        }
-
-        setFormData({
-          targetMarket: data.market_scan?.target_market || '[Quốc gia]',
-          marketSignal: data.market_scan?.market_signal || '[Lý do chọn]',
-          icpSegment: data.icp?.segment || '[Phân khúc]',
-          decisionMaker: dmSlot,
-          painPoints: data.discovery_line?.zone1_ice_breaking?.pain_points || '[Nỗi đau]'
-        });
-
-        // Validation: Basic fields must not be empty
-        const isDraftValid = data.market_scan?.target_market && data.market_scan.target_market.trim().length > 0 &&
-                             data.market_scan?.market_signal && data.market_scan.market_signal.trim().length > 0 &&
-                             data.icp?.segment && data.icp.segment.trim().length > 0;
+        const isDraftValid = data.url_source && data.url_source.trim().length > 0;
         setIsValid(!!isDraftValid);
       }
     }, 1000);
@@ -101,18 +73,6 @@ export default function Module02Page() {
     setIsSubmitting(false);
   };
 
-  const dynamicPrompt = `"Tôi đang phân tích thị trường ${formData.targetMarket} vì ${formData.marketSignal}. Phân khúc khách hàng mục tiêu của tôi là ${formData.icpSegment}. Thông qua sơ đồ Buyer Map, tôi xác định Decision Maker nằm ở bộ phận ${formData.decisionMaker}. Trong giai đoạn Ice-breaking, nỗi đau lớn nhất của họ là: '${formData.painPoints}'. Hãy đóng vai chuyên gia B2B Sales, viết cho tôi một kịch bản Cold Email nhắm thẳng vào nỗi đau này."`;
-
-  const handleCopyPrompt = async () => {
-    try {
-      await navigator.clipboard.writeText(dynamicPrompt);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy prompt:', err);
-    }
-  };
-
   const handleOpenDocument = async (fileName: string) => {
     try {
       setLoadingFile(fileName);
@@ -125,7 +85,7 @@ export default function Module02Page() {
       if (data?.signedUrl) setPreviewUrl(data.signedUrl);
     } catch (err) {
       console.error(err);
-      alert('Đã xảy ra lỗi kết nối. Vui lòng kiểm tra lại file đã được tải lên Supabase chưa.');
+      alert('Đã xảy ra lỗi kết nối.');
     } finally {
       setLoadingFile(null);
     }
@@ -151,14 +111,13 @@ export default function Module02Page() {
 
   const learningContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      
       {/* BÀI 03 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 03 - Lựa chọn Thị trường Mục tiêu
+          Bài 03 - Phân tích, lựa chọn thị trường XK & ICP
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          "Đừng bán thứ bạn có, hãy bán thứ thị trường cần". Bài học này hướng dẫn bạn cách thu hẹp phạm vi, đánh giá rào cản thương mại và lựa chọn quốc gia phù hợp nhất.
+          Xác định bối cảnh thị trường (Market Fact-Check) và vẽ chân dung khách hàng lý tưởng (ICP) phù hợp với quy mô và năng lực doanh nghiệp.
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
@@ -183,10 +142,10 @@ export default function Module02Page() {
       {/* BÀI 04 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 04 - Vẽ chân dung Khách hàng (ICP)
+          Bài 04 - Sơ đồ mua hàng (Buyer Map)
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Khách hàng B2B của bạn là ai? Nhà nhập khẩu sỉ, nhà phân phối hay chuỗi siêu thị? Phân tích chính xác Nỗi đau (Pain points) và Nhu cầu (Needs).
+          Thiết lập sơ đồ tổ chức, người ra quyết định và quy trình mua hàng để có chiến lược tiếp cận phù hợp.
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
@@ -207,100 +166,21 @@ export default function Module02Page() {
           </button>
         </div>
       </div>
-
-      {/* BÀI 05 */}
-      <div className="glass-panel" style={{ padding: '20px' }}>
-        <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 05 - Phân tích Đối thủ Cạnh tranh
-        </h3>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Nhận diện đối thủ cạnh tranh trực tiếp và gián tiếp trên thị trường mục tiêu. Tìm ra khoảng trống thị trường (Market Gap) để chen chân vào.
-        </p>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button 
-            onClick={() => handleOpenDocument('M02_Bai05.pdf')}
-            disabled={loadingFile === 'M02_Bai05.pdf'}
-            className="btn btn-secondary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
-          >
-            <BookOpen size={16}/> {loadingFile === 'M02_Bai05.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
-          </button>
-          <button 
-            onClick={() => handleOpenVideo('M02_Video05.mp4')}
-            disabled={loadingVideo === 'M02_Video05.mp4'}
-            className="btn btn-primary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
-          >
-            <Play size={16}/> {loadingVideo === 'M02_Video05.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
-          </button>
-        </div>
-      </div>
-
-    </div>
-  );
-
-  const aiTutorContent = (
-    <div className="glass-panel" style={{ padding: '20px', borderLeft: '4px solid var(--accent-warning)', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
-        Bạn không biết đối thủ cạnh tranh của mình là ai? Hãy dùng Prompt dưới đây (tự động lấy keywords bạn vừa nhập) và gửi cho NotebookLM nhé!
-      </p>
-      
-      <div style={{ position: 'relative' }}>
-        <div style={{ 
-          background: 'rgba(0,0,0,0.3)', 
-          padding: '16px', 
-          borderRadius: '8px',
-          fontSize: '0.875rem',
-          fontFamily: 'monospace',
-          color: 'var(--text-muted)',
-          border: '1px solid rgba(255,255,255,0.05)',
-          minHeight: '120px'
-        }}>
-          {dynamicPrompt}
-        </div>
-        
-        <button 
-          onClick={handleCopyPrompt}
-          className="btn"
-          style={{ 
-            position: 'absolute', top: '8px', right: '8px',
-            background: 'rgba(255,255,255,0.1)', border: 'none',
-            padding: '6px 12px', borderRadius: '4px',
-            display: 'flex', alignItems: 'center', gap: '6px',
-            fontSize: '0.75rem', color: 'var(--text-primary)', cursor: 'pointer'
-          }}
-        >
-          {isCopied ? <><Check size={14} color="var(--accent-success)"/> Đã Copy</> : <><Copy size={14}/> Copy Prompt</>}
-        </button>
-      </div>
-      
-      <a 
-        href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="btn" 
-        style={{ 
-          display: 'block', textAlign: 'center', background: 'var(--accent-warning)', 
-          color: 'var(--bg-primary)', fontWeight: 'bold', padding: '12px'
-        }}
-      >
-        Mở NotebookLM M02 ➔
-      </a>
     </div>
   );
 
   return (
     <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 02</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Phân tích Thị trường & Chân dung Khách hàng B2B (ICP)</p>
+        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 02: Thị trường và khách hàng xuất khẩu</h1>
+        <p style={{ color: 'var(--text-secondary)' }}>Phân tích định vị thị trường, thiết lập sơ đồ mua hàng và xác định ICP cốt lõi</p>
       </header>
 
-      <ModuleLayout
-        moduleTitle="M02: Thị trường & Khách hàng"
+      <ModuleLayout 
+        moduleTitle="Module 02: Thị trường và khách hàng xuất khẩu"
         learningContent={learningContent}
-        formContent={<M2_MarketForm />}
-        aiTutorContent={aiTutorContent}
+        formContent={<M02_CombinedForm />}
+        aiTutorContent={<GeminiSparkCard />}
         previewUrl={previewUrl}
         onClosePreview={() => setPreviewUrl(null)}
         headerActionNode={
@@ -374,7 +254,6 @@ export default function Module02Page() {
             display: 'flex',
             flexDirection: 'column'
           }}>
-            {/* PiP Header (Nắm kéo / Nút Đóng) */}
             <div className="drag-handle" style={{
               background: 'var(--bg-secondary)',
               height: '32px',
@@ -384,7 +263,7 @@ export default function Module02Page() {
               padding: '0 12px',
               cursor: 'move'
             }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>▶️ Video Bài Giảng</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>▶️ Video Bài Giảng M02</span>
               <button 
                 onClick={() => setPipVideoUrl(null)}
                 onMouseDown={(e) => e.stopPropagation()}
@@ -394,7 +273,6 @@ export default function Module02Page() {
                 <X size={16} />
               </button>
             </div>
-            {/* PiP Body (HTML5 Video) */}
             <div style={{ flex: 1, position: 'relative' }}>
               <video 
                 src={pipVideoUrl} 

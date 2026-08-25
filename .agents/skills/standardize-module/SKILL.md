@@ -25,11 +25,22 @@ Khi User yêu cầu chuẩn hóa một Module cụ thể (ví dụ: `@[Chuẩn h
 - **CỰC KỲ QUAN TRỌNG:** Nếu cấu trúc dữ liệu bị đổi theo PRD, bạn phải sửa Interface Data (`src/types/...` hoặc ngay trong file component) và dùng Optional Chaining (`?.`) để làm Fallback an toàn.
 - Sửa lại câu lệnh nội suy của thẻ AI Prompt ở Cột 3 để biến số được cập nhật khớp với dữ liệu mới.
 
-## Bước 5: Cơ chế Nộp bài & Khóa Tuần tự (Progression Lock)
+## Bước 5: Cơ chế Nộp bài, Khóa Tuần tự & Supabase SSR Client
+- **BẮT BUỘC DÙNG SSR CLIENT:** Tất cả các file `page.tsx` trong module đều phải import `createClient` từ `@/lib/supabase/client` (TUYỆT ĐỐI KHÔNG dùng `import { supabase } from '@/lib/supabase'` vì sẽ lỗi xác thực Cookie). Phải gọi `const supabase = createClient();` bên trong Component.
+- Khai báo hook lấy `userId`: `const [userId, setUserId] = useState<string | null>(null);` và useEffect với `supabase.auth.getUser()`.
 - Thêm logic kiểm tra tính hợp lệ của dữ liệu (Validation) trong file `page.tsx`. Chỉ những trường cực kỳ quan trọng mới bắt buộc khác rỗng.
-- Import và nhúng Nút "Xác nhận Nộp bài" thông qua prop `headerActionNode` của `ModuleLayout`.
-- Lắng nghe trạng thái `isLocked` từ `useModuleStore`. Khi `isLocked === true`, tự động vô hiệu hóa toàn bộ Input, Slider, Drag & Drop trong Cột 2 (Giống hệt trạng thái `!isOnline`).
 - Cập nhật logic `isUnlocked` trong `AppLayout.tsx` và `page.tsx` (Dashboard) để đảm bảo Module này chỉ mở khi Module trước đó đã được nộp.
 
-## Bước 6: Báo cáo
-Sau khi hoàn thành, hãy trả lời User: "✅ Đã tự động chuẩn hóa [Tên Module] theo đúng PRD_Master, b2b-frontend-mindset và cơ chế Progression Lock. Hãy lưu lại bằng lệnh git commit."
+## Bước 6: Xử lý Trạng thái Khóa / Mở Khóa bài làm (Re-submission)
+- Nhắc lại thiết kế DB: Bảng `module_submissions` sử dụng cột `status` (`'draft'` hoặc `'submitted'`), KHÔNG có cột `is_locked`. Việc mapping sang biến `is_locked` được thực hiện cục bộ tại store `useModuleStore`.
+- Import các actions `submitModule` và `unlockModule` từ `useModuleStore`.
+- Nút Action trên Header (`headerActionNode` của `ModuleLayout`) luôn bao gồm 2 trạng thái:
+  1. Khi ĐÃ NỘP (`isLocked == true`): Hiển thị nút "Mở Khóa để Sửa" (`var(--accent-warning)`). Gọi hàm `handleUnlock`.
+  2. Khi CHƯA NỘP (`!isLocked`): Hiển thị nút "Xác nhận Nộp bài" (`var(--accent-primary)`). Gọi hàm `handleSubmit`.
+
+## Bước 7: Thẩm mỹ Toàn cục (Global Dark Theme)
+- Luôn nhớ hệ thống của chúng ta sử dụng **CSS Variables ép cứng thành Màu Xanh Đen (Dark Theme)** trong `:root` tại `globals.css` (bỏ qua media query `prefers-color-scheme`). 
+- Khi code UI mới, không sử dụng class màu Tailwind (ví dụ `bg-gray-800`) mà DÙNG BIẾN CSS của hệ thống như `var(--bg-secondary)`, `var(--accent-primary)` để luôn hòa hợp với Dark Theme thiết kế sẵn.
+
+## Bước 8: Báo cáo
+Sau khi hoàn thành, hãy trả lời User: "✅ Đã tự động chuẩn hóa [Tên Module] theo đúng PRD_Master, b2b-frontend-mindset và kiến trúc Khóa/Mở Khóa, ép cứng Dark Theme. Hãy lưu lại bằng lệnh git commit."
