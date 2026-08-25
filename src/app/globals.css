@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Color Palette - Light Mode */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
+  /* Color Palette - Dark Theme Forced (Màu xanh đen) */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
   
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
   
   --accent-primary: #3b82f6; /* Blue */
   --accent-hover: #2563eb;
@@ -16,14 +16,14 @@
   --accent-warning: #f59e0b; /* Amber */
   --accent-danger: #ef4444; /* Red */
   
-  --border-color: #e2e8f0;
+  --border-color: #334155;
   
   /* Shadows & Effects */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-bg: rgba(30, 41, 59, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
   
   /* Typography */
   --font-sans: 'Be Vietnam Pro', sans-serif;
@@ -33,24 +33,6 @@
   --col-1-width: 30%;
   --col-2-width: 45%;
   --col-3-width: 25%;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Color Palette - Dark Mode */
-    --bg-primary: #0f172a;
-    --bg-secondary: #1e293b;
-    --bg-tertiary: #334155;
-    
-    --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
-    --text-muted: #64748b;
-    
-    --border-color: #334155;
-    
-    --glass-bg: rgba(30, 41, 59, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.1);
-  }
 }
 
 * {
