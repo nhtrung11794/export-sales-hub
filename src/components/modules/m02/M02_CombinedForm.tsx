@@ -23,11 +23,11 @@ export interface M02FormData {
 
   // B05
   discovery_matrix: {
-    need: { hypothesis: string; question: string; insight: string };
-    pain: { hypothesis: string; question: string; insight: string };
-    criteria: { hypothesis: string; question: string; insight: string };
-    risk: { hypothesis: string; question: string; insight: string };
-    concern: { hypothesis: string; question: string; insight: string };
+    need: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
+    pain: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
+    criteria: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
+    risk: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
+    concern: { surface_signal: string; core_hypothesis: string; approach_strategy: string };
   };
 }
 
@@ -42,11 +42,11 @@ const initialData: M02FormData = {
   buyer_map_roles: [],
 
   discovery_matrix: {
-    need: { hypothesis: '', question: '', insight: '' },
-    pain: { hypothesis: '', question: '', insight: '' },
-    criteria: { hypothesis: '', question: '', insight: '' },
-    risk: { hypothesis: '', question: '', insight: '' },
-    concern: { hypothesis: '', question: '', insight: '' },
+    need: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
+    pain: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
+    criteria: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
+    risk: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
+    concern: { surface_signal: '', core_hypothesis: '', approach_strategy: '' },
   }
 };
 

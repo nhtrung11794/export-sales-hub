@@ -10,14 +10,58 @@ interface B05Props {
 }
 
 type MatrixRowKey = 'need' | 'pain' | 'criteria' | 'risk' | 'concern';
-type MatrixColKey = 'hypothesis' | 'question' | 'insight';
+type MatrixColKey = 'surface_signal' | 'core_hypothesis' | 'approach_strategy';
 
-const ROW_CONFIG: { key: MatrixRowKey; label: string; desc: string, placeholders: [string, string, string] }[] = [
-  { key: 'need', label: '1. Need (Nhu cầu thực)', desc: 'Khách nói gì/Hỏi gì? (VD: Yêu cầu hàng giá rẻ)', placeholders: ['VD: Yêu cầu hàng giá rẻ...', 'VD: Cần hàng cấp thấp để phủ thị trường ngách...', 'VD: Hỏi về kênh phân phối của họ...'] },
-  { key: 'pain', label: '2. Pain (Nỗi đau)', desc: 'Họ phàn nàn điều gì? (VD: Hàng giao hay bị trễ)', placeholders: ['VD: Hàng giao hay bị trễ...', 'VD: Bị phạt hợp đồng với siêu thị...', 'VD: Pitching quy trình quản trị ETA...'] },
-  { key: 'criteria', label: '3. Criteria (Tiêu chí)', desc: 'Đòi hỏi trên giấy tờ? (VD: Đòi chứng chỉ Organic)', placeholders: ['VD: Đòi chứng chỉ Organic...', 'VD: Sợ rủi ro bị thu hồi sản phẩm...', 'VD: Gửi test report lô gần nhất...'] },
-  { key: 'risk', label: '4. Risk (Rủi ro)', desc: 'Sự e ngại thể hiện ra? (VD: Ngại mua từ VN)', placeholders: ['VD: Ngại mua từ VN...', 'VD: Sợ NCC lừa đảo thanh toán...', 'VD: Đề xuất thanh toán L/C...'] },
-  { key: 'concern', label: '5. Concern (Mối bận tâm)', desc: 'Thái độ khi đàm phán? (VD: Đọc email nhưng im lặng)', placeholders: ['VD: Đọc email nhưng im lặng...', 'VD: Sếp chưa duyệt ngân sách...', 'VD: Cung cấp Market Insight để nuôi dưỡng...'] },
+const ROW_CONFIG: { 
+  key: MatrixRowKey; 
+  label: string; 
+  placeholders: { surface_signal: string; core_hypothesis: string; approach_strategy: string } 
+}[] = [
+  { 
+    key: 'need', 
+    label: '1. Need (Nhu cầu thực)', 
+    placeholders: { 
+      surface_signal: 'Khách nói gì/Hỏi gì?\n(VD: Yêu cầu hàng giá rẻ)', 
+      core_hypothesis: 'Thực chất họ cần gì?\n(VD: Cần hàng cấp thấp để phủ thị trường ngách)', 
+      approach_strategy: 'Cách đặt câu hỏi/Góc tiếp cận?\n(VD: Hỏi về kênh phân phối của họ)' 
+    } 
+  },
+  { 
+    key: 'pain', 
+    label: '2. Pain (Nỗi đau)', 
+    placeholders: { 
+      surface_signal: 'Họ phàn nàn điều gì?\n(VD: Hàng giao hay bị trễ)', 
+      core_hypothesis: 'Hậu quả thực sự là gì?\n(VD: Bị phạt hợp đồng với siêu thị)', 
+      approach_strategy: 'Giải pháp mồi (Hook)?\n(VD: Pitching quy trình quản trị ETA)' 
+    } 
+  },
+  { 
+    key: 'criteria', 
+    label: '3. Criteria (Tiêu chí)', 
+    placeholders: { 
+      surface_signal: 'Đòi hỏi trên giấy tờ?\n(VD: Đòi chứng chỉ Organic)', 
+      core_hypothesis: 'Ưu tiên ẩn đằng sau?\n(VD: Sợ rủi ro bị thu hồi sản phẩm)', 
+      approach_strategy: 'Tài liệu chứng minh (Proof)?\n(VD: Gửi test report lô gần nhất)' 
+    } 
+  },
+  { 
+    key: 'risk', 
+    label: '4. Risk (Rủi ro)', 
+    placeholders: { 
+      surface_signal: 'Sự e ngại thể hiện ra?\n(VD: Ngại mua từ VN)', 
+      core_hypothesis: 'Rủi ro họ gánh chịu?\n(VD: Sợ NCC lừa đảo thanh toán)', 
+      approach_strategy: 'Chiến lược giảm rủi ro?\n(VD: Đề xuất thanh toán L/C)' 
+    } 
+  },
+  { 
+    key: 'concern', 
+    label: '5. Concern (Mối bận tâm)', 
+    placeholders: { 
+      surface_signal: 'Thái độ khi đàm phán?\n(VD: Đọc email nhưng im lặng)', 
+      core_hypothesis: 'Rào cản nội bộ của họ?\n(VD: Sếp chưa duyệt ngân sách)', 
+      approach_strategy: 'Kịch bản Follow-up?\n(VD: Cung cấp Market Insight để nuôi dưỡng)' 
+    } 
+  },
 ];
 
 export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisabled }: B05Props) {
@@ -43,7 +87,7 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
     // Kiểm tra hàng trước đó đã có ít nhất 1 ô Insight (hoặc Giả thuyết) được điền chưa
     const prevRowKey = ROW_CONFIG[index - 1].key;
     const prevRowData = data.discovery_matrix[prevRowKey];
-    return (prevRowData.hypothesis.trim().length > 0 || prevRowData.insight.trim().length > 0);
+    return (prevRowData.surface_signal.trim().length > 0 || prevRowData.approach_strategy.trim().length > 0);
   };
 
   if (!isB03Completed) {
@@ -73,9 +117,9 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
         {/* Tiêu đề Cột */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', padding: '0 16px', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
           <div>Tầng lớp thông tin</div>
-          <div>Dấu hiệu Bề mặt (Surface Signal)</div>
-          <div>Giả thuyết Bản chất (Core Hypothesis)</div>
-          <div>Chiến lược Đào sâu (Approach Strategy)</div>
+          <div>Dấu hiệu Bề mặt<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Surface Signal)</span></div>
+          <div>Giả thuyết Bản chất<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Core Hypothesis)</span></div>
+          <div>Chiến lược Tiếp cận<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Approach Strategy)</span></div>
         </div>
 
         {/* Ma trận */}
@@ -98,55 +142,48 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
             >
               {/* Tiêu đề Hàng */}
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: unlocked ? 'var(--text-primary)' : 'var(--text-muted)', fontWeight: 'bold', fontSize: '0.95rem' }}>
-                  {unlocked ? <Unlock size={14} color="var(--accent-success)"/> : <Lock size={14} />} {row.label}
+                <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {!unlocked && <Lock size={14} color="var(--text-muted)" />}
+                  {unlocked && <Unlock size={14} color="var(--accent-primary)" />}
+                  {row.label}
                 </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: '1.4' }}>
-                  {row.desc}
-                </div>
               </div>
 
-              {/* Cột 1 */}
-              <div>
-                <textarea 
-                  className="form-input" 
-                  placeholder={unlocked ? row.placeholders[0] : ""}
-                  value={rowData.hypothesis || ''}
-                  onChange={(e) => handleFieldChange(row.key, 'hypothesis', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={!unlocked}
-                  rows={4}
-                  style={{ width: '100%', resize: 'none', background: unlocked ? 'rgba(255,255,255,0.02)' : 'transparent', border: 'none' }}
-                />
-              </div>
+              {/* Ô Surface Signal */}
+              <textarea
+                className="form-input"
+                placeholder={row.placeholders.surface_signal}
+                value={rowData.surface_signal}
+                onChange={(e) => handleFieldChange(row.key, 'surface_signal', e.target.value)}
+                onBlur={handleBlur}
+                disabled={!unlocked || isDisabled}
+                rows={4}
+                style={{ resize: 'none', fontSize: '0.85rem' }}
+              />
 
-              {/* Cột 2 */}
-              <div>
-                <textarea 
-                  className="form-input" 
-                  placeholder={unlocked ? row.placeholders[1] : ""}
-                  value={rowData.question || ''}
-                  onChange={(e) => handleFieldChange(row.key, 'question', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={!unlocked}
-                  rows={4}
-                  style={{ width: '100%', resize: 'none', background: unlocked ? 'rgba(255,255,255,0.02)' : 'transparent', border: 'none' }}
-                />
-              </div>
+              {/* Ô Core Hypothesis */}
+              <textarea
+                className="form-input"
+                placeholder={row.placeholders.core_hypothesis}
+                value={rowData.core_hypothesis}
+                onChange={(e) => handleFieldChange(row.key, 'core_hypothesis', e.target.value)}
+                onBlur={handleBlur}
+                disabled={!unlocked || isDisabled}
+                rows={4}
+                style={{ resize: 'none', fontSize: '0.85rem' }}
+              />
 
-              {/* Cột 3 */}
-              <div>
-                <textarea 
-                  className="form-input" 
-                  placeholder={unlocked ? row.placeholders[2] : ""}
-                  value={rowData.insight || ''}
-                  onChange={(e) => handleFieldChange(row.key, 'insight', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={!unlocked}
-                  rows={4}
-                  style={{ width: '100%', resize: 'none', background: unlocked ? 'rgba(59, 130, 246, 0.05)' : 'transparent', border: unlocked ? '1px solid rgba(59, 130, 246, 0.2)' : 'none' }}
-                />
-              </div>
+              {/* Ô Approach Strategy */}
+              <textarea
+                className="form-input"
+                placeholder={row.placeholders.approach_strategy}
+                value={rowData.approach_strategy}
+                onChange={(e) => handleFieldChange(row.key, 'approach_strategy', e.target.value)}
+                onBlur={handleBlur}
+                disabled={!unlocked || isDisabled}
+                rows={4}
+                style={{ resize: 'none', fontSize: '0.85rem' }}
+              />
             </div>
           );
         })}
