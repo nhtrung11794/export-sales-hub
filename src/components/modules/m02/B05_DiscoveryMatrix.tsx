@@ -161,8 +161,9 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
         {/* Tiêu đề Cột */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', padding: '0 16px', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px' }}>
-          <div>Lớp thông tin</div>
+        {/* Tiêu đề Cột */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', padding: '0 16px', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px', textAlign: 'center' }}>
+          <div style={{ textAlign: 'left' }}>Lớp thông tin</div>
           <div>Tín hiệu<br/><span style={{fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Market Signal)</span></div>
           <div>Giả thuyết<br/><span style={{fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Core Hypothesis)</span></div>
           <div>Chiến lược tiếp cận<br/><span style={{fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Outreach Hook)</span></div>
@@ -191,12 +192,12 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
             >
               {/* Tiêu đề Hàng */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '8px' }}>
-                <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {!unlocked ? <Lock size={16} color="var(--text-muted)" /> : <Unlock className="row-icon" size={16} color={hasContent ? "var(--text-primary)" : "var(--accent-primary)"} style={{ transition: 'color 0.3s' }} />}
+                <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {!unlocked ? <Lock size={14} color="var(--text-muted)" /> : <Unlock className="row-icon" size={14} color={hasContent ? "var(--text-primary)" : "var(--accent-primary)"} style={{ transition: 'color 0.3s' }} />}
                   <span>{mainLabel}</span>
                 </div>
                 {subLabel && (
-                  <div style={{ paddingLeft: '24px', fontSize: '1.1rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+                  <div style={{ paddingLeft: '20px', fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
                     ({subLabel}
                   </div>
                 )}
