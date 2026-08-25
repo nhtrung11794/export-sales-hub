@@ -193,10 +193,10 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
         Route-to-market chọn ở B03: <strong style={{ color: 'var(--accent-warning)' }}>{data.route_to_market}</strong>. Dựa vào đó, hãy xác định ICP và vẽ Sơ đồ mua hàng (Buyer Map).
       </p>
 
-      <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
         
         {/* CỘT TRÁI: ICP CANVAS (40%) */}
-        <div style={{ flex: '0 0 35%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Building size={20} color="var(--accent-primary)" /> Chân dung ICP
           </h3>
@@ -228,7 +228,7 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
         </div>
 
         {/* CỘT PHẢI: BUYER MAP DRAG & DROP (60%) */}
-        <div style={{ flex: '1' }}>
+        <div style={{ flex: '2 1 500px', minWidth: 0 }}>
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
             <Users size={20} color="var(--accent-warning)" /> Sơ đồ mua hàng (Buyer Map)
           </h3>
@@ -238,10 +238,10 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
             onDragEnd={handleDragEnd}
             collisionDetection={closestCenter}
           >
-            <div style={{ display: 'flex', gap: '24px' }}>
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
               
               {/* Cột Role Cards */}
-              <div style={{ flex: '0 0 220px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ flex: '1 1 200px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>Kéo thẻ vai trò:</div>
                 {ROLES.map(role => (
                   <DraggableRole key={role.id} role={role} disabled={isDisabled} />
