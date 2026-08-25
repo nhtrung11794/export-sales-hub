@@ -16,14 +16,16 @@ const ROLES = [
   { id: 'role-qa', label: 'QA / QC Manager' },
   { id: 'role-production', label: 'Production Manager' },
   { id: 'role-logistics', label: 'Logistics Manager' },
-  { id: 'role-finance', label: 'Finance / Accountant' }
+  { id: 'role-finance', label: 'Finance / Accountant' },
+  { id: 'role-other', label: 'Others (Khác)' }
 ];
 
-const DEPARTMENTS = [
-  { id: 'dept-management', label: 'Management (Ban GĐ)' },
-  { id: 'dept-sourcing', label: 'Sourcing (Mua hàng)' },
-  { id: 'dept-technical', label: 'Technical (Kỹ thuật/SX)' },
-  { id: 'dept-finance', label: 'Finance (Tài chính)' }
+const BUYING_ROLES = [
+  { id: 'role-decision-maker', label: 'Decision Maker', color: '#fb7185' },
+  { id: 'role-influencer', label: 'Influencer', color: '#22d3ee' },
+  { id: 'role-user', label: 'User', color: '#fde047' },
+  { id: 'role-approver', label: 'Approver', color: '#2dd4bf' },
+  { id: 'role-gate-keeper', label: 'Gate Keeper', color: '#a78bfa' }
 ];
 
 function DraggableRole({ role, disabled }: { role: { id: string; label: string }, disabled: boolean }) {
@@ -62,43 +64,50 @@ function DraggableRole({ role, disabled }: { role: { id: string; label: string }
   );
 }
 
-function DroppableZone({ dept, assignedRoles, onRemove, disabled }: { 
-  dept: { id: string; label: string }; 
+function DroppableZone({ zone, assignedRoles, onRemove, disabled }: { 
+  zone: { id: string; label: string; color: string }; 
   assignedRoles: Array<{ id: string; role: string; department: string }>;
   onRemove: (id: string) => void;
   disabled: boolean;
 }) {
   const { isOver, setNodeRef } = useDroppable({
-    id: dept.id,
+    id: zone.id,
   });
+
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
 
   return (
     <div 
       ref={setNodeRef}
       style={{
-        background: isOver ? 'rgba(59, 130, 246, 0.1)' : 'rgba(0,0,0,0.2)',
-        border: isOver ? '1px dashed var(--accent-primary)' : '1px solid rgba(255,255,255,0.05)',
+        background: isOver ? hexToRgba(zone.color, 0.2) : hexToRgba(zone.color, 0.05),
+        border: `1px solid ${isOver ? zone.color : hexToRgba(zone.color, 0.3)}`,
         borderRadius: '12px',
         padding: '16px',
         minHeight: '120px',
         transition: 'all 0.2s'
       }}
     >
-      <h4 style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '12px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>
-        {dept.label}
+      <h4 style={{ fontSize: '0.9rem', color: zone.color, fontWeight: 'bold', marginBottom: '12px', borderBottom: `1px solid ${hexToRgba(zone.color, 0.2)}`, paddingBottom: '8px' }}>
+        {zone.label}
       </h4>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {assignedRoles.map(r => (
           <div key={r.id} style={{ 
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            background: 'var(--accent-primary)', color: '#fff', 
+            background: zone.color, color: '#0f172a', fontWeight: '500',
             padding: '6px 12px', borderRadius: '6px', fontSize: '0.8rem' 
           }}>
             <span>{r.role}</span>
             {!disabled && (
               <button 
                 onClick={() => onRemove(r.id)} 
-                style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '1.2rem', lineHeight: '1' }}
+                style={{ background: 'none', border: 'none', color: '#0f172a', cursor: 'pointer', fontSize: '1.2rem', lineHeight: '1' }}
               >
                 &times;
               </button>
@@ -106,7 +115,7 @@ function DroppableZone({ dept, assignedRoles, onRemove, disabled }: {
           </div>
         ))}
         {assignedRoles.length === 0 && (
-          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem', fontStyle: 'italic', textAlign: 'center', marginTop: '16px' }}>
+          <div style={{ color: hexToRgba(zone.color, 0.7), fontSize: '0.8rem', fontStyle: 'italic', textAlign: 'center', marginTop: '16px' }}>
             Kéo thả vai trò vào đây
           </div>
         )}
@@ -230,13 +239,13 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
                 ))}
               </div>
 
-              {/* Lưới Departments */}
+              {/* Lưới Buying Roles */}
               <div style={{ flex: '1', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                {DEPARTMENTS.map(dept => (
+                {BUYING_ROLES.map(zone => (
                   <DroppableZone 
-                    key={dept.id} 
-                    dept={dept} 
-                    assignedRoles={data.buyer_map_roles.filter(r => r.department === dept.id)} 
+                    key={zone.id} 
+                    zone={zone} 
+                    assignedRoles={data.buyer_map_roles.filter(r => r.department === zone.id)} 
                     onRemove={handleRemoveRole}
                     disabled={isDisabled}
                   />
