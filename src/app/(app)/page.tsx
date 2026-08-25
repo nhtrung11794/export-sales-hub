@@ -100,7 +100,7 @@ export default function Dashboard() {
     { 
       id: 'm01',
       storeId: 'M01' as const,
-      name: 'Module 01: Mindset nền tảng', 
+      name: 'Module 01: Lộ trình & Năng lực lõi', 
       desc: 'Dịch chuyển tư duy và đánh giá năng lực B2B Sales', 
       totalLessons: 2,
       status: hasData('M01') ? 'completed' : 'active' 
@@ -108,7 +108,7 @@ export default function Dashboard() {
     { 
       id: 'm02',
       storeId: 'M02' as const,
-      name: 'Module 02: Thị trường & Khách hàng', 
+      name: 'Module 02: Thị trường & Khách hàng xuất khẩu', 
       desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
       totalLessons: 3,
       status: 'active'
