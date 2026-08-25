@@ -7,6 +7,7 @@ export interface ModuleSubmission {
   id?: string;
   module_id: ModuleId;
   form_data: any;
+  status?: string;
   is_locked: boolean;
   updated_at?: string;
 }
@@ -46,8 +47,11 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
       const submissionsMap: Record<string, ModuleSubmission> = {};
       
       if (data) {
-        data.forEach((sub: ModuleSubmission) => {
-          submissionsMap[sub.module_id] = sub;
+        data.forEach((sub: any) => {
+          submissionsMap[sub.module_id] = {
+            ...sub,
+            is_locked: sub.status === 'submitted'
+          };
         });
       }
 
@@ -89,7 +93,7 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
       const supabase = createClient();
       const { error } = await supabase
         .from('module_submissions')
-        .update({ is_locked: true, updated_at: new Date().toISOString() })
+        .update({ status: 'submitted', updated_at: new Date().toISOString() })
         .eq('user_id', userId)
         .eq('module_id', moduleId);
 
