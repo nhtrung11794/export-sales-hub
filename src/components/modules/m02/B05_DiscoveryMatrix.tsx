@@ -21,45 +21,45 @@ const ROW_CONFIG: {
     key: 'context', 
     label: '1. Context (Bối cảnh)', 
     placeholders: { 
-      surface_signal: 'Từ Website, product range, buyer type, channel...\n(VD: Hãng bán lẻ lớn đang mở rộng)', 
-      core_hypothesis: 'Account này đang ở loại hình kinh doanh nào?\n(VD: Cần đa dạng hóa chuỗi cung ứng)', 
-      approach_strategy: 'Cách mồi câu (Hook) dựa trên bối cảnh?\n(VD: Đề cập đến xu hướng thị trường hiện tại)' 
+      surface_signal: 'Đổi nhân sự, đứt gãy cung ứng, ra mắt sản phẩm mới.', 
+      core_hypothesis: 'Áp lực tìm NCC dự phòng, đa dạng hóa rủi ro.', 
+      approach_strategy: 'Cung cấp Insight ngành, báo cáo mùa vụ/nguồn cung.' 
     } 
   },
   { 
     key: 'need', 
-    label: '2. Need (Mục tiêu)', 
+    label: '2. Need (Nhu cầu thực)', 
     placeholders: { 
-      surface_signal: 'Từ Segment logic, market scan, ICP...\n(VD: Tín hiệu mở rộng thị trường ngách)', 
-      core_hypothesis: 'Loại buyer này thường cần đạt điều gì?\n(VD: Cần nguồn hàng giá rẻ để cạnh tranh)', 
-      approach_strategy: 'Cách đặt vấn đề / Góc tiếp cận?\n(VD: Pitching bài toán tối ưu chi phí)' 
+      surface_signal: 'Đăng RFQ, chiến dịch quảng cáo, xu hướng tiêu dùng.', 
+      core_hypothesis: 'Tối ưu biên lợi nhuận, tìm nguyên liệu phân khúc ngách.', 
+      approach_strategy: 'Case Study tối ưu chi phí, gợi ý giải pháp nguyên liệu.' 
     } 
   },
   { 
     key: 'pain', 
-    label: '3. Pain (Vấn đề/Kích hoạt)', 
+    label: '3. Pain (Nỗi đau)', 
     placeholders: { 
-      surface_signal: 'Từ Market issue, supplier pattern, seasonality...\n(VD: Kẹt cước tàu biển, thiếu hụt mùa cao điểm)', 
-      core_hypothesis: 'Buyer type này thường vướng gì?\n(VD: Thường bị trễ tiến độ giao hàng)', 
-      approach_strategy: 'Giải pháp giải quyết nỗi đau?\n(VD: Trình bày quy trình quản trị ETA nghiêm ngặt)' 
+      surface_signal: 'Review tiêu cực, tin tức thu hồi, lợi nhuận sụt giảm.', 
+      core_hypothesis: 'NCC cũ giao trễ, chất lượng kém, rủi ro phạt hợp đồng.', 
+      approach_strategy: 'Pitching quy trình kiểm soát QA/QC, gửi Test Report mẫu.' 
     } 
   },
   { 
     key: 'criteria', 
     label: '4. Criteria (Tiêu chí)', 
     placeholders: { 
-      surface_signal: 'Từ Buyer type, channel, product positioning...\n(VD: Định vị sản phẩm Eco-friendly)', 
-      core_hypothesis: 'Họ có thể đánh giá supplier theo gì?\n(VD: Yêu cầu chứng chỉ và truy xuất nguồn gốc khắt khe)', 
-      approach_strategy: 'Tài liệu chứng minh (Proof) cần gửi?\n(VD: Đính kèm ngay hồ sơ năng lực & chứng chỉ)' 
+      surface_signal: 'Logo chứng nhận (BRC, Halal...), luật nhập khẩu nội địa.', 
+      core_hypothesis: 'Bảo vệ uy tín thương hiệu, đáp ứng tiêu chuẩn Audit.', 
+      approach_strategy: 'Gửi hồ sơ năng lực nhà máy, bản sao chứng chỉ quốc tế.' 
     } 
   },
   { 
     key: 'risk_concern', 
-    label: '5. Risk/Concern (Rủi ro/Rào cản)', 
+    label: '5. Risk (Rủi ro)', 
     placeholders: { 
-      surface_signal: 'Từ B2B export logic, compliance, switching risk...\n(VD: Rủi ro khi đổi supplier mới sang Châu Á)', 
-      core_hypothesis: 'Điều gì có thể làm họ ngại thử supplier mới?\n(VD: Sợ rủi ro chất lượng không đồng đều)', 
-      approach_strategy: 'Chiến lược giảm rủi ro?\n(VD: Đề xuất gửi mẫu thử miễn phí, test lô nhỏ)' 
+      surface_signal: 'Im lặng, chần chừ, yêu cầu thanh toán khắt khe.', 
+      core_hypothesis: 'Sợ lừa đảo chứng từ, kẹt dòng tiền, rủi ro hải quan.', 
+      approach_strategy: 'Đề xuất thanh toán L/C, cung cấp Vận đơn (B/L) tham chiếu.' 
     } 
   },
 ];
@@ -116,10 +116,10 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
         
         {/* Tiêu đề Cột */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', padding: '0 16px', color: 'var(--text-secondary)', fontSize: '0.85rem', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
-          <div>Tầng lớp thông tin</div>
-          <div>Tín hiệu / Nguồn dữ liệu<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Market Signal)</span></div>
-          <div>Giả thuyết<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Hypothesis)</span></div>
-          <div>Chiến lược tiếp cận<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Outreach Strategy)</span></div>
+          <div>Lớp thông tin</div>
+          <div>Cột 1: Tín hiệu<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Market Signal)</span></div>
+          <div>Cột 2: Giả thuyết<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Core Hypothesis)</span></div>
+          <div>Cột 3: Chiến lược tiếp cận<br/><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>(Outreach Hook)</span></div>
         </div>
 
         {/* Ma trận */}
