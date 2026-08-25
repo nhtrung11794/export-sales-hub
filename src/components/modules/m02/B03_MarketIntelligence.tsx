@@ -76,11 +76,11 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   <Search size={18} color="var(--accent-primary)" /> Hướng dẫn: Quét 5 lớp thị trường
                 </h4>
                 <ul style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.8', paddingLeft: '20px' }}>
-                  <li><strong>Lớp 1 (Vĩ mô):</strong> Thuế, luật lệ, rào cản xuất khẩu, chính sách.</li>
-                  <li><strong>Lớp 2 (Nhu cầu):</strong> Quy mô thị trường, xu hướng tăng/giảm, biến động theo mùa.</li>
-                  <li><strong>Lớp 3 (Nguồn cung):</strong> Đối thủ cạnh tranh chính, nguồn thay thế.</li>
-                  <li><strong>Lớp 4 (Giá cả):</strong> Mức giá tham chiếu, biến động giá.</li>
-                  <li><strong>Lớp 5 (Hành vi):</strong> Thói quen mua hàng, Route-to-market phổ biến.</li>
+                  <li><strong>Lớp 1 (Cung):</strong> Tổng quan nguồn cung, các quốc gia/khu vực xuất khẩu chính.</li>
+                  <li><strong>Lớp 2 (Cầu):</strong> Nhu cầu tiêu thụ, quy mô và xu hướng tăng/giảm của thị trường.</li>
+                  <li><strong>Lớp 3 (Giá):</strong> Mức giá tham chiếu, biến động giá nguyên vật liệu và thành phẩm.</li>
+                  <li><strong>Lớp 4 (Đối thủ):</strong> Đối thủ cạnh tranh trực tiếp, năng lực và lợi thế của họ.</li>
+                  <li><strong>Lớp 5 (Pháp lý):</strong> Thuế, luật lệ, rào cản kỹ thuật, chính sách xuất nhập khẩu.</li>
                 </ul>
                 <p style={{ marginTop: '16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   * Lưu ý: Bạn có thể sử dụng Trợ lý AI (Gemini Spark) ở góc dưới màn hình để cào dữ liệu nhanh cho thị trường bạn quan tâm.
@@ -97,9 +97,9 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   Không chỉ nhìn từ góc độ người bán, hãy đặt mình vào vị trí của Buyer:
                 </p>
                 <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
-                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0', marginBottom: '8px' }}>- Họ đang gặp áp lực gì từ thị trường nội địa của họ?</p>
-                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0', marginBottom: '8px' }}>- Nguồn cung hiện tại của họ có vấn đề gì (Giá cao, rủi ro đứt gãy)?</p>
-                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0' }}>- Tại sao họ lại muốn đổi nhà cung cấp ngay lúc này?</p>
+                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0', marginBottom: '8px' }}>- <strong>Tâm lý cốt lõi:</strong> Họ đang gặp áp lực gì lớn nhất tại thị trường nội địa (Doanh thu, cạnh tranh, chi phí)?</p>
+                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0', marginBottom: '8px' }}>- <strong>Ưu tiên lựa chọn:</strong> Tiêu chí hàng đầu khi chọn nhà cung cấp mới là gì (Chất lượng, giá, tốc độ, tính ổn định)?</p>
+                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0' }}>- <strong>Rủi ro đứt gãy:</strong> Nguồn cung hiện tại của họ đang vướng mắc điểm yếu chí mạng nào mà bạn có thể lấp đầy?</p>
                 </div>
               </div>
             )}
