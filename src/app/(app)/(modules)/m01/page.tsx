@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import ModuleLayout from '@/components/layout/ModuleLayout';
 import M1_CompetencyForm from '@/components/modules/m01/M1_CompetencyForm';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
 import { Copy, Check, Play, BookOpen, X } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
 export default function M01Page() {
+  const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

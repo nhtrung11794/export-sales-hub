@@ -111,7 +111,7 @@ export default function Dashboard() {
       name: 'Module 02: Thị trường & Khách hàng', 
       desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
       totalLessons: 3,
-      status: 'locked'
+      status: 'active'
     },
     { 
       id: 'm03',
