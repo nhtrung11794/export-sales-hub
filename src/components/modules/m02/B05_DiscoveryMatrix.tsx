@@ -105,6 +105,52 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
 
   return (
     <section className="glass-panel" style={{ padding: '32px' }}>
+      <style>{`
+        .discovery-row {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          background: rgba(15, 23, 42, 0.4);
+          border: 1px solid rgba(255,255,255,0.05);
+          padding: 16px;
+          border-radius: 12px;
+          position: relative;
+        }
+        .discovery-row.locked {
+          opacity: 0.35;
+          background: rgba(0, 0, 0, 0.2);
+          border: 1px dashed rgba(255,255,255,0.05);
+          filter: grayscale(100%);
+          pointer-events: none;
+        }
+        .discovery-row.active-empty:not(:focus-within) {
+          border-color: rgba(59, 130, 246, 0.4);
+          box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
+        }
+        .discovery-row:focus-within {
+          background: rgba(15, 23, 42, 0.8);
+          border-color: var(--accent-primary);
+          box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+          transform: translateY(-2px);
+          z-index: 10;
+        }
+        .discovery-textarea {
+          background: rgba(0,0,0,0.2) !important;
+          border: 1px solid rgba(255,255,255,0.05) !important;
+          color: var(--text-primary) !important;
+          transition: all 0.2s ease;
+        }
+        .discovery-textarea::placeholder {
+          color: rgba(255,255,255,0.4) !important;
+        }
+        .discovery-textarea:hover {
+          border-color: rgba(255,255,255,0.15) !important;
+          background: rgba(0,0,0,0.3) !important;
+        }
+        .discovery-textarea:focus {
+          border-color: var(--accent-primary) !important;
+          background: rgba(15, 23, 42, 0.6) !important;
+          box-shadow: 0 0 0 1px var(--accent-primary);
+        }
+      `}</style>
       <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
         Bài 05: Discovery Insight Note (Góc tiếp cận)
       </h2>
@@ -126,32 +172,32 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
         {ROW_CONFIG.map((row, index) => {
           const unlocked = isRowUnlocked(index);
           const rowData = data.discovery_matrix[row.key];
+          
+          const hasContent = (rowData.surface_signal || '').trim().length > 0 || 
+                             (rowData.core_hypothesis || '').trim().length > 0 || 
+                             (rowData.approach_strategy || '').trim().length > 0;
+          
+          const prevRowKey = index > 0 ? ROW_CONFIG[index-1].key : null;
+          const isPrevRowFilled = prevRowKey ? ((data.discovery_matrix[prevRowKey].surface_signal || '').trim().length > 0 || (data.discovery_matrix[prevRowKey].approach_strategy || '').trim().length > 0) : true;
+          const isActiveEmpty = unlocked && !hasContent && isPrevRowFilled;
 
           return (
             <div 
               key={row.key}
-              style={{ 
-                display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', 
-                background: unlocked ? 'rgba(15, 23, 42, 0.4)' : 'rgba(0, 0, 0, 0.2)',
-                border: unlocked ? '1px solid rgba(255,255,255,0.05)' : '1px dashed rgba(255,255,255,0.05)',
-                padding: '16px', 
-                borderRadius: '12px',
-                opacity: unlocked ? 1 : 0.4,
-                transition: 'all 0.3s ease'
-              }}
+              className={`discovery-row ${!unlocked ? 'locked' : ''} ${isActiveEmpty ? 'active-empty' : ''}`}
+              style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px' }}
             >
               {/* Tiêu đề Hàng */}
               <div>
                 <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {!unlocked && <Lock size={14} color="var(--text-muted)" />}
-                  {unlocked && <Unlock size={14} color="var(--accent-primary)" />}
+                  {!unlocked ? <Lock size={14} color="var(--text-muted)" /> : <Unlock className="row-icon" size={14} color={hasContent ? "var(--text-primary)" : "var(--accent-primary)"} style={{ transition: 'color 0.3s' }} />}
                   {row.label}
                 </div>
               </div>
 
               {/* Ô Surface Signal */}
               <textarea
-                className="form-input"
+                className="form-input discovery-textarea"
                 placeholder={row.placeholders.surface_signal}
                 value={rowData.surface_signal || ''}
                 onChange={(e) => handleFieldChange(row.key, 'surface_signal', e.target.value)}
@@ -163,7 +209,7 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
 
               {/* Ô Core Hypothesis */}
               <textarea
-                className="form-input"
+                className="form-input discovery-textarea"
                 placeholder={row.placeholders.core_hypothesis}
                 value={rowData.core_hypothesis || ''}
                 onChange={(e) => handleFieldChange(row.key, 'core_hypothesis', e.target.value)}
@@ -175,7 +221,7 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
 
               {/* Ô Approach Strategy */}
               <textarea
-                className="form-input"
+                className="form-input discovery-textarea"
                 placeholder={row.placeholders.approach_strategy}
                 value={rowData.approach_strategy || ''}
                 onChange={(e) => handleFieldChange(row.key, 'approach_strategy', e.target.value)}
