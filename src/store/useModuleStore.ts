@@ -8,7 +8,7 @@ export interface ModuleSubmission {
   module_id: ModuleId;
   form_data: any;
   is_locked: boolean;
-  last_saved_at: string;
+  updated_at?: string;
 }
 
 interface ModuleStore {
@@ -69,7 +69,7 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
         module_id: moduleId,
         form_data: {},
         is_locked: false,
-        last_saved_at: new Date().toISOString()
+        updated_at: new Date().toISOString()
       };
       
       return {
@@ -89,7 +89,7 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
       const supabase = createClient();
       const { error } = await supabase
         .from('module_submissions')
-        .update({ is_locked: true, last_saved_at: new Date().toISOString() })
+        .update({ is_locked: true, updated_at: new Date().toISOString() })
         .eq('user_id', userId)
         .eq('module_id', moduleId);
 
