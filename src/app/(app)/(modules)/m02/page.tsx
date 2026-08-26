@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import ModuleLayout from '@/components/layout/ModuleLayout';
 import M02_CombinedForm from '@/components/modules/m02/M02_CombinedForm';
 import GeminiSparkCard from '@/components/ai-tutors/GeminiSparkCard';
+import GPTResearchCard from '@/components/ai-tutors/GPTResearchCard';
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X } from 'lucide-react';
@@ -211,7 +212,12 @@ export default function M02Page() {
         moduleTitle="Module 02: Thị trường & Khách hàng (ICP)"
         learningContent={learningContent}
         formContent={<M02_CombinedForm />}
-        aiTutorContent={<GeminiSparkCard />}
+        aiTutorContent={
+          <>
+            <GeminiSparkCard />
+            <GPTResearchCard />
+          </>
+        }
         previewUrl={previewUrl}
         onClosePreview={() => setPreviewUrl(null)}
         headerActionNode={
