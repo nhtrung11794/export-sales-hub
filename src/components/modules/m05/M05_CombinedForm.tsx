@@ -17,8 +17,19 @@ export interface ExecutionMilestone {
   title: string;
   owner: string;
   due_date: string;
+  lead_time_days?: number;
+  is_no_return?: boolean;
   status: ExecutionStatus;
   note: string;
+}
+
+export interface JBPInitiative {
+  id: string;
+  title: string;
+  type: 'upsell' | 'cross_sell' | 'repeat' | 'service';
+  kpi: string;
+  dual_commit: string;
+  deadline: string;
 }
 
 export interface M05FormData {
@@ -38,10 +49,14 @@ export interface M05FormData {
     evidence_received: boolean;
     containment_action: string;
     root_cause: string;
+    five_why?: string[];
     preventive_action: string;
     bad_news_email: string;
   };
   b15_growth: {
+    annual_demand_volume?: number;
+    our_supply_volume?: number;
+    volume_unit?: string;
     current_wallet_share: number;
     growth_potential: number;
     goals: {
@@ -51,6 +66,7 @@ export interface M05FormData {
     };
     growth_objective: string;
     joint_initiatives: string;
+    initiatives?: JBPInitiative[];
     value_exchange: string;
     relationship_plan: string;
     next_review_date: string;
@@ -71,10 +87,10 @@ export const initialM05Data: M05FormData = {
       document_owner_assigned: false,
     },
     milestones: [
-      { id: 'ms-production', title: 'Chốt lịch sản xuất & QA', owner: 'Production / QA', due_date: '', status: 'todo', note: '' },
-      { id: 'ms-documents', title: 'Hoàn thiện bộ chứng từ', owner: 'Export Docs', due_date: '', status: 'todo', note: '' },
-      { id: 'ms-booking', title: 'Booking và xác nhận ETD', owner: 'Logistics', due_date: '', status: 'todo', note: '' },
-      { id: 'ms-delivery', title: 'Theo dõi ETA & POD', owner: 'Sales / CS', due_date: '', status: 'todo', note: '' },
+      { id: 'ms-production', title: 'Chốt lịch sản xuất & QA/QC', owner: 'Production / QA', due_date: '', lead_time_days: 14, is_no_return: false, status: 'todo', note: 'Kiểm nghiệm mẫu test SGS trước khi đóng cont' },
+      { id: 'ms-booking', title: 'Booking tàu & Chốt Cut-off CY', owner: 'Logistics Team', due_date: '', lead_time_days: 5, is_no_return: true, status: 'todo', note: 'Điểm không thể quay đầu - hạ bãi và thanh lý hải quan' },
+      { id: 'ms-documents', title: 'Hoàn thiện bộ chứng từ xuất', owner: 'Export Docs', due_date: '', lead_time_days: 3, is_no_return: false, status: 'todo', note: 'Phát hành BL, C/O Form E/EUR.1, Phytosanitary' },
+      { id: 'ms-delivery', title: 'Theo dõi ETA cảng đến & POD', owner: 'Sales / CS', due_date: '', lead_time_days: 20, is_no_return: false, status: 'todo', note: 'Cập nhật định kỳ cho Buyer và nhận xác nhận nhận hàng' },
     ],
   },
   b14_recovery: {
@@ -83,15 +99,24 @@ export const initialM05Data: M05FormData = {
     evidence_received: false,
     containment_action: '',
     root_cause: '',
+    five_why: ['', '', '', '', ''],
     preventive_action: '',
     bad_news_email: '',
   },
   b15_growth: {
+    annual_demand_volume: 100,
+    our_supply_volume: 25,
+    volume_unit: 'Cont 40HC',
     current_wallet_share: 25,
     growth_potential: 50,
-    goals: { upsell: false, cross_sell: false, repeat_order: false },
+    goals: { upsell: true, cross_sell: false, repeat_order: true },
     growth_objective: '',
     joint_initiatives: '',
+    initiatives: [
+      { id: 'init-1', title: 'Cam kết giữ slot tàu mùa cao điểm', type: 'repeat', kpi: 'OTIF >= 98%', dual_commit: 'Buyer cam kết forecast trước 60 ngày - Nhà máy giữ giá cố định', deadline: '2026-Q3' },
+      { id: 'init-2', title: 'Thử nghiệm mã hàng giá trị gia tăng', type: 'cross_sell', kpi: '1 Container thử nghiệm', dual_commit: 'Hỗ trợ 50% chi phí kiểm định mẫu thị trường nội địa', deadline: '2026-Q4' },
+      { id: 'init-3', title: 'Tối ưu bao bì giảm 5% TCO', type: 'upsell', kpi: 'Tiết kiệm $350/cont', dual_commit: 'Hai bên cùng điều chỉnh pallet size để tăng tải trọng đóng cont', deadline: '2026-Q4' },
+    ],
     value_exchange: '',
     relationship_plan: '',
     next_review_date: '',
@@ -146,6 +171,7 @@ export default function M05_CombinedForm() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isOnline, setIsOnline] = useState(() => typeof navigator === 'undefined' ? true : navigator.onLine);
   const [debugError, setDebugError] = useState<string | null>(null);
+  const [devBypass, setDevBypass] = useState(false);
 
   const isLocked = submissions.M05?.is_locked || false;
   const isDisabled = !isOnline || isLocked;
@@ -225,14 +251,23 @@ export default function M05_CombinedForm() {
               ...(fetched.b13_execution?.sla_checklist || {}),
             },
             milestones: fetched.b13_execution?.milestones?.length
-              ? fetched.b13_execution.milestones
+              ? fetched.b13_execution.milestones.map((m, idx) => ({
+                  lead_time_days: 7,
+                  is_no_return: idx === 1,
+                  ...m,
+                }))
               : initialM05Data.b13_execution.milestones,
           },
-          b14_recovery: { ...initialM05Data.b14_recovery, ...(fetched.b14_recovery || {}) },
+          b14_recovery: {
+            ...initialM05Data.b14_recovery,
+            ...(fetched.b14_recovery || {}),
+            five_why: fetched.b14_recovery?.five_why || initialM05Data.b14_recovery.five_why,
+          },
           b15_growth: {
             ...initialM05Data.b15_growth,
             ...(fetched.b15_growth || {}),
             goals: { ...initialM05Data.b15_growth.goals, ...(fetched.b15_growth?.goals || {}) },
+            initiatives: fetched.b15_growth?.initiatives || initialM05Data.b15_growth.initiatives,
           },
           b16_capstone: { ...initialM05Data.b16_capstone, ...(fetched.b16_capstone || {}) },
         };
@@ -277,6 +312,11 @@ export default function M05_CombinedForm() {
   const b15Complete = isB15Complete(data);
   const marketContext = submissions.M02?.form_data || {};
 
+  const effectiveIsM04Ready = devBypass || isM04Ready;
+  const effectiveB13Complete = devBypass || b13Complete;
+  const effectiveB14Complete = devBypass || b14Complete;
+  const effectiveB15Complete = devBypass || b15Complete;
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <div style={{
@@ -290,6 +330,24 @@ export default function M05_CombinedForm() {
             {isOnline ? 'Online' : 'Mất kết nối'}
           </span>
           {isLocked && <span style={{ color: '#f59e0b', fontWeight: 700 }}>🔒 Đã nộp & khóa sửa</span>}
+          <button
+            type="button"
+            onClick={() => setDevBypass(!devBypass)}
+            style={{
+              padding: '4px 10px',
+              borderRadius: 6,
+              fontSize: '.75rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              border: devBypass ? '1px solid #10b981' : '1px solid rgba(255,255,255,.15)',
+              background: devBypass ? 'rgba(16,185,129,.15)' : 'rgba(255,255,255,.05)',
+              color: devBypass ? '#10b981' : 'var(--text-muted)',
+              transition: 'all .2s ease',
+            }}
+            title="Bật để mở khóa toàn bộ các bài học phục vụ kiểm thử và xem giao diện"
+          >
+            {devBypass ? '🔓 Dev Bypass: Đang Mở Khóa Tất Cả' : '🔒 Khóa Tuần Tự (Click để Test)'}
+          </button>
         </div>
         <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           {status === 'saving' && <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--accent-primary)' }}><CloudUpload size={16} /> Đang lưu...</span>}
@@ -305,14 +363,14 @@ export default function M05_CombinedForm() {
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={isM04Ready}
+        isPrerequisiteComplete={effectiveIsM04Ready}
       />
       <B14_IssueRecovery
         data={data}
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={b13Complete}
+        isPrerequisiteComplete={effectiveB13Complete}
         targetMarket={marketContext.target_market || ''}
         legalContext={marketContext.strategic_reason || ''}
       />
@@ -321,14 +379,14 @@ export default function M05_CombinedForm() {
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={b14Complete}
+        isPrerequisiteComplete={effectiveB14Complete}
       />
       <B16_CapstoneHub
         data={data}
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={b15Complete}
+        isPrerequisiteComplete={effectiveB15Complete}
         submissions={submissions}
       />
     </div>
