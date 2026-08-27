@@ -115,32 +115,40 @@ export default function Dashboard() {
       storeId: 'M02' as const,
       name: 'Module 02: Market & Customer Understanding',
       desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
-      totalLessons: 3,
-      status: 'active'
+      totalLessons: 4,
+      status: hasData('M02') ? 'completed' : 'active'
     },
     { 
       id: 'm03',
       storeId: 'M03' as const,
       name: 'Module 03: Prospecting & Opportunity Management',
-      desc: 'Quản trị cơ hội, sàng lọc lead và vòng đời sales pipeline', 
-      totalLessons: 3,
-      status: isAdmin ? 'active' : 'locked'
+      desc: 'Quản trị cơ hội, sàng lọc lead F-N-A-C-M và phễu pipeline', 
+      totalLessons: 2,
+      status: hasData('M03') ? 'completed' : 'active'
     },
     { 
       id: 'm04',
       storeId: 'M04' as const,
       name: 'Module 04: Proposal, Negotiation & Safe Closing',
-      desc: 'Kỹ năng đàm phán, cán cân thương lượng và chốt deal', 
+      desc: 'Yêu cầu P-B-T-P-C, chào giá TCO, Give-Take Bank và chốt deal', 
       totalLessons: 4,
-      status: isAdmin ? 'active' : 'locked' 
+      status: hasData('M04') ? 'completed' : 'active' 
     },
     { 
       id: 'm05',
       storeId: 'M05' as const,
       name: 'Module 05: Execution, Recovery & Account Growth',
-      desc: 'Báo cáo thực chiến, kế hoạch 90 ngày và quản trị khủng hoảng', 
+      desc: 'Internal SLA, Kanban điều phối, 5-Why CAPA và JBP tăng trưởng', 
       totalLessons: 3,
-      status: isAdmin ? 'active' : 'locked' 
+      status: hasData('M05') ? 'completed' : 'active' 
+    },
+    { 
+      id: 'capstone',
+      storeId: 'CAPSTONE' as const,
+      name: 'Final Capstone: Đóng Gói Bộ 03 Playbook',
+      desc: 'Rà soát 15 buổi M01–M05, tự phản biện deal và xuất bản 3 Playbook PDF', 
+      totalLessons: 1,
+      status: hasData('CAPSTONE') ? 'completed' : 'active' 
     },
   ];
 
