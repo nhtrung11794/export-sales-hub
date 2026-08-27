@@ -12,6 +12,7 @@ import {
   Users, 
   GitMerge, 
   Rocket,
+  Award,
   BookOpen,
   Sparkles,
   LogOut,
@@ -30,9 +31,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { fetchAllSubmissions, isLoading: isStoreLoading, submissions } = useModuleStore();
 
   const isUnlocked = (moduleId: string) => {
-    if (isAdmin) return true;
-    if (moduleId === 'DASHBOARD' || moduleId === 'M01' || moduleId === 'M02') return true;
-    return false; // M03, M04, M05 tạm khóa với học viên
+    return true; // Cho phép truy cập toàn bộ module và Capstone Hub
   };
 
   useEffect(() => {
@@ -65,11 +64,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             setIsAdmin(true);
           } else {
             setIsAdmin(false);
-            // Nếu là học viên mà truy cập trực tiếp URL của module bị khóa -> Đẩy về trang chủ
-            if (pathname === '/m03' || pathname === '/m04' || pathname === '/m05' || pathname === '/capstone') {
-              alert('Module này đang được hoàn thiện và sẽ sớm mở trong các buổi học tiếp theo!');
-              router.push('/');
-            }
           }
         }
 
@@ -93,6 +87,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { id: 'M03', name: 'Module 03: Prospecting & Opportunity Management', path: '/m03', icon: <Users size={20} /> },
     { id: 'M04', name: 'Module 04: Proposal, Negotiation & Safe Closing', path: '/m04', icon: <GitMerge size={20} /> },
     { id: 'M05', name: 'Module 05: Execution, Recovery & Account Growth', path: '/m05', icon: <Rocket size={20} /> },
+    { id: 'CAPSTONE', name: 'Final Capstone: Đóng gói Playbook', path: '/capstone', icon: <Award size={20} /> },
   ];
   
   if (isAdmin) {

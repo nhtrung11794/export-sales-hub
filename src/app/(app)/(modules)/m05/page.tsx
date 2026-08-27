@@ -12,7 +12,6 @@ const LESSONS = [
   { id: 13, title: 'Handover & Execution', description: 'Ký duyệt Internal SLA và điều phối milestone theo Kanban.', pdf: 'M05_Bai13.pdf', video: 'M05_Video13.mp4' },
   { id: 14, title: 'Issue Recovery & CAPA', description: 'Xử lý sự cố bằng bằng chứng, CAPA và Bad News Email.', pdf: 'M05_Bai14.pdf', video: 'M05_Video14.mp4' },
   { id: 15, title: 'Account Growth & JBP', description: 'Đánh giá Share of Wallet và xây kế hoạch tăng trưởng chung.', pdf: 'M05_Bai15.pdf', video: 'M05_Video15.mp4' },
-  { id: 16, title: 'Final Capstone', description: 'Tự phản biện và kết xuất ba Playbook vận hành M01–M05.', pdf: 'M05_Capstone_Guide.pdf', video: 'M05_VideoCapstone.mp4' },
 ];
 
 export default function M05Page() {
@@ -67,7 +66,7 @@ export default function M05Page() {
     }
     setIsSubmitting(true);
     const result = await submitModule('M05', userId);
-    window.alert(result.success ? 'Đã nộp Module 05 thành công. Capstone vẫn có thể được xem và xuất Playbook.' : `Có lỗi xảy ra: ${result.error}`);
+    window.alert(result.success ? 'Đã nộp Module 05 thành công! Bạn có thể chuyển sang khoang Final Capstone trên Menu để đóng gói Playbook xuất khẩu.' : `Có lỗi xảy ra: ${result.error}`);
     setIsSubmitting(false);
   };
 

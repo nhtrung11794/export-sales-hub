@@ -8,7 +8,6 @@ import { useModuleStore } from '@/store/useModuleStore';
 import B13_HandoverExecution from './B13_HandoverExecution';
 import B14_IssueRecovery from './B14_IssueRecovery';
 import B15_AccountGrowth from './B15_AccountGrowth';
-import B16_CapstoneHub from './B16_CapstoneHub';
 
 export type ExecutionStatus = 'todo' | 'production' | 'logistics' | 'delivered';
 
@@ -368,14 +367,6 @@ export default function M05_CombinedForm() {
         handleBlur={handleBlur}
         isDisabled={isDisabled}
         isPrerequisiteComplete={true}
-      />
-      <B16_CapstoneHub
-        data={data}
-        setData={setData}
-        handleBlur={handleBlur}
-        isDisabled={isDisabled}
-        isPrerequisiteComplete={true}
-        submissions={submissions}
       />
     </div>
   );
