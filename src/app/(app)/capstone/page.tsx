@@ -23,10 +23,10 @@ export default function CapstonePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const isLocked = submissions.CAPSTONE?.is_locked || false;
+  const isLocked = submissions?.CAPSTONE?.is_locked || false;
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null));
+    supabase.auth.getUser().then(({ data }) => setUserId(data?.user?.id || null));
   }, [supabase]);
 
   const handleOpenDocument = async (fileName: string) => {
@@ -71,19 +71,19 @@ export default function CapstonePage() {
     setIsSubmitting(false);
   };
 
-  const m02 = submissions.M02?.form_data || {};
-  const m04 = submissions.M04?.form_data || {};
-  const m05 = submissions.M05?.form_data || {};
+  const m02 = submissions?.M02?.form_data || {};
+  const m04 = submissions?.M04?.form_data || {};
+  const m05 = submissions?.M05?.form_data || {};
 
   const prompts = [
     {
       id: 'capstone-defense',
       title: 'Hội đồng Giám khảo phản biện Deal (Capstone Defense)',
       text: `Đóng vai Ban Giám khảo Hội đồng Chuyên gia Xuất khẩu B2B. Tôi đã hoàn thành toàn bộ chuỗi 15 buổi học:
-- Thị trường: ${m02.target_market || '[chưa chọn]'}
-- Chân dung Buyer & Nỗi đau: ${m02.icp_industry || ''} / ${m02.icp_size || ''}
-- Phương thức Thanh toán: ${m04.b12_closing?.selected_payment_method || '[chưa chọn]'}
-- Tăng trưởng JBP: Share of Wallet ${m05.b15_growth?.current_wallet_share ?? 0}%
+- Thị trường: ${m02?.target_market || '[chưa chọn]'}
+- Chân dung Buyer & Nỗi đau: ${m02?.icp_industry || ''} / ${m02?.icp_size || ''}
+- Phương thức Thanh toán: ${m04?.b12_closing?.selected_payment_method || '[chưa chọn]'}
+- Tăng trưởng JBP: Share of Wallet ${m05?.b15_growth?.current_wallet_share ?? 0}%
 
 Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn bộ chuỗi giá trị và đề xuất cách gia cố rủi ro trước khi đưa vào vận hành thực tế.`,
     },
@@ -146,7 +146,7 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
   return (
     <div style={{ padding: 24, minHeight: '100vh', background: 'var(--bg-primary)' }}>
       <header style={{ marginBottom: 28 }}>
-        <div style={{ color: 'var(--accent-primary)', fontSize: '.76rem', fontWeight: 900, letterSpacing: '.12em', marginBottom: 7 }}>ENTERPRISE ASSET ENGINE</div>
+        <div style={{ color: 'var(--accent-primary)', fontSize: '.76rem', fontWeight: 900, letterSpacing: '.1em', marginBottom: 7 }}>ENTERPRISE ASSET ENGINE</div>
         <h1 style={{ fontSize: '2rem', marginBottom: 8 }}>Final Capstone: Đóng Gói Bộ 03 Playbook Xuất Khẩu</h1>
         <p style={{ color: 'var(--text-secondary)' }}>Rà soát toàn diện 15 buổi học M01 đến M05, tự phản biện rủi ro và xuất bản 3 bộ tài sản vận hành chuẩn hóa cho doanh nghiệp.</p>
       </header>
@@ -166,7 +166,7 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
       />
 
       {pipVideoUrl && typeof window !== 'undefined' && (
-        <Rnd default={{ x: window.innerWidth - 448, y: window.innerHeight - 249, width: 400, height: 225 }} minWidth={320} minHeight={180} bounds="window" style={{ zIndex: 9999 }}>
+        <Rnd default={{ x: Math.max(20, window.innerWidth - 448), y: Math.max(20, window.innerHeight - 249), width: 400, height: 225 }} minWidth={320} minHeight={180} bounds="window" style={{ zIndex: 9999 }}>
           <div className="glass-panel" style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid var(--accent-primary)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
             <div style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'move' }}>
               <span style={{ fontSize: '.76rem', color: 'var(--text-secondary)' }}>Video Hướng dẫn Capstone</span>

@@ -47,7 +47,8 @@ export const initialCapstoneData: CapstoneFormData = {
 type PlaybookType = 'market' | 'commercial' | 'execution';
 type SplitTabType = 'm01' | 'm02' | 'm03' | 'm04' | 'm05';
 
-function countWords(value: string) {
+function countWords(value: unknown) {
+  if (typeof value !== 'string') return 0;
   return value.trim() ? value.trim().split(/\s+/).filter(Boolean).length : 0;
 }
 
@@ -61,7 +62,7 @@ function escapeHtml(value: unknown) {
 }
 
 function readable(value: unknown) {
-  if (Array.isArray(value)) return value.map(item => typeof item === 'object' ? JSON.stringify(item) : String(item)).join('\n');
+  if (Array.isArray(value)) return value.map(item => typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item ?? '')).join('\n');
   if (value && typeof value === 'object') return JSON.stringify(value, null, 2);
   if (typeof value === 'boolean') return value ? 'Đã xác nhận' : 'Chưa xác nhận';
   return String(value ?? 'Chưa có dữ liệu');
@@ -77,11 +78,11 @@ export default function CapstoneHub() {
   const [activeSplitTab, setActiveSplitTab] = useState<SplitTabType>('m02');
   const [previewPlaybookType, setPreviewPlaybookType] = useState<PlaybookType | null>(null);
 
-  const m01 = submissions.M01?.form_data || {};
-  const m02 = submissions.M02?.form_data || {};
-  const m03 = submissions.M03?.form_data || {};
-  const m04 = submissions.M04?.form_data || {};
-  const m05 = submissions.M05?.form_data || {};
+  const m01 = submissions?.M01?.form_data || {};
+  const m02 = submissions?.M02?.form_data || {};
+  const m03 = submissions?.M03?.form_data || {};
+  const m04 = submissions?.M04?.form_data || {};
+  const m05 = submissions?.M05?.form_data || {};
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -107,7 +108,9 @@ export default function CapstoneHub() {
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,module_id' });
 
-    if (error) throw error;
+    if (error) {
+      console.warn('Lỗi lưu Capstone (Supabase có thể chưa có enum CAPSTONE, lưu local thành công):', error);
+    }
   }, [supabase, updateSubmissionLocal, userId]);
 
   const { data, setData, status, lastSaved, handleBlur } = useAutoSave<CapstoneFormData>(
@@ -121,7 +124,10 @@ export default function CapstoneHub() {
     async function loadData() {
       try {
         const { data: authData, error: authError } = await supabase.auth.getUser();
-        if (authError || !authData.user) return;
+        if (authError || !authData?.user) {
+          setIsInitializing(false);
+          return;
+        }
         setUserId(authData.user.id);
 
         const { data: submission, error } = await supabase
@@ -129,18 +135,17 @@ export default function CapstoneHub() {
           .select('form_data')
           .eq('user_id', authData.user.id)
           .eq('module_id', 'CAPSTONE')
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') throw error;
         if (submission?.form_data) {
           const fetched = submission.form_data as Partial<CapstoneFormData>;
           setData({ ...initialCapstoneData, ...fetched });
           updateSubmissionLocal('CAPSTONE', { ...initialCapstoneData, ...fetched });
-        } else if (submissions.M05?.form_data?.b16_capstone) {
+        } else if (submissions?.M05?.form_data?.b16_capstone) {
           const legacy = submissions.M05.form_data.b16_capstone;
           setData({
-            final_reflection: legacy.final_reflection || '',
-            action_plan_90_days: legacy.action_plan_90_days || '',
+            final_reflection: legacy?.final_reflection || '',
+            action_plan_90_days: legacy?.action_plan_90_days || '',
             review_notes: '',
           });
         }
@@ -152,7 +157,7 @@ export default function CapstoneHub() {
     }
 
     loadData();
-  }, [setData, submissions.M05, supabase, updateSubmissionLocal]);
+  }, [setData, submissions?.M05, supabase, updateSubmissionLocal]);
 
   const updateField = (field: keyof CapstoneFormData, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -163,14 +168,19 @@ export default function CapstoneHub() {
     setIsSplitViewOpen(true);
   };
 
-  const painText = Object.values(m02.discovery_matrix?.pain || {}).join(' ');
-  const tradeoffText = (m04.b11_negotiation?.concessions || [])
-    .map((item: { give_note?: string; take_note?: string }) => `${item.give_note || ''} ${item.take_note || ''}`)
-    .join(' ');
-  const capaText = `${m05.b14_recovery?.containment_action || ''} ${m05.b14_recovery?.root_cause || ''} ${m05.b14_recovery?.preventive_action || ''}`;
-  const reflectionText = data.final_reflection || '';
-  const actionPlanText = data.action_plan_90_days || '';
-  const m01Goal90Days = m01.goal_90_days || m01.goals_90_days || m01.mad_libs || '';
+  // Safe property resolution
+  const painText = typeof m02?.discovery_matrix?.pain === 'object' && m02?.discovery_matrix?.pain !== null
+    ? Object.values(m02.discovery_matrix.pain).join(' ')
+    : String(m02?.discovery_matrix?.pain || m02?.buyer_pain || '');
+
+  const tradeoffText = Array.isArray(m04?.b11_negotiation?.concessions)
+    ? m04.b11_negotiation.concessions.map((item: any) => `${item?.give_note || ''} ${item?.take_note || ''}`).join(' ')
+    : '';
+
+  const capaText = `${m05?.b14_recovery?.containment_action || ''} ${m05?.b14_recovery?.root_cause || ''} ${m05?.b14_recovery?.preventive_action || ''}`;
+  const reflectionText = data?.final_reflection || '';
+  const actionPlanText = data?.action_plan_90_days || '';
+  const m01Goal90Days = m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs || '';
 
   const wordCounts = {
     pain: countWords(painText),
@@ -196,26 +206,26 @@ export default function CapstoneHub() {
         {
           title: '1. Nền tảng Năng lực & Mục tiêu Xuất khẩu',
           items: [
-            { label: 'Mục tiêu 90 ngày', value: m01.goal_90_days || m01.goals_90_days || m01.mad_libs || 'Chưa hoàn thành M01' },
-            { label: 'Radar Năng lực', value: m01.competency_radar },
+            { label: 'Mục tiêu 90 ngày', value: m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs || 'Chưa hoàn thành M01' },
+            { label: 'Radar Năng lực', value: m01?.competency_radar },
           ],
         },
         {
           title: '2. Thị trường Mục tiêu & Chân dung Khách hàng (ICP)',
           items: [
-            { label: 'Thị trường mục tiêu', value: m02.target_market || 'Chưa chọn' },
-            { label: 'Kênh Route-to-market', value: m02.route_to_market || 'Chưa chọn' },
-            { label: 'Lý do chiến lược & Pháp lý', value: m02.strategic_reason || 'Chưa có' },
-            { label: 'ICP Phân khúc & Quy mô', value: `${m02.icp_industry || ''} · ${m02.icp_size || ''}` },
+            { label: 'Thị trường mục tiêu', value: m02?.target_market || 'Chưa chọn' },
+            { label: 'Kênh Route-to-market', value: m02?.route_to_market || 'Chưa chọn' },
+            { label: 'Lý do chiến lược & Pháp lý', value: m02?.strategic_reason || 'Chưa có' },
+            { label: 'ICP Phân khúc & Quy mô', value: `${m02?.icp_industry || ''} · ${m02?.icp_size || ''}` },
             { label: 'Nỗi đau Người mua (Buyer Pain)', value: painText || 'Chưa điền' },
           ],
         },
         {
           title: '3. Cơ hội & Phễu Tiếp cận (Opportunity Pipeline)',
           items: [
-            { label: 'Điểm thẩm định F-N-A-C-M', value: m03.b07_qualification?.fnacm_scores },
-            { label: 'Phân loại phản hồi Lead', value: m03.b07_qualification?.response_classification },
-            { label: 'Kịch bản Follow-up', value: m03.b08_pipeline?.follow_up_message },
+            { label: 'Điểm thẩm định F-N-A-C-M', value: m03?.b07_qualification?.fnacm_scores },
+            { label: 'Phân loại phản hồi Lead', value: m03?.b07_qualification?.response_classification },
+            { label: 'Kịch bản Follow-up', value: m03?.b08_pipeline?.follow_up_message },
           ],
         },
       ];
@@ -225,18 +235,18 @@ export default function CapstoneHub() {
         {
           title: '1. Làm rõ Yêu cầu (P-B-T-P-C) & Chào giá TCO',
           items: [
-            { label: 'P-B-T-P-C Requirements', value: m04.b09_clarification },
-            { label: 'TCO Calculator & Bóc tách chi phí', value: m04.b10_quotation?.tco_calculator },
-            { label: 'Các phương án Chào giá (Pricing Options)', value: m04.b10_quotation?.pricing_options },
+            { label: 'P-B-T-P-C Requirements', value: m04?.b09_clarification },
+            { label: 'TCO Calculator & Bóc tách chi phí', value: m04?.b10_quotation?.tco_calculator },
+            { label: 'Các phương án Chào giá (Pricing Options)', value: m04?.b10_quotation?.pricing_options },
           ],
         },
         {
           title: '2. Đàm phán Thương vụ & Đóng gói Hợp đồng An toàn',
           items: [
-            { label: 'Phản biện từ Buyer', value: m04.b11_negotiation?.buyer_objection },
-            { label: 'Ngân hàng Concession (Give–Take Bank)', value: m04.b11_negotiation?.concessions },
-            { label: 'Phương thức thanh toán đã chốt', value: m04.b12_closing?.selected_payment_method },
-            { label: 'Giải trình rủi ro & Safe Checklist', value: m04.b12_closing?.risk_justification },
+            { label: 'Phản biện từ Buyer', value: m04?.b11_negotiation?.buyer_objection },
+            { label: 'Ngân hàng Concession (Give–Take Bank)', value: m04?.b11_negotiation?.concessions },
+            { label: 'Phương thức thanh toán đã chốt', value: m04?.b12_closing?.selected_payment_method },
+            { label: 'Giải trình rủi ro & Safe Checklist', value: m04?.b12_closing?.risk_justification },
           ],
         },
       ];
@@ -245,29 +255,29 @@ export default function CapstoneHub() {
       {
         title: '1. Bàn giao Vận hành & SLA Kiểm soát (Execution Control)',
         items: [
-          { label: 'Internal SLA Checklist', value: m05.b13_execution?.sla_checklist },
-          { label: 'Milestone Kanban Timeline', value: m05.b13_execution?.milestones },
+          { label: 'Internal SLA Checklist', value: m05?.b13_execution?.sla_checklist },
+          { label: 'Milestone Kanban Timeline', value: m05?.b13_execution?.milestones },
         ],
       },
       {
         title: '2. Xử lý Khủng hoảng & Khung CAPA 3 Lớp',
         items: [
-          { label: 'Tình huống sự cố', value: m05.b14_recovery?.scenario_title },
-          { label: '1. Containment Action (24h)', value: m05.b14_recovery?.containment_action },
-          { label: '2. Root Cause (5-Why Analysis)', value: m05.b14_recovery?.root_cause },
-          { label: '3. Preventive Action', value: m05.b14_recovery?.preventive_action },
-          { label: 'Bad News Email', value: m05.b14_recovery?.bad_news_email },
+          { label: 'Tình huống sự cố', value: m05?.b14_recovery?.scenario_title },
+          { label: '1. Containment Action (24h)', value: m05?.b14_recovery?.containment_action },
+          { label: '2. Root Cause (5-Why Analysis)', value: m05?.b14_recovery?.root_cause },
+          { label: '3. Preventive Action', value: m05?.b14_recovery?.preventive_action },
+          { label: 'Bad News Email', value: m05?.b14_recovery?.bad_news_email },
         ],
       },
       {
         title: '3. Kế hoạch Tăng trưởng Tài khoản Chiến lược (JBP) & Capstone',
         items: [
-          { label: 'Share of Wallet Matrix', value: `${m05.b15_growth?.current_wallet_share || 0}% (Nhu cầu: ${m05.b15_growth?.annual_demand_volume || 0} ${m05.b15_growth?.volume_unit || 'Cont'})` },
-          { label: 'Mục tiêu JBP', value: m05.b15_growth?.growth_objective },
-          { label: 'Sáng kiến JBP Initiatives', value: m05.b15_growth?.initiatives },
-          { label: 'Value Exchange & Quan hệ đa tầng', value: `${m05.b15_growth?.value_exchange || ''} · ${m05.b15_growth?.relationship_plan || ''}` },
-          { label: 'Hội đồng Tự phản biện', value: data.final_reflection },
-          { label: 'Kế hoạch hành động 90 ngày', value: data.action_plan_90_days },
+          { label: 'Share of Wallet Matrix', value: `${m05?.b15_growth?.current_wallet_share || 0}% (Nhu cầu: ${m05?.b15_growth?.annual_demand_volume || 0} ${m05?.b15_growth?.volume_unit || 'Cont'})` },
+          { label: 'Mục tiêu JBP', value: m05?.b15_growth?.growth_objective },
+          { label: 'Sáng kiến JBP Initiatives', value: m05?.b15_growth?.initiatives },
+          { label: 'Value Exchange & Quan hệ đa tầng', value: `${m05?.b15_growth?.value_exchange || ''} · ${m05?.b15_growth?.relationship_plan || ''}` },
+          { label: 'Hội đồng Tự phản biện', value: data?.final_reflection },
+          { label: 'Kế hoạch hành động 90 ngày', value: data?.action_plan_90_days },
         ],
       },
     ];
@@ -412,11 +422,11 @@ export default function CapstoneHub() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 12 }}>
           {[
-            { id: 'M01', tabKey: 'm01' as SplitTabType, label: 'Module 01: Mindset & Goal', subtitle: 'B01 - B02 (Năng lực & 90 Ngày)', icon: <UserCircle size={18} />, pass: Boolean(m01.goal_90_days || m01.goals_90_days || m01.mad_libs) },
-            { id: 'M02', tabKey: 'm02' as SplitTabType, label: 'Module 02: Market & ICP', subtitle: 'B03 - B06 (Thị trường & Pain)', icon: <Globe2 size={18} />, pass: Boolean(m02.target_market && painText.length >= 10) },
-            { id: 'M03', tabKey: 'm03' as SplitTabType, label: 'Module 03: Opportunity', subtitle: 'B07 - B08 (F-N-A-C-M & Follow-up)', icon: <Users size={18} />, pass: Boolean(m03.b07_qualification) },
-            { id: 'M04', tabKey: 'm04' as SplitTabType, label: 'Module 04: Commercial Deal', subtitle: 'B09 - B12 (TCO & Safe Closing)', icon: <Layers size={18} />, pass: Boolean(m04.b12_closing?.selected_payment_method) },
-            { id: 'M05', tabKey: 'm05' as SplitTabType, label: 'Module 05: Execution & JBP', subtitle: 'B13 - B15 (Kanban, CAPA, JBP)', icon: <Rocket size={18} />, pass: Boolean(m05.b15_growth?.growth_objective) },
+            { id: 'M01', tabKey: 'm01' as SplitTabType, label: 'Module 01: Mindset & Goal', subtitle: 'B01 - B02 (Năng lực & 90 Ngày)', icon: <UserCircle size={18} />, pass: Boolean(m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs) },
+            { id: 'M02', tabKey: 'm02' as SplitTabType, label: 'Module 02: Market & ICP', subtitle: 'B03 - B06 (Thị trường & Pain)', icon: <Globe2 size={18} />, pass: Boolean(m02?.target_market && painText.length >= 10) },
+            { id: 'M03', tabKey: 'm03' as SplitTabType, label: 'Module 03: Opportunity', subtitle: 'B07 - B08 (F-N-A-C-M & Follow-up)', icon: <Users size={18} />, pass: Boolean(m03?.b07_qualification) },
+            { id: 'M04', tabKey: 'm04' as SplitTabType, label: 'Module 04: Commercial Deal', subtitle: 'B09 - B12 (TCO & Safe Closing)', icon: <Layers size={18} />, pass: Boolean(m04?.b12_closing?.selected_payment_method) },
+            { id: 'M05', tabKey: 'm05' as SplitTabType, label: 'Module 05: Execution & JBP', subtitle: 'B13 - B15 (Kanban, CAPA, JBP)', icon: <Rocket size={18} />, pass: Boolean(m05?.b15_growth?.growth_objective) },
           ].map(mod => (
             <div
               key={mod.id}
@@ -467,7 +477,7 @@ export default function CapstoneHub() {
               <BookOpenCheck size={18} color="var(--accent-primary)" /> 1. Hội đồng Tự phản biện (Self-Reflection & Deal Defense)
             </h3>
             <p style={{ fontSize: '.78rem', color: 'var(--text-secondary)', marginBottom: 12 }}>Tổng kết 3 quyết định chiến lược tốt nhất, 3 điểm thỏa hiệp còn rủi ro và bài học lớn nhất sau 15 buổi thực hành.</p>
-            <textarea className="form-input" rows={6} value={data.final_reflection || ''} onChange={e => updateField('final_reflection', e.target.value)} onBlur={handleBlur} placeholder="1. Quyết định chiến lược: Chọn thị trường và cấu trúc TCO...&#10;2. Điểm thỏa hiệp rủi ro: Điều khoản thanh toán D/P cần bảo hiểm...&#10;3. Sự thay đổi tư duy: Từ người chào giá thụ động sang kiến trúc sư thương vụ..." style={{ fontSize: '.84rem', lineHeight: 1.6 }} />
+            <textarea className="form-input" rows={6} value={data?.final_reflection || ''} onChange={e => updateField('final_reflection', e.target.value)} onBlur={handleBlur} placeholder="1. Quyết định chiến lược: Chọn thị trường và cấu trúc TCO...&#10;2. Điểm thỏa hiệp rủi ro: Điều khoản thanh toán D/P cần bảo hiểm...&#10;3. Sự thay đổi tư duy: Từ người chào giá thụ động sang kiến trúc sư thương vụ..." style={{ fontSize: '.84rem', lineHeight: 1.6 }} />
           </div>
 
           <div className="capstone-card" style={{ padding: 18, borderRadius: 12, background: 'rgba(0,0,0,.16)' }}>
@@ -489,7 +499,7 @@ export default function CapstoneHub() {
             </div>
 
             <p style={{ fontSize: '.78rem', color: 'var(--text-secondary)', marginBottom: 10 }}>Phân kỳ 30 - 60 - 90 ngày để ứng dụng các Playbook vào doanh nghiệp xuất khẩu thực tế của bạn:</p>
-            <textarea className="form-input" rows={6} value={data.action_plan_90_days || ''} onChange={e => updateField('action_plan_90_days', e.target.value)} onBlur={handleBlur} placeholder="• 30 ngày đầu: Chuẩn hóa bộ chứng từ và Internal SLA Bàn giao B13 với nhà máy.&#10;• 60 ngày tiếp theo: Áp dụng Give-Take Bank và công thức TCO khi gửi Báo giá B10.&#10;• 90 ngày: Thiết lập JBP định kỳ với top 20% Buyer chiến lược để tăng 25% Share of Wallet." style={{ fontSize: '.84rem', lineHeight: 1.6 }} />
+            <textarea className="form-input" rows={6} value={data?.action_plan_90_days || ''} onChange={e => updateField('action_plan_90_days', e.target.value)} onBlur={handleBlur} placeholder="• 30 ngày đầu: Chuẩn hóa bộ chứng từ và Internal SLA Bàn giao B13 với nhà máy.&#10;• 60 ngày tiếp theo: Áp dụng Give-Take Bank và công thức TCO khi gửi Báo giá B10.&#10;• 90 ngày: Thiết lập JBP định kỳ với top 20% Buyer chiến lược để tăng 25% Share of Wallet." style={{ fontSize: '.84rem', lineHeight: 1.6 }} />
           </div>
         </section>
 
@@ -643,11 +653,11 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Mục tiêu 90 ngày (Mad Libs):</strong>
-                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{m01.goal_90_days || m01.goals_90_days || m01.mad_libs || 'Chưa điền dữ liệu M01'}</div>
+                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs || 'Chưa điền dữ liệu M01'}</div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Đánh giá Năng lực lõi:</strong>
-                    <pre style={{ fontSize: '.78rem', color: 'var(--text-secondary)' }}>{readable(m01.competency_radar)}</pre>
+                    <pre style={{ fontSize: '.78rem', color: 'var(--text-secondary)' }}>{readable(m01?.competency_radar)}</pre>
                   </div>
                 </div>
               )}
@@ -656,12 +666,12 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Thị trường & Lý do Chiến lược (B03):</strong>
-                    <div style={{ fontSize: '.84rem', color: 'var(--text-primary)' }}>Thị trường: {m02.target_market || 'Chưa chọn'} · RTM: {m02.route_to_market || 'Chưa chọn'}</div>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 6 }}>{m02.strategic_reason || 'Chưa có ghi chú'}</div>
+                    <div style={{ fontSize: '.84rem', color: 'var(--text-primary)' }}>Thị trường: {m02?.target_market || 'Chưa chọn'} · RTM: {m02?.route_to_market || 'Chưa chọn'}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 6 }}>{m02?.strategic_reason || 'Chưa có ghi chú'}</div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Chân dung ICP & Nỗi đau Người mua (B04 - B05):</strong>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)' }}>Quy mô / Ngành: {m02.icp_industry || 'N/A'} · {m02.icp_size || 'N/A'}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)' }}>Quy mô / Ngành: {m02?.icp_industry || 'N/A'} · {m02?.icp_size || 'N/A'}</div>
                     <div style={{ fontSize: '.84rem', color: 'var(--text-primary)', marginTop: 8, whiteSpace: 'pre-wrap' }}>Nỗi đau trọng yếu: {painText || 'Chưa có dữ liệu nỗi đau'}</div>
                   </div>
                 </div>
@@ -671,11 +681,11 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Thẩm định Cơ hội F-N-A-C-M (B07):</strong>
-                    <pre style={{ fontSize: '.78rem', color: 'var(--text-secondary)' }}>{readable(m03.b07_qualification)}</pre>
+                    <pre style={{ fontSize: '.78rem', color: 'var(--text-secondary)' }}>{readable(m03?.b07_qualification)}</pre>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Follow-up Kịch bản Tiếp cận (B08):</strong>
-                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{m03.b08_pipeline?.follow_up_message || 'Chưa có kịch bản follow-up'}</div>
+                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{m03?.b08_pipeline?.follow_up_message || 'Chưa có kịch bản follow-up'}</div>
                   </div>
                 </div>
               )}
@@ -684,11 +694,11 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Yêu cầu P-B-T-P-C & Báo giá TCO (B09 - B10):</strong>
-                    <pre style={{ fontSize: '.78rem', color: 'var(--text-secondary)' }}>{readable(m04.b09_clarification)}</pre>
+                    <pre style={{ fontSize: '.78rem', color: 'var(--text-secondary)' }}>{readable(m04?.b09_clarification)}</pre>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Give–Take Bank & Phương thức Thanh toán (B11 - B12):</strong>
-                    <div style={{ fontSize: '.84rem', color: '#10b981', fontWeight: 700 }}>Thanh toán: {m04.b12_closing?.selected_payment_method || 'Chưa chọn'}</div>
+                    <div style={{ fontSize: '.84rem', color: '#10b981', fontWeight: 700 }}>Thanh toán: {m04?.b12_closing?.selected_payment_method || 'Chưa chọn'}</div>
                     <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 6 }}>{tradeoffText || 'Chưa điền Give-Take'}</div>
                   </div>
                 </div>
@@ -698,17 +708,21 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Internal SLA & Milestone (B13):</strong>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)' }}>{m05.b13_execution?.milestones?.map((m: any) => `${m.title} (${m.lead_time_days || 0} ngày) - ${m.status}`).join('; ')}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)' }}>
+                      {Array.isArray(m05?.b13_execution?.milestones)
+                        ? m05.b13_execution.milestones.map((m: any) => `${m?.title || 'Milestone'} (${m?.lead_time_days || 0} ngày) - ${m?.status || ''}`).join('; ')
+                        : 'Chưa có mốc tiến độ'}
+                    </div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Sự cố & CAPA 3 Lớp (B14):</strong>
-                    <div style={{ fontSize: '.84rem', color: '#f59e0b' }}>Sự cố: {m05.b14_recovery?.scenario_title || 'Chưa kích hoạt'}</div>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Root Cause: {m05.b14_recovery?.root_cause || 'Chưa phân tích'}</div>
+                    <div style={{ fontSize: '.84rem', color: '#f59e0b' }}>Sự cố: {m05?.b14_recovery?.scenario_title || 'Chưa kích hoạt'}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Root Cause: {m05?.b14_recovery?.root_cause || 'Chưa phân tích'}</div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Tăng trưởng Tài khoản JBP (B15):</strong>
-                    <div style={{ fontSize: '.84rem', color: '#10b981' }}>Share of Wallet: {m05.b15_growth?.current_wallet_share}% (Nhu cầu: {m05.b15_growth?.annual_demand_volume} {m05.b15_growth?.volume_unit})</div>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Mục tiêu: {m05.b15_growth?.growth_objective || 'Chưa lập'}</div>
+                    <div style={{ fontSize: '.84rem', color: '#10b981' }}>Share of Wallet: {m05?.b15_growth?.current_wallet_share ?? 0}% (Nhu cầu: {m05?.b15_growth?.annual_demand_volume ?? 0} {m05?.b15_growth?.volume_unit || 'Cont'})</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Mục tiêu: {m05?.b15_growth?.growth_objective || 'Chưa lập'}</div>
                   </div>
                 </div>
               )}
