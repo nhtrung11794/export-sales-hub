@@ -25,6 +25,8 @@ import {
   Wifi,
   WifiOff,
   X,
+  ArrowRight,
+  ExternalLink,
 } from 'lucide-react';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { createClient } from '@/lib/supabase/client';
@@ -43,6 +45,7 @@ export const initialCapstoneData: CapstoneFormData = {
 };
 
 type PlaybookType = 'market' | 'commercial' | 'execution';
+type SplitTabType = 'm01' | 'm02' | 'm03' | 'm04' | 'm05';
 
 function countWords(value: string) {
   return value.trim() ? value.trim().split(/\s+/).filter(Boolean).length : 0;
@@ -71,7 +74,7 @@ export default function CapstoneHub() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isOnline, setIsOnline] = useState(() => typeof navigator === 'undefined' ? true : navigator.onLine);
   const [isSplitViewOpen, setIsSplitViewOpen] = useState(false);
-  const [activeSplitTab, setActiveSplitTab] = useState<'m01' | 'm02' | 'm03' | 'm04' | 'm05'>('m02');
+  const [activeSplitTab, setActiveSplitTab] = useState<SplitTabType>('m02');
   const [previewPlaybookType, setPreviewPlaybookType] = useState<PlaybookType | null>(null);
 
   const m01 = submissions.M01?.form_data || {};
@@ -134,7 +137,6 @@ export default function CapstoneHub() {
           setData({ ...initialCapstoneData, ...fetched });
           updateSubmissionLocal('CAPSTONE', { ...initialCapstoneData, ...fetched });
         } else if (submissions.M05?.form_data?.b16_capstone) {
-          // Backward compatibility check
           const legacy = submissions.M05.form_data.b16_capstone;
           setData({
             final_reflection: legacy.final_reflection || '',
@@ -156,6 +158,11 @@ export default function CapstoneHub() {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
+  const openSplitViewTo = (tab: SplitTabType) => {
+    setActiveSplitTab(tab);
+    setIsSplitViewOpen(true);
+  };
+
   const painText = Object.values(m02.discovery_matrix?.pain || {}).join(' ');
   const tradeoffText = (m04.b11_negotiation?.concessions || [])
     .map((item: { give_note?: string; take_note?: string }) => `${item.give_note || ''} ${item.take_note || ''}`)
@@ -163,6 +170,7 @@ export default function CapstoneHub() {
   const capaText = `${m05.b14_recovery?.containment_action || ''} ${m05.b14_recovery?.root_cause || ''} ${m05.b14_recovery?.preventive_action || ''}`;
   const reflectionText = data.final_reflection || '';
   const actionPlanText = data.action_plan_90_days || '';
+  const m01Goal90Days = m01.goal_90_days || m01.goals_90_days || m01.mad_libs || '';
 
   const wordCounts = {
     pain: countWords(painText),
@@ -173,11 +181,11 @@ export default function CapstoneHub() {
   };
 
   const coreChecks = [
-    { label: 'Buyer Pain (M02 / B05)', count: wordCounts.pain, min: 15, pass: wordCounts.pain >= 15 },
-    { label: 'Give–Take Bank (M04 / B11)', count: wordCounts.tradeoff, min: 15, pass: wordCounts.tradeoff >= 15 },
-    { label: 'CAPA Analysis (M05 / B14)', count: wordCounts.capa, min: 20, pass: wordCounts.capa >= 20 },
-    { label: 'Hội đồng Tự phản biện (Capstone)', count: wordCounts.reflection, min: 15, pass: wordCounts.reflection >= 15 },
-    { label: 'Kế hoạch 90 ngày (Capstone)', count: wordCounts.actionPlan, min: 15, pass: wordCounts.actionPlan >= 15 },
+    { label: 'Buyer Pain (M02 / B05)', count: wordCounts.pain, min: 15, pass: wordCounts.pain >= 15, tab: 'm02' as SplitTabType },
+    { label: 'Give–Take Bank (M04 / B11)', count: wordCounts.tradeoff, min: 15, pass: wordCounts.tradeoff >= 15, tab: 'm04' as SplitTabType },
+    { label: 'CAPA Analysis (M05 / B14)', count: wordCounts.capa, min: 20, pass: wordCounts.capa >= 20, tab: 'm05' as SplitTabType },
+    { label: 'Hội đồng Tự phản biện (Zone 02)', count: wordCounts.reflection, min: 15, pass: wordCounts.reflection >= 15, tab: null },
+    { label: 'Kế hoạch 90 ngày (Zone 02)', count: wordCounts.actionPlan, min: 15, pass: wordCounts.actionPlan >= 15, tab: null },
   ];
 
   const garbageFilterPassed = coreChecks.every(item => item.pass);
@@ -266,6 +274,11 @@ export default function CapstoneHub() {
   };
 
   const printPlaybook = (type: PlaybookType) => {
+    if (!garbageFilterPassed) {
+      window.alert('⚠️ Chưa vượt qua Garbage Filter! Vui lòng hoàn thiện độ sâu các ô dữ liệu trước khi xuất file PDF chính thức.');
+      return;
+    }
+
     const titles: Record<PlaybookType, string> = {
       market: 'Playbook 01 — Market & Opportunity Development',
       commercial: 'Playbook 02 — Commercial Deal & Safe Closing',
@@ -328,6 +341,24 @@ export default function CapstoneHub() {
       <style>{`
         .capstone-card { transition: all .25s ease; border: 1px solid rgba(255,255,255,.08); }
         .capstone-card:focus-within { border-color: var(--accent-primary); box-shadow: 0 4px 20px rgba(59,130,246,.15); transform: translateY(-2px); }
+        .interactive-module-card {
+          cursor: pointer;
+          transition: all .2s ease;
+        }
+        .interactive-module-card:hover {
+          border-color: var(--accent-primary) !important;
+          transform: translateY(-3px);
+          box-shadow: 0 8px 24px rgba(59,130,246,.2);
+          background: rgba(59,130,246,.12) !important;
+        }
+        .garbage-link {
+          cursor: pointer;
+          transition: all .2s ease;
+        }
+        .garbage-link:hover {
+          text-decoration: underline;
+          opacity: 0.9;
+        }
       `}</style>
 
       {/* Top Status Bar */}
@@ -359,18 +390,20 @@ export default function CapstoneHub() {
         </div>
       </div>
 
-      {/* ZONE 1: Trạm Rà Soát Toàn Khóa (M01-M05) */}
+      {/* ZONE 1: Trạm Rà Soát Toàn Khóa (M01-M05) - DEEP LINKING INTERACTIVE CARDS */}
       <section className="glass-panel" style={{ padding: 28 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
           <div>
             <div style={{ color: 'var(--accent-primary)', fontSize: '.76rem', fontWeight: 900, letterSpacing: '.1em', marginBottom: 4 }}>ZONE 01 · TỔNG HỢP HÀNH TRÌNH</div>
             <h2 style={{ fontSize: '1.35rem', margin: 0 }}>Trạm Rà Soát Toàn Bộ 15 Buổi Học (M01–M05)</h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '.84rem', marginTop: 4 }}>Kiểm tra tính nhất quán giữa Mục tiêu, Chân dung ICP, Báo giá TCO, Đàm phán và Kế hoạch Vận hành.</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '.84rem', marginTop: 4 }}>
+              Click trực tiếp vào từng thẻ Module bên dưới để mở ngay Ngăn kéo Split-View đối chiếu dữ liệu tương ứng.
+            </p>
           </div>
           <button
             type="button"
             className="btn btn-primary"
-            onClick={() => setIsSplitViewOpen(true)}
+            onClick={() => openSplitViewTo('m02')}
             style={{ gap: 8, fontSize: '.82rem', padding: '9px 16px' }}
           >
             <FileSearch size={16} /> Mở Split-View Đối Chiếu Deal (B01–B15)
@@ -379,21 +412,41 @@ export default function CapstoneHub() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 12 }}>
           {[
-            { id: 'M01', label: 'Module 01: Mindset & Goal', subtitle: 'B01 - B02 (Năng lực & 90 Ngày)', icon: <UserCircle size={18} />, pass: Boolean(m01.goal_90_days || m01.goals_90_days || m01.mad_libs) },
-            { id: 'M02', label: 'Module 02: Market & ICP', subtitle: 'B03 - B06 (Thị trường & Pain)', icon: <Globe2 size={18} />, pass: Boolean(m02.target_market && painText.length >= 10) },
-            { id: 'M03', label: 'Module 03: Opportunity', subtitle: 'B07 - B08 (F-N-A-C-M & Follow-up)', icon: <Users size={18} />, pass: Boolean(m03.b07_qualification) },
-            { id: 'M04', label: 'Module 04: Commercial Deal', subtitle: 'B09 - B12 (TCO & Safe Closing)', icon: <Layers size={18} />, pass: Boolean(m04.b12_closing?.selected_payment_method) },
-            { id: 'M05', label: 'Module 05: Execution & JBP', subtitle: 'B13 - B15 (Kanban, CAPA, JBP)', icon: <Rocket size={18} />, pass: Boolean(m05.b15_growth?.growth_objective) },
+            { id: 'M01', tabKey: 'm01' as SplitTabType, label: 'Module 01: Mindset & Goal', subtitle: 'B01 - B02 (Năng lực & 90 Ngày)', icon: <UserCircle size={18} />, pass: Boolean(m01.goal_90_days || m01.goals_90_days || m01.mad_libs) },
+            { id: 'M02', tabKey: 'm02' as SplitTabType, label: 'Module 02: Market & ICP', subtitle: 'B03 - B06 (Thị trường & Pain)', icon: <Globe2 size={18} />, pass: Boolean(m02.target_market && painText.length >= 10) },
+            { id: 'M03', tabKey: 'm03' as SplitTabType, label: 'Module 03: Opportunity', subtitle: 'B07 - B08 (F-N-A-C-M & Follow-up)', icon: <Users size={18} />, pass: Boolean(m03.b07_qualification) },
+            { id: 'M04', tabKey: 'm04' as SplitTabType, label: 'Module 04: Commercial Deal', subtitle: 'B09 - B12 (TCO & Safe Closing)', icon: <Layers size={18} />, pass: Boolean(m04.b12_closing?.selected_payment_method) },
+            { id: 'M05', tabKey: 'm05' as SplitTabType, label: 'Module 05: Execution & JBP', subtitle: 'B13 - B15 (Kanban, CAPA, JBP)', icon: <Rocket size={18} />, pass: Boolean(m05.b15_growth?.growth_objective) },
           ].map(mod => (
-            <div key={mod.id} style={{ padding: 14, borderRadius: 10, background: mod.pass ? 'rgba(16,185,129,.06)' : 'rgba(15,23,42,.45)', border: `1px solid ${mod.pass ? 'rgba(16,185,129,.25)' : 'rgba(255,255,255,.08)'}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span style={{ color: mod.pass ? '#10b981' : 'var(--accent-primary)' }}>{mod.icon}</span>
-                <span style={{ fontSize: '.72rem', fontWeight: 700, color: mod.pass ? '#10b981' : 'var(--text-muted)' }}>
-                  {mod.pass ? 'Đã hoàn thành ✓' : 'Đang thực hiện'}
-                </span>
+            <div
+              key={mod.id}
+              onClick={() => openSplitViewTo(mod.tabKey)}
+              className="interactive-module-card"
+              style={{
+                padding: 14,
+                borderRadius: 10,
+                background: mod.pass ? 'rgba(16,185,129,.06)' : 'rgba(15,23,42,.45)',
+                border: `1px solid ${mod.pass ? 'rgba(16,185,129,.25)' : 'rgba(255,255,255,.08)'}`,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+              title="Nhấn để mở nhanh Split-View Module này"
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ color: mod.pass ? '#10b981' : 'var(--accent-primary)' }}>{mod.icon}</span>
+                  <span style={{ fontSize: '.72rem', fontWeight: 700, color: mod.pass ? '#10b981' : 'var(--text-muted)' }}>
+                    {mod.pass ? 'Đã hoàn thành ✓' : 'Đang thực hiện'}
+                  </span>
+                </div>
+                <strong style={{ display: 'block', fontSize: '.84rem', color: 'var(--text-primary)' }}>{mod.label}</strong>
+                <span style={{ fontSize: '.72rem', color: 'var(--text-secondary)' }}>{mod.subtitle}</span>
               </div>
-              <strong style={{ display: 'block', fontSize: '.84rem', color: 'var(--text-primary)' }}>{mod.label}</strong>
-              <span style={{ fontSize: '.72rem', color: 'var(--text-secondary)' }}>{mod.subtitle}</span>
+              
+              <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 4, color: 'var(--accent-primary)', fontSize: '.72rem', fontWeight: 600 }}>
+                <span>Xem lại dữ liệu</span> <ArrowRight size={12} />
+              </div>
             </div>
           ))}
         </div>
@@ -402,7 +455,7 @@ export default function CapstoneHub() {
       {/* ZONE 2 & ZONE 3 */}
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.25fr) minmax(320px, .75fr)', gap: 24 }}>
         
-        {/* ZONE 2: Tự phản biện & Kế hoạch 90 ngày */}
+        {/* ZONE 2: Tự phản biện & Kế hoạch 90 ngày (CLOSED-LOOP INHERITANCE) */}
         <section className="glass-panel" style={{ padding: 26, display: 'flex', flexDirection: 'column', gap: 18 }}>
           <div>
             <div style={{ color: '#f59e0b', fontSize: '.76rem', fontWeight: 900, letterSpacing: '.1em', marginBottom: 4 }}>ZONE 02 · TỰ PHẢN BIỆN & HÀNH ĐỘNG</div>
@@ -421,25 +474,62 @@ export default function CapstoneHub() {
             <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem', marginBottom: 6 }}>
               <Sparkles size={18} color="#f59e0b" /> 2. Kế hoạch Hành động 90 Ngày Đưa Vào Doanh Nghiệp (90-Day Execution Plan)
             </h3>
-            <p style={{ fontSize: '.78rem', color: 'var(--text-secondary)', marginBottom: 12 }}>Phân kỳ 30 - 60 - 90 ngày để ứng dụng các Playbook vào doanh nghiệp xuất khẩu thực tế của bạn.</p>
+
+            {/* CALLOUT ĐỐI CHIẾU MỤC TIÊU B02 */}
+            <div style={{ padding: '12px 16px', borderRadius: '10px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--accent-primary)', fontSize: '.82rem', fontWeight: 700, marginBottom: 4 }}>
+                <span>📌 Nhìn lại: Mục tiêu 90 ngày bạn đã viết ở Buổi 02 (Module 01)</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '.78rem', color: '#e2e8f0', fontStyle: 'italic', lineHeight: 1.5, background: 'rgba(0,0,0,0.2)', padding: '8px 12px', borderRadius: 6 }}>
+                "{m01Goal90Days || 'Chưa điền mục tiêu tại Buổi 02'}"
+              </p>
+              <span style={{ display: 'block', fontSize: '.72rem', color: 'var(--text-muted)', marginTop: 6 }}>
+                💡 <em>Đối chiếu tư duy ban đầu của bạn với lượng kiến thức hiện tại để xây dựng bản kế hoạch 90 ngày chuyển giao thực chiến sâu sắc hơn.</em>
+              </span>
+            </div>
+
+            <p style={{ fontSize: '.78rem', color: 'var(--text-secondary)', marginBottom: 10 }}>Phân kỳ 30 - 60 - 90 ngày để ứng dụng các Playbook vào doanh nghiệp xuất khẩu thực tế của bạn:</p>
             <textarea className="form-input" rows={6} value={data.action_plan_90_days || ''} onChange={e => updateField('action_plan_90_days', e.target.value)} onBlur={handleBlur} placeholder="• 30 ngày đầu: Chuẩn hóa bộ chứng từ và Internal SLA Bàn giao B13 với nhà máy.&#10;• 60 ngày tiếp theo: Áp dụng Give-Take Bank và công thức TCO khi gửi Báo giá B10.&#10;• 90 ngày: Thiết lập JBP định kỳ với top 20% Buyer chiến lược để tăng 25% Share of Wallet." style={{ fontSize: '.84rem', lineHeight: 1.6 }} />
           </div>
         </section>
 
-        {/* ZONE 3: Trung Tâm Xuất Bản 3 Playbook PDF */}
+        {/* ZONE 3: Trung Tâm Xuất Bản 3 Playbook PDF (ACTIONABLE ALERTS & GAMIFIED PREVIEW) */}
         <aside style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <div style={{ padding: 20, borderRadius: 12, background: garbageFilterPassed ? 'rgba(16,185,129,.08)' : 'rgba(245,158,11,.08)', border: `1px solid ${garbageFilterPassed ? 'rgba(16,185,129,.3)' : 'rgba(245,158,11,.3)'}` }}>
             <h3 style={{ display: 'flex', gap: 8, alignItems: 'center', color: garbageFilterPassed ? '#10b981' : '#f59e0b', fontSize: '.95rem', margin: 0 }}>
               {garbageFilterPassed ? <ShieldCheck size={19} /> : <AlertTriangle size={19} />} Garbage Filter (Kiểm tra Độ sâu Dữ liệu)
             </h3>
-            <p style={{ fontSize: '.74rem', color: 'var(--text-muted)', marginTop: 6, marginBottom: 12 }}>Kiểm duyệt tự động độ sâu dữ liệu trên toàn bộ 15 buổi trước khi mở khóa xuất bản Playbook PDF.</p>
+            <p style={{ fontSize: '.74rem', color: 'var(--text-muted)', marginTop: 6, marginBottom: 12 }}>
+              Nhấp vào các dòng báo lỗi đỏ để tự động mở đúng ô dữ liệu cần bổ sung trong Split-View.
+            </p>
             
             <div style={{ display: 'grid', gap: 8, fontSize: '.78rem' }}>
               {coreChecks.map((item, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 10px', borderRadius: 6, background: item.pass ? 'rgba(16,185,129,.06)' : 'rgba(239,68,68,.08)', border: `1px solid ${item.pass ? 'rgba(16,185,129,.2)' : 'rgba(239,68,68,.2)'}` }}>
-                  <span style={{ color: item.pass ? 'var(--text-primary)' : '#fca5a5' }}>{item.label}</span>
+                <div
+                  key={idx}
+                  onClick={() => {
+                    if (!item.pass && item.tab) {
+                      openSplitViewTo(item.tab);
+                    }
+                  }}
+                  className={!item.pass && item.tab ? 'garbage-link' : ''}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '8px 12px',
+                    borderRadius: 6,
+                    background: item.pass ? 'rgba(16,185,129,.06)' : 'rgba(239,68,68,.08)',
+                    border: `1px solid ${item.pass ? 'rgba(16,185,129,.2)' : 'rgba(239,68,68,.25)'}`,
+                  }}
+                  title={!item.pass && item.tab ? 'Click để mở nhanh vị trí cần sửa trong Split-View' : undefined}
+                >
+                  <span style={{ color: item.pass ? 'var(--text-primary)' : '#fca5a5', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {!item.pass && item.tab && <ExternalLink size={12} color="#fca5a5" />}
+                    {item.label}
+                  </span>
                   <span style={{ fontWeight: 700, color: item.pass ? '#10b981' : '#ef4444' }}>
-                    {item.count}/{item.min} từ {item.pass ? '✓' : '✗'}
+                    {item.count}/{item.min} từ {item.pass ? '✓' : '✗ Sửa ngay'}
                   </span>
                 </div>
               ))}
@@ -447,7 +537,7 @@ export default function CapstoneHub() {
 
             {!garbageFilterPassed && (
               <p style={{ color: '#fbbf24', fontSize: '.75rem', marginTop: 12, lineHeight: 1.4 }}>
-                ⚠️ Cần hoàn thiện độ sâu các ô dữ liệu trước khi kết xuất file PDF.
+                ⚠️ Cần hoàn thiện độ sâu các ô dữ liệu trước khi kết xuất file PDF chính thức.
               </p>
             )}
           </div>
@@ -463,13 +553,13 @@ export default function CapstoneHub() {
                 { type: 'execution' as const, label: 'Playbook 03: Execution & JBP Growth', subtitle: 'Kanban SLA, CAPA Khủng hoảng & JBP 90 Ngày (M05)' },
               ].map(playbook => (
                 <div key={playbook.type} style={{ display: 'flex', gap: 6 }}>
+                  {/* NÚT XEM TRƯỚC LUÔN BẤM ĐƯỢC (GAMIFICATION PREVIEW) */}
                   <button
                     type="button"
                     className="btn btn-secondary"
-                    disabled={!garbageFilterPassed}
                     onClick={() => setPreviewPlaybookType(playbook.type)}
-                    style={{ flex: 1, justifyContent: 'space-between', padding: '12px 14px', opacity: !garbageFilterPassed ? .45 : 1 }}
-                    title="Xem trước tài sản"
+                    style={{ flex: 1, justifyContent: 'space-between', padding: '12px 14px' }}
+                    title="Bấm để xem trước bản nháp tài sản"
                   >
                     <span style={{ textAlign: 'left' }}>
                       <strong style={{ display: 'block', fontSize: '.82rem' }}>{playbook.label}</strong>
@@ -477,13 +567,14 @@ export default function CapstoneHub() {
                     </span>
                     <Eye size={17} color="var(--accent-primary)" />
                   </button>
+
                   <button
                     type="button"
                     className="btn btn-primary"
                     disabled={!garbageFilterPassed}
                     onClick={() => printPlaybook(playbook.type)}
                     style={{ padding: '0 14px', opacity: !garbageFilterPassed ? .45 : 1 }}
-                    title="In / Tải PDF ngay"
+                    title={garbageFilterPassed ? "In / Tải PDF ngay" : "Khóa tải PDF (Cần qua Garbage Filter)"}
                   >
                     {garbageFilterPassed ? <Download size={16} /> : <Lock size={16} />}
                   </button>
@@ -491,9 +582,13 @@ export default function CapstoneHub() {
               ))}
             </div>
 
-            {garbageFilterPassed && (
+            {garbageFilterPassed ? (
               <div style={{ display: 'flex', gap: 8, alignItems: 'center', color: '#10b981', fontSize: '.76rem', marginTop: 12 }}>
                 <FileCheck2 size={17} /> Sẵn sàng kết xuất Playbook chính thức có dấu Watermark!
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: 6, alignItems: 'center', color: 'var(--text-muted)', fontSize: '.74rem', marginTop: 12 }}>
+                <span>💡 Có thể bấm <Eye size={13} style={{ display: 'inline', verticalAlign: 'middle' }} /> <strong>Xem trước</strong> bản nháp bất kỳ lúc nào.</span>
               </div>
             )}
           </div>
@@ -626,21 +721,28 @@ export default function CapstoneHub() {
         </div>
       )}
 
-      {/* Live Preview Modal */}
+      {/* Live Preview Modal (HỖ TRỢ WATERMARK DRAFT PREVIEW NẾU CHƯA QUA GARBAGE FILTER) */}
       {previewPlaybookType && (
         <div role="dialog" aria-modal="true" style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'grid', placeItems: 'center', padding: 24, background: 'rgba(2,6,23,.85)', backdropFilter: 'blur(8px)' }}>
           <div className="glass-panel" style={{ width: 'min(860px, 95vw)', maxHeight: '90vh', display: 'flex', flexDirection: 'column', border: '1px solid rgba(59,130,246,.5)', boxShadow: '0 30px 80px rgba(0,0,0,.6)' }}>
             <div style={{ padding: '18px 24px', borderBottom: '1px solid rgba(255,255,255,.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <Layers size={22} color="var(--accent-primary)" />
-                <h3 style={{ fontSize: '1.25rem', margin: 0 }}>
-                  Xem trước: {previewPlaybookType === 'market' ? 'Playbook 01 (Market)' : previewPlaybookType === 'commercial' ? 'Playbook 02 (Commercial)' : 'Playbook 03 (Execution & JBP)'}
-                </h3>
+                <div>
+                  <h3 style={{ fontSize: '1.2rem', margin: 0 }}>
+                    Xem trước: {previewPlaybookType === 'market' ? 'Playbook 01 (Market)' : previewPlaybookType === 'commercial' ? 'Playbook 02 (Commercial)' : 'Playbook 03 (Execution & JBP)'}
+                  </h3>
+                  {!garbageFilterPassed && (
+                    <span style={{ fontSize: '.74rem', color: '#f59e0b', fontWeight: 600 }}>
+                      ⚠️ BẢN NHÁP XEM TRƯỚC - Khóa Tải PDF do chưa hoàn thành Garbage Filter
+                    </span>
+                  )}
+                </div>
               </div>
               <button onClick={() => setPreviewPlaybookType(null)} aria-label="Đóng xem trước" style={{ border: 0, background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer' }}><X size={22} /></button>
             </div>
 
-            <div style={{ flex: 1, padding: 24, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ flex: 1, padding: 24, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 16, position: 'relative' }}>
               {getPlaybookSections(previewPlaybookType).map((sec, sIdx) => (
                 <div key={sIdx} style={{ borderRadius: 10, border: '1px solid rgba(255,255,255,.1)', background: 'rgba(15,23,42,.6)', overflow: 'hidden' }}>
                   <div style={{ padding: '10px 14px', background: 'rgba(59,130,246,.12)', color: 'var(--accent-primary)', fontWeight: 700, fontSize: '.9rem', borderBottom: '1px solid rgba(255,255,255,.08)' }}>
@@ -659,10 +761,17 @@ export default function CapstoneHub() {
             </div>
 
             <div style={{ padding: '16px 24px', borderTop: '1px solid rgba(255,255,255,.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>Watermark bản quyền sẽ tự động đính kèm khi in ra PDF.</span>
+              <span style={{ fontSize: '.78rem', color: 'var(--text-muted)' }}>
+                {garbageFilterPassed ? '✓ Sẵn sàng xuất bản chính thức có watermark.' : '⚠️ Cần vượt qua Garbage Filter để xuất bản chính thức.'}
+              </span>
               <div style={{ display: 'flex', gap: 10 }}>
                 <button className="btn btn-secondary" onClick={() => setPreviewPlaybookType(null)}>Đóng</button>
-                <button className="btn btn-primary" onClick={() => { const t = previewPlaybookType; setPreviewPlaybookType(null); printPlaybook(t); }} style={{ gap: 6 }}>
+                <button
+                  className="btn btn-primary"
+                  disabled={!garbageFilterPassed}
+                  onClick={() => { const t = previewPlaybookType; setPreviewPlaybookType(null); printPlaybook(t); }}
+                  style={{ gap: 6, opacity: !garbageFilterPassed ? 0.45 : 1 }}
+                >
                   <Printer size={16} /> Xuất / In File PDF
                 </button>
               </div>
