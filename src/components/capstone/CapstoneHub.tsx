@@ -47,12 +47,12 @@ export const initialCapstoneData: CapstoneFormData = {
 type PlaybookType = 'market' | 'commercial' | 'execution';
 type SplitTabType = 'm01' | 'm02' | 'm03' | 'm04' | 'm05';
 
-function countWords(value: unknown) {
+function countWords(value: unknown): number {
   if (typeof value !== 'string') return 0;
   return value.trim() ? value.trim().split(/\s+/).filter(Boolean).length : 0;
 }
 
-function escapeHtml(value: unknown) {
+function escapeHtml(value: unknown): string {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
     .replaceAll('<', '&lt;')
@@ -61,11 +61,46 @@ function escapeHtml(value: unknown) {
     .replaceAll("'", '&#039;');
 }
 
-function readable(value: unknown) {
-  if (Array.isArray(value)) return value.map(item => typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item ?? '')).join('\n');
-  if (value && typeof value === 'object') return JSON.stringify(value, null, 2);
+function readable(value: unknown): string {
+  if (value === null || value === undefined) return 'Chưa có dữ liệu';
+  if (typeof value === 'string') return value || 'Chưa có dữ liệu';
+  if (typeof value === 'number') return String(value);
   if (typeof value === 'boolean') return value ? 'Đã xác nhận' : 'Chưa xác nhận';
-  return String(value ?? 'Chưa có dữ liệu');
+  if (Array.isArray(value)) {
+    return value.map(item => typeof item === 'object' && item !== null ? JSON.stringify(item) : String(item ?? '')).join('\n');
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value, null, 2);
+  }
+  return String(value);
+}
+
+function formatM01Goal(m01: any): string {
+  if (!m01) return '';
+  if (typeof m01.goal_90_days === 'string' && m01.goal_90_days.trim()) return m01.goal_90_days;
+  if (typeof m01.goals_90_days === 'string' && m01.goals_90_days.trim()) return m01.goals_90_days;
+  if (typeof m01.mad_libs === 'string' && m01.mad_libs.trim()) return m01.mad_libs;
+  if (m01.mad_libs && typeof m01.mad_libs === 'object') {
+    const { input1 = '', input2 = '', input3 = '' } = m01.mad_libs;
+    const parts = [input1, input2, input3].filter(Boolean);
+    if (parts.length > 0) {
+      return `Trong 90 ngày tới, tôi sẽ ${input1 || '...'} bằng cách ${input2 || '...'} nhằm đạt mục tiêu ${input3 || '...'}.`;
+    }
+  }
+  return '';
+}
+
+function formatPain(m02: any): string {
+  if (!m02) return '';
+  if (typeof m02.discovery_matrix?.pain === 'object' && m02.discovery_matrix?.pain !== null) {
+    return Object.values(m02.discovery_matrix.pain)
+      .map(v => typeof v === 'object' ? JSON.stringify(v) : String(v ?? ''))
+      .join(' ')
+      .trim();
+  }
+  if (typeof m02.buyer_pain === 'string') return m02.buyer_pain;
+  if (typeof m02.discovery_matrix?.pain === 'string') return m02.discovery_matrix.pain;
+  return '';
 }
 
 export default function CapstoneHub() {
@@ -109,7 +144,7 @@ export default function CapstoneHub() {
       }, { onConflict: 'user_id,module_id' });
 
     if (error) {
-      console.warn('Lỗi lưu Capstone (Supabase có thể chưa có enum CAPSTONE, lưu local thành công):', error);
+      console.warn('Lưu local thành công, Supabase:', error.message);
     }
   }, [supabase, updateSubmissionLocal, userId]);
 
@@ -130,7 +165,7 @@ export default function CapstoneHub() {
         }
         setUserId(authData.user.id);
 
-        const { data: submission, error } = await supabase
+        const { data: submission } = await supabase
           .from('module_submissions')
           .select('form_data')
           .eq('user_id', authData.user.id)
@@ -168,19 +203,17 @@ export default function CapstoneHub() {
     setIsSplitViewOpen(true);
   };
 
-  // Safe property resolution
-  const painText = typeof m02?.discovery_matrix?.pain === 'object' && m02?.discovery_matrix?.pain !== null
-    ? Object.values(m02.discovery_matrix.pain).join(' ')
-    : String(m02?.discovery_matrix?.pain || m02?.buyer_pain || '');
+  // Safe string extractions
+  const painText = formatPain(m02);
+  const m01Goal90Days = formatM01Goal(m01);
 
   const tradeoffText = Array.isArray(m04?.b11_negotiation?.concessions)
     ? m04.b11_negotiation.concessions.map((item: any) => `${item?.give_note || ''} ${item?.take_note || ''}`).join(' ')
     : '';
 
   const capaText = `${m05?.b14_recovery?.containment_action || ''} ${m05?.b14_recovery?.root_cause || ''} ${m05?.b14_recovery?.preventive_action || ''}`;
-  const reflectionText = data?.final_reflection || '';
-  const actionPlanText = data?.action_plan_90_days || '';
-  const m01Goal90Days = m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs || '';
+  const reflectionText = typeof data?.final_reflection === 'string' ? data.final_reflection : '';
+  const actionPlanText = typeof data?.action_plan_90_days === 'string' ? data.action_plan_90_days : '';
 
   const wordCounts = {
     pain: countWords(painText),
@@ -206,7 +239,7 @@ export default function CapstoneHub() {
         {
           title: '1. Nền tảng Năng lực & Mục tiêu Xuất khẩu',
           items: [
-            { label: 'Mục tiêu 90 ngày', value: m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs || 'Chưa hoàn thành M01' },
+            { label: 'Mục tiêu 90 ngày', value: m01Goal90Days || 'Chưa hoàn thành M01' },
             { label: 'Radar Năng lực', value: m01?.competency_radar },
           ],
         },
@@ -422,7 +455,7 @@ export default function CapstoneHub() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 12 }}>
           {[
-            { id: 'M01', tabKey: 'm01' as SplitTabType, label: 'Module 01: Mindset & Goal', subtitle: 'B01 - B02 (Năng lực & 90 Ngày)', icon: <UserCircle size={18} />, pass: Boolean(m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs) },
+            { id: 'M01', tabKey: 'm01' as SplitTabType, label: 'Module 01: Mindset & Goal', subtitle: 'B01 - B02 (Năng lực & 90 Ngày)', icon: <UserCircle size={18} />, pass: Boolean(m01Goal90Days) },
             { id: 'M02', tabKey: 'm02' as SplitTabType, label: 'Module 02: Market & ICP', subtitle: 'B03 - B06 (Thị trường & Pain)', icon: <Globe2 size={18} />, pass: Boolean(m02?.target_market && painText.length >= 10) },
             { id: 'M03', tabKey: 'm03' as SplitTabType, label: 'Module 03: Opportunity', subtitle: 'B07 - B08 (F-N-A-C-M & Follow-up)', icon: <Users size={18} />, pass: Boolean(m03?.b07_qualification) },
             { id: 'M04', tabKey: 'm04' as SplitTabType, label: 'Module 04: Commercial Deal', subtitle: 'B09 - B12 (TCO & Safe Closing)', icon: <Layers size={18} />, pass: Boolean(m04?.b12_closing?.selected_payment_method) },
@@ -653,7 +686,9 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Mục tiêu 90 ngày (Mad Libs):</strong>
-                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{m01?.goal_90_days || m01?.goals_90_days || m01?.mad_libs || 'Chưa điền dữ liệu M01'}</div>
+                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>
+                      {m01Goal90Days || 'Chưa điền dữ liệu M01'}
+                    </div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Đánh giá Năng lực lõi:</strong>
@@ -666,12 +701,12 @@ export default function CapstoneHub() {
                 <div style={{ display: 'grid', gap: 14 }}>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Thị trường & Lý do Chiến lược (B03):</strong>
-                    <div style={{ fontSize: '.84rem', color: 'var(--text-primary)' }}>Thị trường: {m02?.target_market || 'Chưa chọn'} · RTM: {m02?.route_to_market || 'Chưa chọn'}</div>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 6 }}>{m02?.strategic_reason || 'Chưa có ghi chú'}</div>
+                    <div style={{ fontSize: '.84rem', color: 'var(--text-primary)' }}>Thị trường: {readable(m02?.target_market)} · RTM: {readable(m02?.route_to_market)}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 6 }}>{readable(m02?.strategic_reason)}</div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Chân dung ICP & Nỗi đau Người mua (B04 - B05):</strong>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)' }}>Quy mô / Ngành: {m02?.icp_industry || 'N/A'} · {m02?.icp_size || 'N/A'}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)' }}>Quy mô / Ngành: {readable(m02?.icp_industry)} · {readable(m02?.icp_size)}</div>
                     <div style={{ fontSize: '.84rem', color: 'var(--text-primary)', marginTop: 8, whiteSpace: 'pre-wrap' }}>Nỗi đau trọng yếu: {painText || 'Chưa có dữ liệu nỗi đau'}</div>
                   </div>
                 </div>
@@ -685,7 +720,7 @@ export default function CapstoneHub() {
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Follow-up Kịch bản Tiếp cận (B08):</strong>
-                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{m03?.b08_pipeline?.follow_up_message || 'Chưa có kịch bản follow-up'}</div>
+                    <div style={{ fontSize: '.84rem', color: 'var(--text-secondary)', whiteSpace: 'pre-wrap' }}>{readable(m03?.b08_pipeline?.follow_up_message)}</div>
                   </div>
                 </div>
               )}
@@ -698,7 +733,7 @@ export default function CapstoneHub() {
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Give–Take Bank & Phương thức Thanh toán (B11 - B12):</strong>
-                    <div style={{ fontSize: '.84rem', color: '#10b981', fontWeight: 700 }}>Thanh toán: {m04?.b12_closing?.selected_payment_method || 'Chưa chọn'}</div>
+                    <div style={{ fontSize: '.84rem', color: '#10b981', fontWeight: 700 }}>Thanh toán: {readable(m04?.b12_closing?.selected_payment_method)}</div>
                     <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 6 }}>{tradeoffText || 'Chưa điền Give-Take'}</div>
                   </div>
                 </div>
@@ -716,13 +751,13 @@ export default function CapstoneHub() {
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Sự cố & CAPA 3 Lớp (B14):</strong>
-                    <div style={{ fontSize: '.84rem', color: '#f59e0b' }}>Sự cố: {m05?.b14_recovery?.scenario_title || 'Chưa kích hoạt'}</div>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Root Cause: {m05?.b14_recovery?.root_cause || 'Chưa phân tích'}</div>
+                    <div style={{ fontSize: '.84rem', color: '#f59e0b' }}>Sự cố: {readable(m05?.b14_recovery?.scenario_title)}</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Root Cause: {readable(m05?.b14_recovery?.root_cause)}</div>
                   </div>
                   <div className="capstone-card" style={{ padding: 16, borderRadius: 10, background: 'rgba(0,0,0,.18)' }}>
                     <strong style={{ color: 'var(--accent-primary)', fontSize: '.86rem', display: 'block', marginBottom: 6 }}>Tăng trưởng Tài khoản JBP (B15):</strong>
-                    <div style={{ fontSize: '.84rem', color: '#10b981' }}>Share of Wallet: {m05?.b15_growth?.current_wallet_share ?? 0}% (Nhu cầu: {m05?.b15_growth?.annual_demand_volume ?? 0} {m05?.b15_growth?.volume_unit || 'Cont'})</div>
-                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Mục tiêu: {m05?.b15_growth?.growth_objective || 'Chưa lập'}</div>
+                    <div style={{ fontSize: '.84rem', color: '#10b981' }}>Share of Wallet: {readable(m05?.b15_growth?.current_wallet_share)}% (Nhu cầu: {readable(m05?.b15_growth?.annual_demand_volume)} {readable(m05?.b15_growth?.volume_unit || 'Cont')})</div>
+                    <div style={{ fontSize: '.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>Mục tiêu: {readable(m05?.b15_growth?.growth_objective)}</div>
                   </div>
                 </div>
               )}
