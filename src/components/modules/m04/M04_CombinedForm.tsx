@@ -43,6 +43,7 @@ export interface M04FormData {
       freight: number;
       import_tax: number;
       local_charges: number;
+      doc_inspection_fee?: number;
     };
     pricing_options: PricingOption[];
   };
@@ -78,6 +79,7 @@ const initialData: M04FormData = {
       freight: 0,
       import_tax: 0,
       local_charges: 0,
+      doc_inspection_fee: 0,
     },
     pricing_options: [
       { id: 'opt_1', name: 'Tiêu chuẩn (Standard)', price: 0, features: '', is_active: true },

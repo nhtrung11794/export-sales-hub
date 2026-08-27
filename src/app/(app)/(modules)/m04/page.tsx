@@ -35,6 +35,17 @@ export default function M04Page() {
 
   const handleSubmit = async () => {
     if (!userId || isLocked) return;
+    const m04Data = submissions['M04']?.form_data as any;
+    const checklist = m04Data?.b12_closing?.checklist;
+    const isChecklistComplete = Boolean(
+      checklist?.check_bec && 
+      checklist?.check_local_charge && 
+      checklist?.check_vessel
+    );
+    if (!isChecklistComplete) {
+      alert('⚠️ Bạn chưa hoàn thành Safe Order Checklist tại Bài 12 (Bắt buộc tick xác nhận cả 3 tiêu chuẩn: BEC, Local Charge, Booking Tàu) để bảo đảm an toàn trước khi nộp bài!');
+      return;
+    }
     setIsSubmitting(true);
     const result = await submitModule('M04', userId);
     if (result.success) alert('Nộp bài thành công! Module 05 đã được cập nhật.');
