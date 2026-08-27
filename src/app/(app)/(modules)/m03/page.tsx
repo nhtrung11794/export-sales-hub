@@ -8,6 +8,8 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X, Sparkles, Copy, Check } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+
 export default function M03Page() {
   const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
@@ -15,10 +17,11 @@ export default function M03Page() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
-  
-  const { submitModule, unlockModule, submissions } = useModuleStore();
+
+  const { getModuleData, submitModule, unlockModule, submissions } = useModuleStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValid, setIsValid] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -29,16 +32,30 @@ export default function M03Page() {
   }, [supabase.auth]);
 
   useEffect(() => {
-    const submission = submissions['M03'];
-    if (submission) setIsLocked(submission.is_locked);
-  }, [submissions]);
+    const interval = setInterval(() => {
+      const data = getModuleData('M03');
+      const submission = submissions['M03'];
+      if (submission) {
+        setIsLocked(submission.is_locked);
+      }
+      
+      if (data) {
+        const isDraftValid = (data.leads && data.leads.length > 0) || Boolean(data.b07_qualification);
+        setIsValid(!!isDraftValid);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [getModuleData, submissions]);
 
   const handleSubmit = async () => {
-    if (!userId || isLocked) return;
+    if (!userId || !isValid || isLocked) return;
     setIsSubmitting(true);
     const result = await submitModule('M03', userId);
-    if (result.success) alert('Nộp bài thành công! Module 04 đã được cập nhật.');
-    else alert('Có lỗi xảy ra: ' + result.error);
+    if (result.success) {
+      alert('Nộp bài thành công! Module 04 đã được mở khóa.');
+    } else {
+      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    }
     setIsSubmitting(false);
   };
 
@@ -46,132 +63,140 @@ export default function M03Page() {
     if (!userId) return;
     setIsSubmitting(true);
     const result = await unlockModule('M03', userId);
-    if (result.success) alert('Đã mở khóa.');
-    else alert('Có lỗi xảy ra: ' + result.error);
+    if (result.success) {
+      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
+    } else {
+      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
+    }
     setIsSubmitting(false);
   };
 
-  const handleOpenDocument = async (fileName: string) => {
-    try {
-      setLoadingFile(fileName);
-      const { data, error } = await supabase.storage.from('course_materials').createSignedUrl(fileName, 3600);
-      if (error) throw error;
-      if (data?.signedUrl) setPreviewUrl(data.signedUrl);
-    } catch (err) {
-      alert('Đã xảy ra lỗi kết nối với tài liệu.');
-    } finally {
-      setLoadingFile(null);
-    }
+  const handleOpenDocument = (lessonId: string) => {
+    openCourseSlide(lessonId);
   };
 
   const handleOpenVideo = async (fileName: string) => {
     try {
       setLoadingVideo(fileName);
-      const { data, error } = await supabase.storage.from('course_materials').createSignedUrl(fileName, 3600);
+      const { data, error } = await supabase
+        .storage
+        .from('course_materials')
+        .createSignedUrl(fileName, 3600);
+
       if (error) throw error;
       if (data?.signedUrl) setPipVideoUrl(data.signedUrl);
     } catch (err) {
-      alert('Không thể mở video bài giảng.');
+      console.error(err);
+      alert('Không thể mở video. Vui lòng kiểm tra lại file đã được tải lên Supabase chưa.');
     } finally {
       setLoadingVideo(null);
     }
   };
 
-  const promptSpark = `"Đóng vai chuyên gia nghiên cứu thị trường B2B Export, hãy liệt kê danh sách 5 nhà nhập khẩu/phân phối lớn nhất cho ngành hàng [Sản phẩm xuất khẩu] tại thị trường [Thị trường mục tiêu] dưới dạng bảng gồm các cột: Tên Công Ty | Website | Quy mô ước tính | Điểm mạnh nổi bật."`;
-
-  const promptFollowUp = `"Đóng vai Giám đốc Kinh doanh B2B Export kỳ cựu, một khách hàng tiềm năng đã nhận Báo giá từ 14 ngày trước nhưng đang im lặng. Hãy gợi ý cho tôi 3 kịch bản Email Follow-up mang lại giá trị gia tăng (Value-add / Market Intelligence) để hâm nóng cuộc hội thoại mà tuyệt đối KHÔNG dùng câu giục ép 'Anh chị đã xem giá chưa'."`;
-
-  const handleCopyPrompt = async (text: string, id: string, targetUrl: string) => {
+  const handleCopyPrompt = async (text: string, id: string, externalUrl?: string) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedPrompt(id);
-      setTimeout(() => setCopiedPrompt(null), 2500);
-      window.open(targetUrl, '_blank');
-    } catch (err) {}
+      setTimeout(() => setCopiedPrompt(null), 3000);
+      if (externalUrl) {
+        window.open(externalUrl, '_blank');
+      }
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
+
+  const promptSpark = `"Hãy đóng vai chuyên gia Market Intelligence. Tôi đang xuất khẩu mặt hàng Nông sản/Thực phẩm chế biến sang thị trường Mỹ/EU. Hãy tìm giúp tôi 5 Nhà nhập khẩu / B2B Wholesaler tiềm năng kèm: Tên công ty, Website, Quy mô ước tính, và Lý do họ cần mua từ Việt Nam."`;
+  
+  const promptFollowUp = `"Đóng vai Giám đốc Kinh doanh B2B Export kỳ cựu, một khách hàng tiềm năng đã nhận Báo giá từ 14 ngày trước nhưng đang im lặng. Hãy gợi ý cho tôi 3 kịch bản Email Follow-up mang lại giá trị gia tăng (Value-add / Market Intelligence) để hâm nóng cuộc hội thoại mà tuyệt đối KHÔNG dùng câu giục ép 'Anh chị đã xem giá chưa'."`;
+  
+  const promptColdEmail = `"Dựa trên chân dung khách hàng ICP và Nỗi đau Buyer vừa phân tích, hãy viết giúp tôi 1 Cold Email tiếp cận B2B ngắn gọn (dưới 150 từ), không mang giọng điệu chào hàng dạo mà tập trung vào giải pháp giải quyết vấn đề đứt gãy chuỗi cung ứng cho họ."`;
 
   const learningContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* BÀI 06 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
+        <span style={{ fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          📁 <strong>Kho Slide Bài Giảng:</strong> Chuẩn hóa M01_B01 đến M05_B15
+        </span>
+        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '4px 10px' }}>
+          Mở Thư Mục Google Drive ➔
+        </a>
+      </div>
+
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 06: Tìm kiếm khách hàng & Mở đầu Prospecting
+          {COURSE_MATERIALS.B06.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Cách xây dựng Lead List, chọn Target Account và viết Cold Outreach cá nhân hóa.
+          {COURSE_MATERIALS.B06.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M03_Bai05.pdf')}
-            disabled={loadingFile === 'M03_Bai05.pdf'}
+            onClick={() => handleOpenDocument('B06')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M03_Bai05.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M03_Video05.mp4')}
-            disabled={loadingVideo === 'M03_Video05.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B06.videoFileName || 'M03_Video06.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B06.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M03_Video05.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B06.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
 
-      {/* BÀI 07 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 07: Qualify Lead & Phát triển Cơ hội
+          {COURSE_MATERIALS.B07.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Khung chấm điểm F-N-A-C-M để phân biệt Inquiry dạo với Cơ hội thực tế.
+          {COURSE_MATERIALS.B07.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M03_Bai06.pdf')}
-            disabled={loadingFile === 'M03_Bai06.pdf'}
+            onClick={() => handleOpenDocument('B07')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M03_Bai06.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M03_Video06.mp4')}
-            disabled={loadingVideo === 'M03_Video06.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B07.videoFileName || 'M03_Video07.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B07.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M03_Video06.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B07.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
 
-      {/* BÀI 08 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 08: Quản trị Pipeline & Kỷ luật Follow-up
+          {COURSE_MATERIALS.B08.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Mô hình CRM 3 lớp và xử lý sự cố khách im lặng sau báo giá bằng Touchpoint giá trị.
+          {COURSE_MATERIALS.B08.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M03_Bai07.pdf')}
-            disabled={loadingFile === 'M03_Bai07.pdf'}
+            onClick={() => handleOpenDocument('B08')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M03_Bai07.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M03_Video07.mp4')}
-            disabled={loadingVideo === 'M03_Video07.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B08.videoFileName || 'M03_Video08.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B08.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M03_Video07.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B08.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>

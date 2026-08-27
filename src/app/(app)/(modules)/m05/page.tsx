@@ -8,16 +8,17 @@ import M05_CombinedForm, { isB13Complete, isB14Complete, isB15Complete, M05FormD
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
 
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+
 const LESSONS = [
-  { id: 13, title: 'Handover & Execution', description: 'Ký duyệt Internal SLA và điều phối milestone theo Kanban.', pdf: 'M05_Bai13.pdf', video: 'M05_Video13.mp4' },
-  { id: 14, title: 'Issue Recovery & CAPA', description: 'Xử lý sự cố bằng bằng chứng, CAPA và Bad News Email.', pdf: 'M05_Bai14.pdf', video: 'M05_Video14.mp4' },
-  { id: 15, title: 'Account Growth & JBP', description: 'Đánh giá Share of Wallet và xây kế hoạch tăng trưởng chung.', pdf: 'M05_Bai15.pdf', video: 'M05_Video15.mp4' },
+  { lessonKey: 'B13', id: 13, title: COURSE_MATERIALS.B13.title, description: COURSE_MATERIALS.B13.description, pdf: COURSE_MATERIALS.B13.standardFileName, video: COURSE_MATERIALS.B13.videoFileName || 'M05_Video13.mp4' },
+  { lessonKey: 'B14', id: 14, title: COURSE_MATERIALS.B14.title, description: COURSE_MATERIALS.B14.description, pdf: COURSE_MATERIALS.B14.standardFileName, video: COURSE_MATERIALS.B14.videoFileName || 'M05_Video14.mp4' },
+  { lessonKey: 'B15', id: 15, title: COURSE_MATERIALS.B15.title, description: COURSE_MATERIALS.B15.description, pdf: COURSE_MATERIALS.B15.standardFileName, video: COURSE_MATERIALS.B15.videoFileName || 'M05_Video15.mp4' },
 ];
 
 export default function M05Page() {
   const supabase = useMemo(() => createClient(), []);
   const { submitModule, unlockModule, submissions } = useModuleStore();
-  const [loadingFile, setLoadingFile] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
@@ -31,17 +32,8 @@ export default function M05Page() {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null));
   }, [supabase]);
 
-  const handleOpenDocument = async (fileName: string) => {
-    try {
-      setLoadingFile(fileName);
-      const { data, error } = await supabase.storage.from('course_materials').createSignedUrl(fileName, 3600);
-      if (error) throw error;
-      setPreviewUrl(data.signedUrl);
-    } catch {
-      window.alert('Tài liệu chưa được tải lên kho học liệu hoặc kết nối đang gián đoạn.');
-    } finally {
-      setLoadingFile(null);
-    }
+  const handleOpenDocument = (lessonKey: string) => {
+    openCourseSlide(lessonKey);
   };
 
   const handleOpenVideo = async (fileName: string) => {
@@ -51,7 +43,7 @@ export default function M05Page() {
       if (error) throw error;
       setPipVideoUrl(data.signedUrl);
     } catch {
-      window.alert('Video chưa được tải lên kho học liệu hoặc kết nối đang gián đoạn.');
+      window.alert('Video chưa được tải lên kho lưu trữ.');
     } finally {
       setLoadingVideo(null);
     }
@@ -59,14 +51,13 @@ export default function M05Page() {
 
   const handleSubmit = async () => {
     if (!userId || isLocked) return;
-    const currentData = submissions.M05?.form_data as M05FormData | undefined;
-    if (!currentData || !isB13Complete(currentData) || !isB14Complete(currentData) || !isB15Complete(currentData)) {
-      window.alert('Chưa thể nộp: hãy hoàn thành SLA B13, CAPA B14 và JBP B15 trước.');
-      return;
-    }
     setIsSubmitting(true);
     const result = await submitModule('M05', userId);
-    window.alert(result.success ? 'Đã nộp Module 05 thành công! Bạn có thể chuyển sang khoang Final Capstone trên Menu để đóng gói Playbook xuất khẩu.' : `Có lỗi xảy ra: ${result.error}`);
+    if (result.success) {
+      window.alert('✅ Nộp bài Module 05 thành công! Khoang Final Capstone đã được mở khóa.');
+    } else {
+      window.alert(`Không thể nộp bài: ${result.error}`);
+    }
     setIsSubmitting(false);
   };
 
@@ -74,23 +65,26 @@ export default function M05Page() {
     if (!userId) return;
     setIsSubmitting(true);
     const result = await unlockModule('M05', userId);
-    window.alert(result.success ? 'Đã mở khóa Module 05 để chỉnh sửa.' : `Có lỗi xảy ra: ${result.error}`);
+    if (result.success) {
+      window.alert('Đã mở khóa bài tập M05.');
+    } else {
+      window.alert(`Không thể mở khóa: ${result.error}`);
+    }
     setIsSubmitting(false);
   };
 
-  const m05 = submissions.M05?.form_data as M05FormData | undefined;
-  const m02 = submissions.M02?.form_data || {};
-  const milestoneSummary = (m05?.b13_execution?.milestones || []).map(item => `${item.title}: ${item.status}, hạn ${item.due_date || 'chưa chốt'}`).join('; ');
+  const m05 = submissions.M05?.form_data as Partial<M05FormData> | undefined;
+
   const prompts = [
     {
-      id: 'qa-timeline',
-      title: 'QA Manager phản biện Timeline',
-      text: `Đóng vai QA Manager của doanh nghiệp xuất khẩu. Hãy phản biện tính khả thi của timeline sau, chỉ ra dependency, checkpoint chất lượng và phương án dự phòng còn thiếu: ${milestoneSummary || '[Chưa có timeline B13]'}`,
+      id: 'sla-risk',
+      title: 'Handover & SLA Coach',
+      text: 'Đóng vai Trưởng phòng Quản lý Đơn hàng (Order Fulfillment Manager). Rà soát checklist bàn giao và milestone của tôi. Chỉ ra 2 điểm mù có thể gây chậm tiến độ hoặc vỡ cam kết với buyer và đề xuất phương án phòng ngừa.',
     },
     {
-      id: 'capa-review',
-      title: 'Incident Commander rà CAPA',
-      text: `Đóng vai Incident Commander. Với thị trường ${m02.target_market || '[chưa chọn]'} và bối cảnh pháp lý/chiến lược: ${m02.strategic_reason || '[chưa có]'}, hãy rà CAPA của tôi theo tiêu chí Evidence - Containment - Root Cause - Prevention và chỉ ra mọi cam kết vượt quá bằng chứng.`,
+      id: 'capa-crisis',
+      title: 'Crisis Recovery Expert',
+      text: `Đóng vai Giám đốc Điều hành XNK. Tôi vừa gặp sự cố: ${m05?.b14_recovery?.scenario_title || 'Giao trễ và phát hiện độ ẩm vượt chuẩn'}. Hãy phản biện kế hoạch CAPA (Containment 24h, 5-Why root cause, Preventive action) và rà soát Bad News Email để không bị buyer phạt hợp đồng.`,
     },
     {
       id: 'growth-jbp',
@@ -112,14 +106,24 @@ export default function M05Page() {
 
   const learningContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      {/* Banner Thư mục Slide */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
+        <span style={{ fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          📁 <strong>Kho Slide Bài Giảng:</strong> Chuẩn hóa M01_B01 đến M05_B15
+        </span>
+        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '4px 10px' }}>
+          Mở Thư Mục Google Drive ➔
+        </a>
+      </div>
+
       {LESSONS.map(lesson => (
         <div key={lesson.id} className="glass-panel" style={{ padding: 18 }}>
           <div style={{ color: 'var(--accent-primary)', fontSize: '.73rem', fontWeight: 900, letterSpacing: '.08em', marginBottom: 5 }}>BÀI {lesson.id.toString().padStart(2, '0')}</div>
           <h3 style={{ fontSize: '1rem', marginBottom: 7 }}>{lesson.title}</h3>
           <p style={{ color: 'var(--text-secondary)', fontSize: '.8rem', lineHeight: 1.5, marginBottom: 14 }}>{lesson.description}</p>
           <div style={{ display: 'flex', gap: 9 }}>
-            <button className="btn btn-secondary" disabled={loadingFile === lesson.pdf} onClick={() => handleOpenDocument(lesson.pdf)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
-              <BookOpen size={14} /> {loadingFile === lesson.pdf ? 'Đang tải...' : 'Giáo án PDF'}
+            <button className="btn btn-secondary" onClick={() => handleOpenDocument(lesson.lessonKey)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
+              <BookOpen size={14} /> 📖 Slide Bài Giảng
             </button>
             <button className="btn btn-primary" disabled={loadingVideo === lesson.video} onClick={() => handleOpenVideo(lesson.video)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
               <Play size={14} /> {loadingVideo === lesson.video ? 'Đang tải...' : 'Video'}

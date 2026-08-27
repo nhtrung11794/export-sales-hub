@@ -8,6 +8,8 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X, Sparkles, Copy, Check } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+
 export default function M04Page() {
   const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
@@ -16,9 +18,10 @@ export default function M04Page() {
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
   
-  const { submitModule, unlockModule, submissions } = useModuleStore();
+  const { getModuleData, submitModule, unlockModule, submissions } = useModuleStore();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isValid, setIsValid] = useState(false);
   const [isLocked, setIsLocked] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
@@ -29,27 +32,30 @@ export default function M04Page() {
   }, [supabase.auth]);
 
   useEffect(() => {
-    const submission = submissions['M04'];
-    if (submission) setIsLocked(submission.is_locked);
-  }, [submissions]);
+    const interval = setInterval(() => {
+      const data = getModuleData('M04');
+      const submission = submissions['M04'];
+      if (submission) {
+        setIsLocked(submission.is_locked);
+      }
+      
+      if (data) {
+        const isDraftValid = Boolean(data.b12_closing?.selected_payment_method || data.b10_quotation);
+        setIsValid(!!isDraftValid);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [getModuleData, submissions]);
 
   const handleSubmit = async () => {
-    if (!userId || isLocked) return;
-    const m04Data = submissions['M04']?.form_data as any;
-    const checklist = m04Data?.b12_closing?.checklist;
-    const isChecklistComplete = Boolean(
-      checklist?.check_bec && 
-      checklist?.check_local_charge && 
-      checklist?.check_vessel
-    );
-    if (!isChecklistComplete) {
-      alert('⚠️ Bạn chưa hoàn thành Safe Order Checklist tại Bài 12 (Bắt buộc tick xác nhận cả 3 tiêu chuẩn: BEC, Local Charge, Booking Tàu) để bảo đảm an toàn trước khi nộp bài!');
-      return;
-    }
+    if (!userId || !isValid || isLocked) return;
     setIsSubmitting(true);
     const result = await submitModule('M04', userId);
-    if (result.success) alert('Nộp bài thành công! Module 05 đã được cập nhật.');
-    else alert('Có lỗi xảy ra: ' + result.error);
+    if (result.success) {
+      alert('Nộp bài thành công! Module 05 đã được mở khóa.');
+    } else {
+      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    }
     setIsSubmitting(false);
   };
 
@@ -57,31 +63,30 @@ export default function M04Page() {
     if (!userId) return;
     setIsSubmitting(true);
     const result = await unlockModule('M04', userId);
-    if (result.success) alert('Đã mở khóa.');
-    else alert('Có lỗi xảy ra: ' + result.error);
+    if (result.success) {
+      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
+    } else {
+      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
+    }
     setIsSubmitting(false);
   };
 
-  const handleOpenDocument = async (fileName: string) => {
-    try {
-      setLoadingFile(fileName);
-      const { data, error } = await supabase.storage.from('course_materials').createSignedUrl(fileName, 3600);
-      if (error) throw error;
-      if (data?.signedUrl) setPreviewUrl(data.signedUrl);
-    } catch (err) {
-      alert('Đã xảy ra lỗi kết nối với tài liệu.');
-    } finally {
-      setLoadingFile(null);
-    }
+  const handleOpenDocument = (lessonId: string) => {
+    openCourseSlide(lessonId);
   };
 
   const handleOpenVideo = async (fileName: string) => {
     try {
       setLoadingVideo(fileName);
-      const { data, error } = await supabase.storage.from('course_materials').createSignedUrl(fileName, 3600);
+      const { data, error } = await supabase
+        .storage
+        .from('course_materials')
+        .createSignedUrl(fileName, 3600);
+
       if (error) throw error;
       if (data?.signedUrl) setPipVideoUrl(data.signedUrl);
     } catch (err) {
+      console.error(err);
       alert('Không thể mở video bài giảng.');
     } finally {
       setLoadingVideo(null);
@@ -91,7 +96,7 @@ export default function M04Page() {
   const prompts = [
     {
       id: 'prompt_1',
-      title: 'Khám bệnh Lỗ hổng Yêu cầu',
+      title: 'Scan Rủi ro 5 Lớp',
       text: 'Đóng vai Chuyên gia Thương mại Quốc tế. Rà soát đoạn email dưới đây của khách hàng dựa trên khung 5 lớp (Sản phẩm - Thương mại - Giao nhận - Thanh toán - Tuân thủ). Hãy chỉ ra những điểm chưa rõ ràng hoặc mâu thuẫn có thể gây rủi ro nếu tôi vội vàng báo giá lúc này. [Dán email của khách vào đây]'
     },
     {
@@ -122,30 +127,39 @@ export default function M04Page() {
 
   const learningContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Banner Thư mục Slide */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
+        <span style={{ fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          📁 <strong>Kho Slide Bài Giảng:</strong> Chuẩn hóa M01_B01 đến M05_B15
+        </span>
+        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '4px 10px' }}>
+          Mở Thư Mục Google Drive ➔
+        </a>
+      </div>
+
       {/* BÀI 09 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 09: Requirement Clarification
+          {COURSE_MATERIALS.B09.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Làm rõ yêu cầu với ma trận P-B-T-P-C.
+          {COURSE_MATERIALS.B09.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M04_Bai09.pdf')}
-            disabled={loadingFile === 'M04_Bai09.pdf'}
+            onClick={() => handleOpenDocument('B09')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M04_Bai09.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M04_Video09.mp4')}
-            disabled={loadingVideo === 'M04_Video09.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B09.videoFileName || 'M04_Video09.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B09.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M04_Video09.mp4' ? 'Đang tải...' : 'Video Bài giảng'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B09.videoFileName ? 'Đang tải...' : 'Video Bài giảng'}
           </button>
         </div>
       </div>
@@ -153,27 +167,26 @@ export default function M04Page() {
       {/* BÀI 10 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 10: Proposal & Quotation
+          {COURSE_MATERIALS.B10.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Thiết kế cấu trúc báo giá 3 tùy chọn & Tính Landed Cost (TCO).
+          {COURSE_MATERIALS.B10.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M04_Bai10.pdf')}
-            disabled={loadingFile === 'M04_Bai10.pdf'}
+            onClick={() => handleOpenDocument('B10')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M04_Bai10.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M04_Video10.mp4')}
-            disabled={loadingVideo === 'M04_Video10.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B10.videoFileName || 'M04_Video10.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B10.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M04_Video10.mp4' ? 'Đang tải...' : 'Video Bài giảng'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B10.videoFileName ? 'Đang tải...' : 'Video Bài giảng'}
           </button>
         </div>
       </div>
@@ -181,27 +194,26 @@ export default function M04Page() {
       {/* BÀI 11 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 11: Negotiation & Blocker
+          {COURSE_MATERIALS.B11.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Bàn cân đàm phán Give - Take, chặn nhượng bộ miễn phí.
+          {COURSE_MATERIALS.B11.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M04_Bai11.pdf')}
-            disabled={loadingFile === 'M04_Bai11.pdf'}
+            onClick={() => handleOpenDocument('B11')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M04_Bai11.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M04_Video11.mp4')}
-            disabled={loadingVideo === 'M04_Video11.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B11.videoFileName || 'M04_Video11.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B11.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M04_Video11.mp4' ? 'Đang tải...' : 'Video Bài giảng'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B11.videoFileName ? 'Đang tải...' : 'Video Bài giảng'}
           </button>
         </div>
       </div>
@@ -209,27 +221,26 @@ export default function M04Page() {
       {/* BÀI 12 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '8px', fontSize: '1.05rem', fontWeight: 'bold' }}>
-          Bài 12: Payment Risk & Safe Closing
+          {COURSE_MATERIALS.B12.title}
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: '1.5' }}>
-          Quản trị rủi ro thanh toán và xác nhận đơn hàng an toàn.
+          {COURSE_MATERIALS.B12.description}
         </p>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
-            onClick={() => handleOpenDocument('M04_Bai12.pdf')}
-            disabled={loadingFile === 'M04_Bai12.pdf'}
+            onClick={() => handleOpenDocument('B12')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <BookOpen size={14}/> {loadingFile === 'M04_Bai12.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M04_Video12.mp4')}
-            disabled={loadingVideo === 'M04_Video12.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B12.videoFileName || 'M04_Video12.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B12.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
           >
-            <Play size={14}/> {loadingVideo === 'M04_Video12.mp4' ? 'Đang tải...' : 'Video Bài giảng'}
+            <Play size={14}/> {loadingVideo === COURSE_MATERIALS.B12.videoFileName ? 'Đang tải...' : 'Video Bài giảng'}
           </button>
         </div>
       </div>

@@ -10,6 +10,8 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+
 export default function M02Page() {
   const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
@@ -77,22 +79,8 @@ export default function M02Page() {
     setIsSubmitting(false);
   };
 
-  const handleOpenDocument = async (fileName: string) => {
-    try {
-      setLoadingFile(fileName);
-      const { data, error } = await supabase
-        .storage
-        .from('course_materials')
-        .createSignedUrl(fileName, 3600);
-
-      if (error) throw error;
-      if (data?.signedUrl) setPreviewUrl(data.signedUrl);
-    } catch (err) {
-      console.error(err);
-      alert('Đã xảy ra lỗi kết nối.');
-    } finally {
-      setLoadingFile(null);
-    }
+  const handleOpenDocument = (lessonId: string) => {
+    openCourseSlide(lessonId);
   };
 
   const handleOpenVideo = async (fileName: string) => {
@@ -114,31 +102,40 @@ export default function M02Page() {
   };
 
   const learningContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Banner Thư mục Slide */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
+        <span style={{ fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          📁 <strong>Kho Slide Bài Giảng:</strong> Chuẩn hóa M01_B01 đến M05_B15
+        </span>
+        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '4px 10px' }}>
+          Mở Thư Mục Google Drive ➔
+        </a>
+      </div>
+
       {/* BÀI 03 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 03: Market Intelligence cho Sales xuất khẩu
+          {COURSE_MATERIALS.B03.title}
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Xác định bối cảnh thị trường (Market Fact-Check) và vẽ chân dung khách hàng lý tưởng (ICP) phù hợp với quy mô và năng lực doanh nghiệp.
+          {COURSE_MATERIALS.B03.description}
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
-            onClick={() => handleOpenDocument('M02_Bai03.pdf')}
-            disabled={loadingFile === 'M02_Bai03.pdf'}
+            onClick={() => handleOpenDocument('B03')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <BookOpen size={16}/> {loadingFile === 'M02_Bai03.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M02_Video03.mp4')}
-            disabled={loadingVideo === 'M02_Video03.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B03.videoFileName || 'M02_Video03.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B03.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> {loadingVideo === 'M02_Video03.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B03.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
@@ -146,27 +143,26 @@ export default function M02Page() {
       {/* BÀI 04 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 04: Phân khúc khách hàng và Buyer Logic
+          {COURSE_MATERIALS.B04.title}
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Thiết lập sơ đồ tổ chức, người ra quyết định và quy trình mua hàng để có chiến lược tiếp cận phù hợp.
+          {COURSE_MATERIALS.B04.description}
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
-            onClick={() => handleOpenDocument('M02_Bai04.pdf')}
-            disabled={loadingFile === 'M02_Bai04.pdf'}
+            onClick={() => handleOpenDocument('B04')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <BookOpen size={16}/> {loadingFile === 'M02_Bai04.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M02_Video04.mp4')}
-            disabled={loadingVideo === 'M02_Video04.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B04.videoFileName || 'M02_Video04.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B04.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> {loadingVideo === 'M02_Video04.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B04.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
@@ -174,27 +170,26 @@ export default function M02Page() {
       {/* BÀI 05 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 05: Discovery nền tảng trước khi phát triển cơ hội
+          {COURSE_MATERIALS.B05.title}
         </h3>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '16px', fontSize: '0.9rem', lineHeight: '1.5' }}>
-          Phân tích các Tab: Need, Pain, Criteria, Risk, Concern. Bóc tách từ Nỗi đau bề mặt thành câu hỏi cốt lõi.
+          {COURSE_MATERIALS.B05.description}
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
-            onClick={() => handleOpenDocument('M02_Bai05.pdf')}
-            disabled={loadingFile === 'M02_Bai05.pdf'}
+            onClick={() => handleOpenDocument('B05')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <BookOpen size={16}/> {loadingFile === 'M02_Bai05.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M02_Video05.mp4')}
-            disabled={loadingVideo === 'M02_Video05.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B05.videoFileName || 'M02_Video05.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B05.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> {loadingVideo === 'M02_Video05.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B05.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>

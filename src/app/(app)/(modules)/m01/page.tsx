@@ -8,6 +8,8 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Copy, Check, Play, BookOpen, X } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+
 export default function M01Page() {
   const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
@@ -30,16 +32,18 @@ export default function M01Page() {
     supabase.auth.getUser().then(({ data }) => {
       if (data?.user) setUserId(data.user.id);
     });
-  }, []);
+  }, [supabase.auth]);
 
-  const [radarScores, setRadarScores] = useState({
-    market: 3,
-    prospecting: 3,
-    pricing: 3,
-    risk: 3,
-    internal: 3,
-    crm: 3
-  });
+  // Extract real dynamic radar scores from zustand store
+  const currentM01Data = getModuleData('M01');
+  const radarScores = {
+    market: currentM01Data?.competency_radar?.market_research || 3,
+    prospecting: currentM01Data?.competency_radar?.prospecting_discovery || 3,
+    pricing: currentM01Data?.competency_radar?.pricing_negotiation || 3,
+    risk: currentM01Data?.competency_radar?.risk_management || 3,
+    internal: currentM01Data?.competency_radar?.internal_claim || 3,
+    crm: currentM01Data?.competency_radar?.crm_growth || 3,
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -50,20 +54,7 @@ export default function M01Page() {
       }
       
       if (data) {
-        if (data.competency_radar) {
-          setRadarScores({
-            market: data.competency_radar.market_and_icp || 3,
-            prospecting: data.competency_radar.prospecting_discovery || 3,
-            pricing: data.competency_radar.pricing_negotiation || 3,
-            risk: data.competency_radar.risk_management || 3,
-            internal: data.competency_radar.internal_claim || 3,
-            crm: data.competency_radar.crm_growth || 3
-          });
-        }
-        
-        // Validation: mad_libs inputs and goals_90d must not be empty
-        const isDraftValid = data.goals_90d && data.goals_90d.trim().length > 0 &&
-                             data.mad_libs && data.mad_libs.input1?.trim().length > 0;
+        const isDraftValid = (data.goal_90_days?.trim().length > 0 || data.goals_90_days?.trim().length > 0 || (data.mad_libs && Object.values(data.mad_libs).some(Boolean)));
         setIsValid(!!isDraftValid);
       }
     }, 1000);
@@ -106,22 +97,8 @@ export default function M01Page() {
     }
   };
 
-  const handleOpenDocument = async (fileName: string) => {
-    try {
-      setLoadingFile(fileName);
-      const { data, error } = await supabase
-        .storage
-        .from('course_materials')
-        .createSignedUrl(fileName, 3600);
-
-      if (error) throw error;
-      if (data?.signedUrl) setPreviewUrl(data.signedUrl);
-    } catch (err) {
-      console.error(err);
-      alert('Đã xảy ra lỗi kết nối.');
-    } finally {
-      setLoadingFile(null);
-    }
+  const handleOpenDocument = (lessonId: string) => {
+    openCourseSlide(lessonId);
   };
 
   const handleOpenVideo = async (fileName: string) => {
@@ -143,32 +120,40 @@ export default function M01Page() {
   };
 
   const learningContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Banner Thư mục Slide */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
+        <span style={{ fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          📁 <strong>Kho Slide Bài Giảng:</strong> Chuẩn hóa M01_B01 đến M05_B15
+        </span>
+        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '4px 10px' }}>
+          Mở Thư Mục Google Drive ➔
+        </a>
+      </div>
       
       {/* BÀI 01 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 01: Tư duy Sales xuất khẩu trong bối cảnh thị trường thay đổi
+          {COURSE_MATERIALS.B01.title}
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Dịch chuyển tư duy (Mindset Shift) từ bán hàng truyền thống sang tư vấn. Hiểu rõ bối cảnh thị trường BANI/VUCA để xây dựng sự thấu cảm (Customer-centric) với khách hàng B2B.
+          {COURSE_MATERIALS.B01.description}
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
-            onClick={() => handleOpenDocument('M01_Bai01.pdf')}
-            disabled={loadingFile === 'M01_Bai01.pdf'}
+            onClick={() => handleOpenDocument('B01')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <BookOpen size={16}/> {loadingFile === 'M01_Bai01.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M01_Video01.mp4')}
-            disabled={loadingVideo === 'M01_Video01.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B01.videoFileName || 'M01_Video01.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B01.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> {loadingVideo === 'M01_Video01.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B01.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
@@ -176,27 +161,26 @@ export default function M01Page() {
       {/* BÀI 02 */}
       <div className="glass-panel" style={{ padding: '20px' }}>
         <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
-          Bài 02: Bản chất nghề Sales xuất khẩu
+          {COURSE_MATERIALS.B02.title}
         </h3>
         <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
-          Nắm vững 5 giai đoạn của một chu trình Sales B2B tiêu chuẩn và tự đánh giá bản thân qua 4 trụ cột năng lực cốt lõi để vẽ nên Radar Chart của riêng bạn.
+          {COURSE_MATERIALS.B02.description}
         </p>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
-            onClick={() => handleOpenDocument('M01_Bai02.pdf')}
-            disabled={loadingFile === 'M01_Bai02.pdf'}
+            onClick={() => handleOpenDocument('B02')}
             className="btn btn-secondary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <BookOpen size={16}/> {loadingFile === 'M01_Bai02.pdf' ? 'Đang tải...' : 'Giáo án PDF'}
+            <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo('M01_Video02.mp4')}
-            disabled={loadingVideo === 'M01_Video02.mp4'}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B02.videoFileName || 'M01_Video02.mp4')}
+            disabled={loadingVideo === COURSE_MATERIALS.B02.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
           >
-            <Play size={16}/> {loadingVideo === 'M01_Video02.mp4' ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B02.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
           </button>
         </div>
       </div>
