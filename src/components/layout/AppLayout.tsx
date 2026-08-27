@@ -254,8 +254,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           }}>
             {isHovered ? 'Hỗ trợ & Công cụ' : ''}
           </div>
-          <a 
-            href="#"
+          <Link 
+            href="/#bo-tro-xnk"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -267,7 +267,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               borderLeft: '3px solid transparent',
               whiteSpace: 'nowrap'
             }}
-            title="Tài liệu Tham khảo"
+            title="Bổ trợ nghiệp vụ XNK"
           >
             <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px' }}>
               <BookOpen size={20} />
@@ -278,9 +278,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               transition: 'opacity 0.2s',
               display: isHovered ? 'inline-block' : 'none'
             }}>
-              Tài liệu Tham khảo
+              Bổ trợ nghiệp vụ XNK
             </span>
-          </a>
+          </Link>
           <a 
             href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14"
             target="_blank"

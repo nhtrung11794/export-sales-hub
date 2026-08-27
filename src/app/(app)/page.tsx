@@ -393,7 +393,9 @@ export default function Dashboard() {
       </div>
 
       {/* TẦNG 3: NGHIỆP VỤ THƯƠNG MẠI QUỐC TẾ */}
-      <h2 style={{ fontSize: '1.5rem', color: 'var(--text-primary)', marginBottom: '24px' }}>Bổ trợ nghiệp vụ XNK</h2>
+      <h2 id="bo-tro-xnk" style={{ fontSize: '1.5rem', color: 'var(--text-primary)', marginBottom: '24px', scrollMarginTop: '40px' }}>
+        Bổ trợ nghiệp vụ XNK
+      </h2>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
         
         {/* Cột 1: TMQT */}
