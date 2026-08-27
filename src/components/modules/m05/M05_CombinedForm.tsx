@@ -312,11 +312,6 @@ export default function M05_CombinedForm() {
   const b15Complete = isB15Complete(data);
   const marketContext = submissions.M02?.form_data || {};
 
-  const effectiveIsM04Ready = devBypass || isM04Ready;
-  const effectiveB13Complete = devBypass || b13Complete;
-  const effectiveB14Complete = devBypass || b14Complete;
-  const effectiveB15Complete = devBypass || b15Complete;
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
       <div style={{
@@ -330,24 +325,17 @@ export default function M05_CombinedForm() {
             {isOnline ? 'Online' : 'Mất kết nối'}
           </span>
           {isLocked && <span style={{ color: '#f59e0b', fontWeight: 700 }}>🔒 Đã nộp & khóa sửa</span>}
-          <button
-            type="button"
-            onClick={() => setDevBypass(!devBypass)}
-            style={{
-              padding: '4px 10px',
-              borderRadius: 6,
-              fontSize: '.75rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              border: devBypass ? '1px solid #10b981' : '1px solid rgba(255,255,255,.15)',
-              background: devBypass ? 'rgba(16,185,129,.15)' : 'rgba(255,255,255,.05)',
-              color: devBypass ? '#10b981' : 'var(--text-muted)',
-              transition: 'all .2s ease',
-            }}
-            title="Bật để mở khóa toàn bộ các bài học phục vụ kiểm thử và xem giao diện"
-          >
-            {devBypass ? '🔓 Dev Bypass: Đang Mở Khóa Tất Cả' : '🔒 Khóa Tuần Tự (Click để Test)'}
-          </button>
+          <span style={{
+            padding: '4px 10px',
+            borderRadius: 6,
+            fontSize: '.75rem',
+            fontWeight: 700,
+            border: '1px solid #10b981',
+            background: 'rgba(16,185,129,.15)',
+            color: '#10b981',
+          }}>
+            🔓 Toàn bộ Bài học (B13–B16) Đã Mở Khóa
+          </span>
         </div>
         <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
           {status === 'saving' && <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--accent-primary)' }}><CloudUpload size={16} /> Đang lưu...</span>}
@@ -363,14 +351,14 @@ export default function M05_CombinedForm() {
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={effectiveIsM04Ready}
+        isPrerequisiteComplete={true}
       />
       <B14_IssueRecovery
         data={data}
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={effectiveB13Complete}
+        isPrerequisiteComplete={true}
         targetMarket={marketContext.target_market || ''}
         legalContext={marketContext.strategic_reason || ''}
       />
@@ -379,14 +367,14 @@ export default function M05_CombinedForm() {
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={effectiveB14Complete}
+        isPrerequisiteComplete={true}
       />
       <B16_CapstoneHub
         data={data}
         setData={setData}
         handleBlur={handleBlur}
         isDisabled={isDisabled}
-        isPrerequisiteComplete={effectiveB15Complete}
+        isPrerequisiteComplete={true}
         submissions={submissions}
       />
     </div>
