@@ -19,6 +19,9 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+import { isModuleUnlocked, MODULE_PREREQUISITES } from '@/lib/moduleGating';
+import { ModuleId } from '@/store/useModuleStore';
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -31,7 +34,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { fetchAllSubmissions, isLoading: isStoreLoading, submissions } = useModuleStore();
 
   const isUnlocked = (moduleId: string) => {
-    return true; // Cho phép truy cập toàn bộ module và Capstone Hub
+    if (moduleId === 'DASHBOARD' || moduleId === 'ADMIN') return true;
+    return isModuleUnlocked(moduleId as ModuleId, submissions, isAdmin ? 'admin' : 'user');
   };
 
   useEffect(() => {
@@ -228,7 +232,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               );
             } else {
               // Module bị khóa
-              const alertMsg = 'Module này đang được hoàn thiện và sẽ sớm mở trong các buổi học tiếp theo!';
+              const prereq = MODULE_PREREQUISITES[item.id as ModuleId];
+              const alertMsg = prereq?.prevName
+                ? `Bạn cần hoàn thành và nộp bài ${prereq.prevName} để mở khóa ${item.name}!`
+                : 'Module này đang tạm khóa.';
 
               return (
                 <div key={item.path} onClick={() => alert(alertMsg)} style={sharedStyle} title={!isHovered ? item.name : undefined}>

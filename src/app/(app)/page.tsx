@@ -8,10 +8,12 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { createClient } from '@/lib/supabase/client';
 import { Clock } from 'lucide-react';
 
+import { isModuleUnlocked, MODULE_PREREQUISITES } from '@/lib/moduleGating';
+
 export default function Dashboard() {
   const router = useRouter();
   const supabase = createClient();
-  const { getModuleData } = useModuleStore();
+  const { getModuleData, submissions } = useModuleStore();
 
   const [timeLeft, setTimeLeft] = useState<{ days: number, hours: number, mins: number, secs: number }>({ days: 0, hours: 0, mins: 0, secs: 0 });
   const [userName, setUserName] = useState<string>('Nhà xuất khẩu');
@@ -96,9 +98,14 @@ export default function Dashboard() {
     };
   }, [supabase]);
 
-  const hasData = (moduleId: import('@/store/useModuleStore').ModuleId) => {
-    const data = getModuleData(moduleId);
-    return data && Object.keys(data).length > 0;
+  const getModuleStatus = (storeId: import('@/store/useModuleStore').ModuleId) => {
+    const unlocked = isModuleUnlocked(storeId, submissions, isAdmin ? 'admin' : 'user');
+    if (!unlocked) return 'locked';
+    const sub = submissions[storeId];
+    if (sub?.is_locked || (sub?.form_data && Object.keys(sub.form_data).length > 0)) {
+      return 'completed';
+    }
+    return 'active';
   };
 
   const modules = [
@@ -108,7 +115,7 @@ export default function Dashboard() {
       name: 'Module 01: Mindset & Foundation',
       desc: 'Dịch chuyển tư duy và đánh giá năng lực B2B Sales', 
       totalLessons: 2,
-      status: hasData('M01') ? 'completed' : 'active' 
+      status: getModuleStatus('M01') 
     },
     { 
       id: 'm02',
@@ -116,7 +123,7 @@ export default function Dashboard() {
       name: 'Module 02: Market & Customer Understanding',
       desc: 'Phân tích thị trường mục tiêu và chân dung khách hàng ICP', 
       totalLessons: 4,
-      status: hasData('M02') ? 'completed' : 'active'
+      status: getModuleStatus('M02')
     },
     { 
       id: 'm03',
@@ -124,7 +131,7 @@ export default function Dashboard() {
       name: 'Module 03: Prospecting & Opportunity Management',
       desc: 'Quản trị cơ hội, sàng lọc lead F-N-A-C-M và phễu pipeline', 
       totalLessons: 2,
-      status: hasData('M03') ? 'completed' : 'active'
+      status: getModuleStatus('M03')
     },
     { 
       id: 'm04',
@@ -132,7 +139,7 @@ export default function Dashboard() {
       name: 'Module 04: Proposal, Negotiation & Safe Closing',
       desc: 'Yêu cầu P-B-T-P-C, chào giá TCO, Give-Take Bank và chốt deal', 
       totalLessons: 4,
-      status: hasData('M04') ? 'completed' : 'active' 
+      status: getModuleStatus('M04') 
     },
     { 
       id: 'm05',
@@ -140,7 +147,7 @@ export default function Dashboard() {
       name: 'Module 05: Execution, Recovery & Account Growth',
       desc: 'Internal SLA, Kanban điều phối, 5-Why CAPA và JBP tăng trưởng', 
       totalLessons: 3,
-      status: hasData('M05') ? 'completed' : 'active' 
+      status: getModuleStatus('M05') 
     },
     { 
       id: 'capstone',
@@ -148,7 +155,7 @@ export default function Dashboard() {
       name: 'Final Capstone: Đóng Gói Bộ 03 Playbook',
       desc: 'Rà soát 15 buổi M01–M05, tự phản biện deal và xuất bản 3 Playbook PDF', 
       totalLessons: 1,
-      status: hasData('CAPSTONE') ? 'completed' : 'active' 
+      status: getModuleStatus('CAPSTONE') 
     },
   ];
 
@@ -352,8 +359,8 @@ export default function Dashboard() {
               
               <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
                 {isLocked ? (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '4px', color: 'var(--text-muted)' }}>
-                    🔒 Sắp ra mắt
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(239, 68, 68, 0.1)', padding: '2px 8px', borderRadius: '4px', color: '#fca5a5' }}>
+                    🔒 Cần hoàn thành {MODULE_PREREQUISITES[mod.storeId]?.prevName || 'Module trước'}
                   </span>
                 ) : (
                   <>Tiến độ: <strong style={{ color: 'var(--text-primary)' }}>{completedLessons}/{mod.totalLessons} Bài</strong></>
@@ -367,13 +374,14 @@ export default function Dashboard() {
               {isLocked ? (
                 <button 
                   className="btn btn-secondary"
-                  style={{ width: '100%', fontSize: '0.9rem', padding: '8px', opacity: 0.6, cursor: 'not-allowed' }}
+                  style={{ width: '100%', fontSize: '0.85rem', padding: '8px', opacity: 0.6, cursor: 'not-allowed' }}
                   onClick={(e) => {
                     e.stopPropagation();
-                    alert('Module này đang được hoàn thiện và sẽ sớm mở trong các buổi học tiếp theo!');
+                    const prereq = MODULE_PREREQUISITES[mod.storeId];
+                    alert(`Bạn cần hoàn thành và nộp bài ${prereq?.prevName || 'Module trước'} để mở khóa ${mod.name}!`);
                   }}
                 >
-                  Chưa mở
+                  🔒 Chưa mở khóa
                 </button>
               ) : (
                 <button 
