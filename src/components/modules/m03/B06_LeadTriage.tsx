@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, AlertTriangle, CheckCircle2, Mail, Plus, Trash2, ArrowRight } from 'lucide-react';
+import { Sparkles, AlertTriangle, CheckCircle2, Mail, Plus, Trash2, ArrowRight, FileSpreadsheet, X, Upload } from 'lucide-react';
 import { M03FormData, LeadItem } from './M03_CombinedForm';
 
 interface Props {
@@ -13,10 +13,13 @@ interface Props {
 
 export default function B06_LeadTriage({ data, setData, handleBlur, isDisabled }: Props) {
   const [activeTab, setActiveTab] = useState<'triage' | 'outreach'>('triage');
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importText, setImportText] = useState('');
 
   // Đảm bảo dữ liệu luôn có fallback
   const leads = data.b06_leads || [];
   const selectedTargets = leads.filter(l => l.is_target);
+  const isLimitReached = selectedTargets.length >= 2;
   const isOverLimit = selectedTargets.length > 2;
   const outreachData = data.b06_outreach || {};
 
@@ -34,7 +37,7 @@ export default function B06_LeadTriage({ data, setData, handleBlur, isDisabled }
       website: '',
       estimated_size: '',
       icp_match: 'High',
-      is_target: leads.length === 0 // Tự chọn nếu là dòng đầu
+      is_target: false
     };
     setData(prev => ({ ...prev, b06_leads: [...leads, newLead] }));
   };
@@ -42,6 +45,54 @@ export default function B06_LeadTriage({ data, setData, handleBlur, isDisabled }
   const handleRemoveLead = (id: string) => {
     if (isDisabled) return;
     setData(prev => ({ ...prev, b06_leads: leads.filter(l => l.id !== id) }));
+  };
+
+  const handleParseImport = () => {
+    if (!importText.trim()) return;
+
+    const lines = importText.split('\n').map(l => l.trim()).filter(Boolean);
+    const parsedLeads: LeadItem[] = lines.map((line, idx) => {
+      // Hỗ trợ tab, comma, hoặc pipe separator
+      const parts = line.includes('\t') 
+        ? line.split('\t') 
+        : line.includes(',') 
+          ? line.split(',') 
+          : line.includes('|') 
+            ? line.split('|') 
+            : [line];
+
+      const name = (parts[0] || '').trim();
+      const web = (parts[1] || '').trim();
+      const size = (parts[2] || '').trim() || '50-200 NV';
+      const rawMatch = (parts[3] || '').trim().toLowerCase();
+      let match: 'High' | 'Medium' | 'Low' | 'Junk' = 'High';
+      if (rawMatch.includes('med') || rawMatch.includes('trung')) match = 'Medium';
+      else if (rawMatch.includes('low') || rawMatch.includes('thấp')) match = 'Low';
+      else if (rawMatch.includes('junk') || rawMatch.includes('rác')) match = 'Junk';
+
+      return {
+        id: `lead_ai_${Date.now()}_${idx}`,
+        company_name: name,
+        website: web,
+        estimated_size: size,
+        icp_match: match,
+        is_target: idx < 2 // Chọn sẵn 2 dòng đầu tiên
+      };
+    });
+
+    if (parsedLeads.length > 0) {
+      setData(prev => ({ ...prev, b06_leads: parsedLeads }));
+      setIsImportModalOpen(false);
+      setImportText('');
+    }
+  };
+
+  const handleInsertSampleAI = () => {
+    setImportText(`Golden Harvest Foods\tgoldenharvest.us\t100-500 NV\tHigh
+Apex Global Trade\tapex-global.eu\t50-100 NV\tHigh
+Sunrise Bulk Agro\tsunrise-agro.com\t20-50 NV\tMedium
+Metro Spices Corp\tmetrospices.de\t500+ NV\tLow
+Random Broker LLC\trandombroker.net\t1-5 NV\tJunk`);
   };
 
   const handleOutreachChange = (leadId: string, field: string, value: string) => {
@@ -126,8 +177,7 @@ Trân trọng,
         }
       `}</style>
 
-      {/* HEADER BÀI HỌC */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <h2 style={{ color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold', marginBottom: '8px' }}>
             Bài 06: Sàng lọc Lead & Tiếp cận Mục tiêu (Lead Triage & Outreach)
@@ -137,7 +187,6 @@ Trân trọng,
           </p>
         </div>
 
-        {/* TAB TOGGLE */}
         <div style={{ display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '10px' }}>
           <button 
             type="button"
@@ -154,10 +203,6 @@ Trân trọng,
                 alert('Vui lòng chọn ít nhất 1 Target Account ở Tab 1 trước khi viết kịch bản!');
                 return;
               }
-              if (isOverLimit) {
-                alert('Bạn đang chọn quá 2 Target Accounts. Hãy bỏ bớt để tiếp tục!');
-                return;
-              }
               setActiveTab('outreach');
             }}
           >
@@ -166,24 +211,31 @@ Trân trọng,
         </div>
       </div>
 
-      {/* TAB 1: LEAD TRIAGE */}
       {activeTab === 'triage' && (
         <div>
-          {/* CẢNH BÁO FOCUS CONSTRAINT */}
-          {isOverLimit && (
-            <div style={{
-              display: 'flex', alignItems: 'center', gap: '12px',
-              background: 'rgba(239, 68, 68, 0.15)', border: '1px solid var(--accent-danger)',
-              padding: '12px 16px', borderRadius: '8px', marginBottom: '20px', color: '#fca5a5', fontSize: '0.875rem'
-            }}>
-              <AlertTriangle size={20} color="var(--accent-danger)" style={{ flexShrink: 0 }} />
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px',
+            background: isLimitReached ? 'rgba(16, 185, 129, 0.1)' : 'rgba(59, 130, 246, 0.08)',
+            border: `1px solid ${isLimitReached ? '#10b981' : 'rgba(59, 130, 246, 0.25)'}`,
+            padding: '12px 16px', borderRadius: '8px', marginBottom: '20px', fontSize: '0.875rem'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              {isLimitReached ? <CheckCircle2 size={20} color="#10b981" /> : <AlertTriangle size={20} color="var(--accent-primary)" />}
               <div>
-                <strong>Quy tắc Tập trung (Focus Constraint):</strong> Tư duy B2B không phải là Spam. Bạn đang chọn {selectedTargets.length} leads. Hãy chọn tối đa <strong>2 Target Accounts</strong> nét nhất để cá nhân hóa kịch bản tiếp cận!
+                <strong>Quy tắc Tập trung (Focus Constraint):</strong> Đã chọn <strong>{selectedTargets.length}/2 Target Accounts</strong>. 
+                {isLimitReached ? ' Các ô còn lại đã tự động khóa để bảo vệ tính kỷ luật B2B.' : ' Hãy chọn tối đa 2 accounts nét nhất.'}
               </div>
             </div>
-          )}
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setIsImportModalOpen(true)}
+              style={{ gap: 6, fontSize: '.8rem', padding: '6px 14px', background: 'rgba(59,130,246,.15)', borderColor: 'var(--accent-primary)', color: 'var(--accent-primary)' }}
+            >
+              <FileSpreadsheet size={15} /> 📥 Dán danh sách từ AI / CSV
+            </button>
+          </div>
 
-          {/* TABLE HEADER */}
           <div style={{
             display: 'grid', gridTemplateColumns: '3fr 3fr 2fr 2fr 1.5fr 40px', gap: '12px',
             padding: '0 16px', color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 'bold',
@@ -198,244 +250,300 @@ Trân trọng,
             <div></div>
           </div>
 
-          {/* LEADS LIST */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
-            {leads.map((lead, index) => (
-              <div key={lead.id} className="lead-row" style={{ display: 'grid', gridTemplateColumns: '3fr 3fr 2fr 2fr 1.5fr 40px', gap: '12px', alignItems: 'center' }}>
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder={`VD: Global Foods LLC #${index + 1}`}
-                  value={lead.company_name || ''}
-                  onChange={(e) => handleFieldChange(lead.id, 'company_name', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={isDisabled}
-                  style={{ fontSize: '0.85rem' }}
-                />
-                
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="globalfoods.com"
-                  value={lead.website || ''}
-                  onChange={(e) => handleFieldChange(lead.id, 'website', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={isDisabled}
-                  style={{ fontSize: '0.85rem' }}
-                />
+            {leads.map((lead, index) => {
+              const isCheckboxDisabled = isDisabled || (!lead.is_target && isLimitReached);
 
-                <input
-                  type="text"
-                  className="form-input"
-                  placeholder="50-200 NV"
-                  value={lead.estimated_size || ''}
-                  onChange={(e) => handleFieldChange(lead.id, 'estimated_size', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={isDisabled}
-                  style={{ fontSize: '0.85rem', textAlign: 'center' }}
-                />
-
-                <select
-                  className="form-input"
-                  value={lead.icp_match || 'High'}
-                  onChange={(e) => handleFieldChange(lead.id, 'icp_match', e.target.value)}
-                  onBlur={handleBlur}
-                  disabled={isDisabled}
-                  style={{ 
-                    fontSize: '0.85rem',
-                    color: lead.icp_match === 'High' ? '#10b981' : lead.icp_match === 'Medium' ? '#f59e0b' : '#ef4444',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  <option value="High">Cao (High)</option>
-                  <option value="Medium">Trung bình (Medium)</option>
-                  <option value="Low">Thấp (Low)</option>
-                  <option value="Junk">Rác (Junk)</option>
-                </select>
-
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
+              return (
+                <div key={lead.id} className="lead-row" style={{ display: 'grid', gridTemplateColumns: '3fr 3fr 2fr 2fr 1.5fr 40px', gap: '12px', alignItems: 'center' }}>
                   <input
-                    type="checkbox"
-                    checked={!!lead.is_target}
-                    onChange={(e) => handleFieldChange(lead.id, 'is_target', e.target.checked)}
+                    type="text"
+                    className="form-input"
+                    placeholder={`VD: Global Foods LLC #${index + 1}`}
+                    value={lead.company_name || ''}
+                    onChange={(e) => handleFieldChange(lead.id, 'company_name', e.target.value)}
+                    onBlur={handleBlur}
                     disabled={isDisabled}
-                    style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: 'var(--accent-primary)' }}
+                    style={{ fontSize: '0.85rem' }}
                   />
-                </div>
+                  
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="globalfoods.com"
+                    value={lead.website || ''}
+                    onChange={(e) => handleFieldChange(lead.id, 'website', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    style={{ fontSize: '0.85rem' }}
+                  />
 
-                <button
-                  type="button"
-                  onClick={() => handleRemoveLead(lead.id)}
-                  disabled={isDisabled || leads.length <= 1}
-                  style={{
-                    background: 'transparent', border: 'none', color: 'var(--text-muted)',
-                    cursor: leads.length <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}
-                  title="Xóa dòng"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="50-200 NV"
+                    value={lead.estimated_size || ''}
+                    onChange={(e) => handleFieldChange(lead.id, 'estimated_size', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    style={{ fontSize: '0.85rem', textAlign: 'center' }}
+                  />
+
+                  <select
+                    className="form-input"
+                    value={lead.icp_match || 'High'}
+                    onChange={(e) => handleFieldChange(lead.id, 'icp_match', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    style={{ 
+                      fontSize: '0.85rem',
+                      color: lead.icp_match === 'High' ? '#10b981' : lead.icp_match === 'Medium' ? '#f59e0b' : '#ef4444',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    <option value="High">Cao (High)</option>
+                    <option value="Medium">Trung bình (Medium)</option>
+                    <option value="Low">Thấp (Low)</option>
+                    <option value="Junk">Rác (Junk)</option>
+                  </select>
+
+                  <div 
+                    style={{ display: 'flex', justifyContent: 'center' }}
+                    title={!lead.is_target && isLimitReached ? 'Chỉ được tập trung tối đa 2 Leads' : undefined}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!!lead.is_target}
+                      onChange={(e) => handleFieldChange(lead.id, 'is_target', e.target.checked)}
+                      disabled={isCheckboxDisabled}
+                      style={{ 
+                        width: '18px', 
+                        height: '18px', 
+                        cursor: isCheckboxDisabled ? 'not-allowed' : 'pointer',
+                        opacity: isCheckboxDisabled && !lead.is_target ? 0.35 : 1,
+                        accentColor: 'var(--accent-primary)' 
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveLead(lead.id)}
+                    disabled={isDisabled || leads.length <= 1}
+                    style={{
+                      background: 'transparent', border: 'none', color: 'var(--text-muted)',
+                      cursor: leads.length <= 1 ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    }}
+                    title="Xóa dòng"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              );
+            })}
           </div>
 
-          {/* ACTION BUTTONS */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '16px' }}>
-            <button
-              type="button"
-              onClick={handleAddLead}
-              disabled={isDisabled}
-              className="btn btn-secondary"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}
-            >
-              <Plus size={16} /> Thêm Lead mới
-            </button>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setIsImportModalOpen(true)}
+                style={{ fontSize: '0.85rem', gap: '6px' }}
+              >
+                <FileSpreadsheet size={16} /> 📥 Dán danh sách từ AI / CSV
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={handleAddLead}
+                disabled={isDisabled}
+                style={{ fontSize: '0.85rem', gap: '6px' }}
+              >
+                <Plus size={16} /> + Thêm dòng thủ công
+              </button>
+            </div>
 
             <button
               type="button"
+              className="btn btn-primary"
               onClick={() => {
                 if (selectedTargets.length === 0) {
-                  alert('Vui lòng chọn ít nhất 1 Target Account!');
-                  return;
-                }
-                if (isOverLimit) {
-                  alert('Vui lòng bỏ chọn bớt (tối đa 2 accounts) để tiếp tục!');
+                  alert('Vui lòng chọn ít nhất 1 Target Account trước khi tiếp tục!');
                   return;
                 }
                 setActiveTab('outreach');
               }}
-              disabled={selectedTargets.length === 0 || isOverLimit}
-              className="btn btn-primary"
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}
+              style={{ fontSize: '0.875rem', gap: '8px' }}
             >
-              Tiếp tục: Viết Kịch bản Tiếp cận ({selectedTargets.length}/2) <ArrowRight size={16} />
+              Chuyển sang Viết Kịch bản Tiếp cận ({selectedTargets.length}) <ArrowRight size={16} />
             </button>
           </div>
         </div>
       )}
 
-      {/* TAB 2: OUTREACH GENERATOR */}
       {activeTab === 'outreach' && (
         <div>
-          {selectedTargets.length === 0 ? (
-            <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              Chưa có Target Account nào được chọn. Vui lòng quay lại Tab 1 để chọn tối đa 2 Leads.
-            </div>
-          ) : (
-            selectedTargets.map((lead, idx) => {
-              const current = outreachData[lead.id] || { relevance: '', value_angle: '', cta: '', email_draft: '' };
+          <div style={{ marginBottom: '20px', padding: '12px 16px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)' }}>
+              🎯 Đang soạn kịch bản cá nhân hóa cho <strong>{selectedTargets.length} Target Accounts</strong> đã chọn ở Bước 1.
+            </span>
+          </div>
 
-              return (
-                <div key={lead.id} className="outreach-box">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ background: 'var(--accent-primary)', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                        Mục tiêu #{idx + 1}
-                      </span>
-                      <h3 style={{ color: 'var(--text-primary)', fontSize: '1.1rem', margin: 0, fontWeight: 'bold' }}>
-                        {lead.company_name || 'Chưa đặt tên công ty'}
-                      </h3>
-                      {lead.website && <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>({lead.website})</span>}
+          {selectedTargets.map((lead) => {
+            const current = outreachData[lead.id] || { relevance: '', value_angle: '', cta: '', email_draft: '' };
+
+            return (
+              <div key={lead.id} className="outreach-box">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
+                  <h3 style={{ color: 'var(--accent-primary)', fontSize: '1.15rem', fontWeight: 'bold', margin: 0 }}>
+                    🏢 {lead.company_name || 'Target Account'} ({lead.website || 'Chưa có website'})
+                  </h3>
+                  <span style={{ fontSize: '0.8rem', padding: '4px 10px', borderRadius: '6px', background: 'rgba(16, 185, 129, 0.15)', color: '#10b981', fontWeight: 'bold' }}>
+                    Độ khớp ICP: {lead.icp_match || 'High'}
+                  </span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                        1. Sự thật ngầm hiểu / Liên hệ (Relevance Hook):
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="VD: Doanh nghiệp đang mở rộng chuỗi bán lẻ tại Đức..."
+                        value={current.relevance || ''}
+                        onChange={(e) => handleOutreachChange(lead.id, 'relevance', e.target.value)}
+                        onBlur={handleBlur}
+                        disabled={isDisabled}
+                        style={{ fontSize: '0.85rem' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                        2. Góc Giá trị / Giải pháp (Value Angle):
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="VD: Cung cấp hạt điều Organic đạt chứng nhận BRC/IFS, giảm 12% TCO..."
+                        value={current.value_angle || ''}
+                        onChange={(e) => handleOutreachChange(lead.id, 'value_angle', e.target.value)}
+                        onBlur={handleBlur}
+                        disabled={isDisabled}
+                        style={{ fontSize: '0.85rem' }}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                        3. Lời kêu gọi hành động áp lực thấp (Low-friction CTA):
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="VD: Phản hồi email này để nhận bảng Specs và mẫu test miễn phí tuần này."
+                        value={current.cta || ''}
+                        onChange={(e) => handleOutreachChange(lead.id, 'cta', e.target.value)}
+                        onBlur={handleBlur}
+                        disabled={isDisabled}
+                        style={{ fontSize: '0.85rem' }}
+                      />
                     </div>
 
                     <button
                       type="button"
+                      className="btn btn-secondary"
                       onClick={() => handleGenerateDraft(lead)}
                       disabled={isDisabled}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: '6px',
-                        background: 'rgba(59, 130, 246, 0.1)', color: 'var(--accent-primary)',
-                        border: '1px solid rgba(59, 130, 246, 0.2)', padding: '6px 12px',
-                        borderRadius: '6px', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 'bold'
-                      }}
+                      style={{ marginTop: '6px', fontSize: '0.85rem', gap: '6px' }}
                     >
-                      <Sparkles size={14} /> 🪄 Tạo Email Mẫu
+                      <Sparkles size={16} color="var(--accent-primary)" /> Tự động ghép thành Bản nháp Email
                     </button>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                    {/* Cột trái: 3 trường Mad-libs */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          1. Sự thật ngầm hiểu (Relevance / Trigger Event)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="VD: Họ vừa ra mắt dòng sản phẩm Organic mới tháng trước..."
-                          value={current.relevance || ''}
-                          onChange={(e) => handleOutreachChange(lead.id, 'relevance', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.85rem' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          2. Góc tiếp cận giá trị (Value Angle)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="VD: Tối ưu chi phí bao bì 15% mà vẫn đạt chứng chỉ USDA..."
-                          value={current.value_angle || ''}
-                          onChange={(e) => handleOutreachChange(lead.id, 'value_angle', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.85rem' }}
-                        />
-                      </div>
-
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          3. Kêu gọi hành động (Low-friction CTA)
-                        </label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="VD: Đề xuất gửi bảng Test Report và 3 mẫu dùng thử miễn phí..."
-                          value={current.cta || ''}
-                          onChange={(e) => handleOutreachChange(lead.id, 'cta', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.85rem' }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Cột phải: Bản nháp Email hoàn chỉnh */}
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                        <Mail size={14} /> Bản nháp Email tiếp cận (Cold Outreach Draft)
-                      </label>
-                      <textarea
-                        className="form-input"
-                        rows={7}
-                        placeholder="Nội dung email sau khi ghép hoặc tự viết lại..."
-                        value={current.email_draft || ''}
-                        onChange={(e) => handleOutreachChange(lead.id, 'email_draft', e.target.value)}
-                        onBlur={handleBlur}
-                        disabled={isDisabled}
-                        style={{ fontSize: '0.85rem', resize: 'vertical', flex: 1, fontFamily: 'sans-serif' }}
-                      />
-                    </div>
+                  {/* CỘT PHẢI: BẢN NHÁP EMAIL HOÀN CHỈNH */}
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                      Bản nháp Email Tiếp cận (Outreach Cold Email):
+                    </label>
+                    <textarea
+                      className="form-input"
+                      rows={9}
+                      placeholder="Bản nháp email sẽ được tạo ở đây hoặc bạn có thể tự soạn thảo..."
+                      value={current.email_draft || ''}
+                      onChange={(e) => handleOutreachChange(lead.id, 'email_draft', e.target.value)}
+                      onBlur={handleBlur}
+                      disabled={isDisabled}
+                      style={{ fontSize: '0.85rem', lineHeight: '1.5' }}
+                    />
                   </div>
                 </div>
-              );
-            })
-          )}
+              </div>
+            );
+          })}
 
-          <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '16px' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <button
               type="button"
-              onClick={() => setActiveTab('triage')}
               className="btn btn-secondary"
+              onClick={() => setActiveTab('triage')}
               style={{ fontSize: '0.85rem' }}
             >
               ← Quay lại Sàng lọc Danh sách
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL IMPORT DỮ LIỆU TỪ AI / CSV */}
+      {isImportModalOpen && (
+        <div role="dialog" aria-modal="true" style={{ position: 'fixed', inset: 0, zIndex: 10000, display: 'grid', placeItems: 'center', padding: 24, background: 'rgba(2,6,23,.85)', backdropFilter: 'blur(8px)' }}>
+          <div className="glass-panel" style={{ width: 'min(640px, 95vw)', display: 'flex', flexDirection: 'column', border: '1px solid var(--accent-primary)', boxShadow: '0 24px 60px rgba(0,0,0,.6)' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,.08)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ fontSize: '1.15rem', margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FileSpreadsheet size={18} color="var(--accent-primary)" /> Dán Danh Sách Leads từ AI / CSV
+              </h3>
+              <button onClick={() => setIsImportModalOpen(false)} aria-label="Đóng" style={{ border: 0, background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer' }}><X size={20} /></button>
+            </div>
+
+            <div style={{ padding: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <p style={{ fontSize: '.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                Dán kết quả tìm kiếm Lead từ <strong>Gemini Spark / ChatGPT</strong> hoặc file CSV/Excel vào đây. Cấu trúc mỗi dòng: <code>Tên Công Ty [Tab / Phẩy] Website [Tab / Phẩy] Quy Mô [Tab / Phẩy] Điểm Fit (High/Medium/Low)</code>
+              </p>
+
+              <textarea
+                className="form-input"
+                rows={7}
+                placeholder={`Golden Harvest Foods\tgoldenharvest.us\t100-500 NV\tHigh\nApex Global Trade\tapex-global.eu\t50-100 NV\tHigh`}
+                value={importText}
+                onChange={e => setImportText(e.target.value)}
+                style={{ fontSize: '.82rem', fontFamily: 'monospace', lineHeight: 1.4 }}
+              />
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={handleInsertSampleAI}
+                  style={{ background: 'transparent', border: 0, color: 'var(--accent-primary)', fontSize: '.8rem', cursor: 'pointer', textDecoration: 'underline' }}
+                >
+                  ⚡ Chèn nhanh 5 Leads mẫu từ Gemini AI
+                </button>
+                <span style={{ fontSize: '.76rem', color: 'var(--text-muted)' }}>
+                  {importText.trim().split('\n').filter(Boolean).length} dòng phát hiện
+                </span>
+              </div>
+            </div>
+
+            <div style={{ padding: '14px 20px', borderTop: '1px solid rgba(255,255,255,.08)', display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+              <button className="btn btn-secondary" onClick={() => setIsImportModalOpen(false)} style={{ fontSize: '.84rem' }}>Hủy</button>
+              <button className="btn btn-primary" onClick={handleParseImport} disabled={!importText.trim()} style={{ fontSize: '.84rem', gap: 6 }}>
+                <Upload size={15} /> Nhập vào Bảng Sàng Lọc
+              </button>
+            </div>
           </div>
         </div>
       )}
