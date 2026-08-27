@@ -1,72 +1,110 @@
-# 📘 CẨM NANG BÀN GIAO (HANDOFF HANDBOOK)
-**Dự án:** Export Sales Interactive Hub (LOS)  
-**Ngày cập nhật:** 27/08/2026 (Chốt hạ toàn diện Module 01 -> Module 04, RBAC, AI Assistant & Tooling)
+# 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
+**Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
+**Phiên bản:** v7.0 (Chốt hạ toàn diện từ M01 -> M05, Khoang Final Capstone Độc Lập, ErrorBoundary, Split-View Dashboards & Trực quan hóa Dữ liệu)  
+**Ngày cập nhật:** 27/08/2026
 
-Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ Tư duy, Kết quả, Công cụ và Kế hoạch để bạn hoặc bất kỳ AI Agent nào trong phiên tiếp theo có thể tiếp nối dự án ngay lập tức mà không bị đứt gãy mạch logic.
+Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư duy, Kết quả, Kỹ thuật, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc bảo trì dự án ngay lập tức mà không bao giờ bị đứt gãy mạch logic.
 
 ---
 
 ## 1. 🏆 NHỮNG ĐIỂM ĐÃ LÀM ĐƯỢC (ACCOMPLISHED)
 
-### 1.1. Kiến trúc Cốt lõi & Phân quyền (Auth & RBAC v6.0)
-- **Tự đăng ký & Phê duyệt (Self-signup with Admin Approval):** Người dùng tự đăng ký không cần xác thực email. Trạng thái mặc định `approval_status = 'pending'`, tự động chuyển hướng tới `/pending-approval` để bảo vệ tài nguyên học tập.
-- **Admin Dashboard (`/admin`):** Giao diện quản trị viên 1-click phê duyệt/từ chối học viên.
-- **Chế độ Khóa Module (Student Pilot Lock):**
-  - Mở quyền trải nghiệm thực tế cho học viên ở **M01 và M02**.
-  - Tạm khóa các Module sau đối với tài khoản học viên thường (`role = 'user'`) kèm huy hiệu `🔒 Sắp ra mắt`.
-  - Tài khoản `role = 'admin'` mở toàn quyền truy cập để phát triển và nghiệm thu.
-
-### 1.2. Hoàn thiện 100% Giao diện & Logic Nghiệp vụ các Module:
-- **Module 01: Export Sales Strategy & Foundation:** Chuẩn hóa form mục tiêu doanh thu, sản phẩm xuất khẩu và năng lực lõi.
-- **Module 02: Market & Customer Understanding (ICP):**
-  - B03: Ma trận 6 cột Target Market & Route to Market.
-  - B04: Sơ đồ tổ chức Buyer Map với kéo thả `@dnd-kit` mượt mà.
-  - B05: Ma trận 5 lớp Discovery Insight (*Context, Need, Pain, Criteria, Risk/Concern*), căn giữa bảng và Dynamic Focus Glow.
-  - **Bổ sung Trợ lý AI:** Tích hợp cả **Gemini Spark** lẫn **GPT Chuyên gia Nghiên cứu Thị trường & Đối thủ** trực tiếp tại Cột 3.
-- **Module 03: Lead Generation & Qualification:**
-  - B06: Kênh tiếp cận & Lead Sourcing.
-  - B07: Ma trận sàng lọc F-N-A-C-M (Fit, Need, Authority, Commercial, Mindset) và chấm điểm Access Score.
-  - B08: Lead Enrichment & Chiến lược tạo cơ hội.
-- **Module 04: Proposal, Negotiation & Safe Closing ("Máy ép kỷ luật thương mại"):**
-  - B09: Ma trận P-B-T-P-C (*Product, Business, Transport, Payment, Compliance*) với **Go/No-go Gate**.
-  - B10: **TCO Calculator** tính Landed Cost tự động & Rào cản định giá 3 tùy chọn (Pricing Anchoring).
-  - B11: **Trade-off Gate (Bàn cân đàm phán)**: Báo đỏ 🔴 và chặn nhượng bộ miễn phí nếu có GIVE mà không có TAKE.
-  - B12: **Payment Risk Gate**: Tự động bôi xám các phương thức rủi ro (O/A, D/P) nếu điểm tín nhiệm từ B07 thấp; bắt buộc viết Giải trình rủi ro (Bypass Rule) và hoàn thành Safe Order Checklist.
-
-### 1.3. Đóng gói Công cụ & Tự động hóa (Tools & Skills)
-- Đóng gói file công cụ **[`PRD/🚀_1_CLICK_CHUAN_HOA_PRD.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/PRD/%F0%9F%9A%80_1_CLICK_CHUAN_HOA_PRD.md)** giúp kích hoạt skill `@standardize-prd` bằng một thao tác dán lệnh.
-- Hệ thống đã vượt qua kiểm tra `npx tsc --noEmit` (0 lỗi) và tự động Deploy thành công lên **Vercel**.
+### 1.1. Hoàn thiện 100% Hành trình 15 Buổi Học (M01 -> M05)
+- **Module 01: Mindset & Foundation (B01 - B02)**:
+  - B01: Radar 11 năng lực xuất khẩu B2B cốt lõi.
+  - B02: Cấu trúc mục tiêu 90 ngày dạng Mad Libs 3 thành phần.
+- **Module 02: Market & ICP (B03 - B06)**:
+  - B03: Ma trận 6 cột Target Market & Route to Market + Tích hợp Rào cản pháp lý.
+  - B04: Sơ đồ tổ chức Buyer Map kéo thả `@dnd-kit` đa tầng quyền lực.
+  - B05: Discovery Matrix 5 lớp (*Context, Need, Pain, Criteria, Risk*) với Dynamic Focus Glow.
+  - Trợ lý AI Cột 3: Tích hợp Gemini Spark và GPT Chuyên gia Nghiên cứu Thị trường.
+- **Module 03: Lead Generation & Qualification (B07 - B08)**:
+  - B06: Kênh tiếp cận & Lead Sourcing (tối đa 2 target accounts).
+  - B07: Ma trận sàng lọc F-N-A-C-M (*Fit, Need, Authority, Commercials, Market Timing*) và chấm điểm Access Score.
+  - B08: Kịch bản Follow-up đa kênh và quản trị Pipeline.
+- **Module 04: Proposal, Negotiation & Safe Closing (B09 - B12)**:
+  - B09: Trạm làm rõ yêu cầu P-B-T-P-C (*Product, Budget, Timeline, Payment, Compliance*) với Toggle tương tác và Placeholders chuyên sâu.
+  - B10: Bảng tính Landed Cost (bổ sung phí kiểm định SGS/C/O) & Rào cản Chào giá Chim mồi (Decoy Pricing Gate).
+  - B11: Bàn cân đàm phán Give–Take Bank (Tooltip trích xuất nỗi đau Buyer từ B05 để đòi hỏi điều kiện có lợi).
+  - B12: Kiểm soát rủi ro thanh toán & Interactive Safe Order Checklist (bắt buộc tick đủ 3 bước để hoàn tất clearance M04).
+- **Module 05: Execution, Recovery & Account Growth (B13 - B15)**:
+  - B13: Cam kết dịch vụ nội bộ (Internal SLA Gate khóa mốc tiến độ nếu chưa đạt 4/5) & Khóa cứng mốc `Point of No Return 🔒`.
+  - B14: Xử lý khủng hoảng với Crisis UX Pop-up Email giận dữ từ khách hàng + Bộ quét từ khóa pháp lý (`compensate, refund, đền bù...`) theo thời gian thực.
+  - B15: Kế hoạch tăng trưởng tài khoản chiến lược (JBP), Ma trận Share of Wallet, Trust Score Gate ($<50$ khóa Up-sell) & Modal kết nối Buyer Map B04.
 
 ---
 
-## 2. ⏳ NHỮNG ĐIỂM CHƯA LÀM ĐƯỢC (NEXT STEPS / PENDING)
-
-- **[Sprint Cuối] Xây dựng Module 05 (Execution, Recovery & Account Growth - B13 đến B16):**
-  - B13: Quản trị thực thi đơn hàng & Xử lý sự cố phát sinh (Dispute & Claim Management).
-  - B14: Quy trình chăm sóc & Mở rộng tài khoản khách hàng (Account Expansion / Cross-selling).
-  - B15: Tổng kết chiến lược & Đánh giá năng lực Sales.
-  - B16: **Capstone Project & Xuất Báo cáo PDF:** Cơ chế tổng hợp dữ liệu xuyên suốt từ M01 -> M05 thành bản Kế hoạch Kinh doanh Xuất khẩu hoàn chỉnh.
-- **Tối ưu hóa Video Hosting:** Sẵn sàng chuyển đổi trình phát PiP sang `<iframe>` để nhúng video YouTube Unlisted / Vimeo nếu có video bài giảng dài (>50MB).
-
----
-
-## 3. 🧠 TƯ DUY & Ý TƯỞNG CỐT LÕI (CORE MINDSET)
-
-1. **Dynamic Design & Touch Feedback:** Luôn có phản hồi thị giác tức thời (`:focus-within`, Glow, Row Dimming cho hàng khóa, Badges màu phân loại).
-2. **Kỷ luật thương mại thông qua Rào cản (Gating System):** Không để học viên điền bừa; hệ thống bắt buộc phải tính toán TCO, đánh đổi Give-Take và giải trình rủi ro thanh toán.
-3. **Data Inheritance & Defensive Fallbacks:** Kế thừa dữ liệu giữa các bài qua Zustand store, luôn bọc `(data || '').trim()` để đảm bảo không bao giờ sập giao diện khi có thay đổi schema.
-4. **Tối ưu chi phí hạ tầng:** Tận dụng triệt để Supabase Free Tier + Giải pháp Embed YouTube/Drive/iLovePDF cho tài nguyên đa phương tiện nặng.
+### 1.2. Khoang Final Capstone Độc Lập & Cỗ Máy Xuất Bản 3 Playbook
+- **Tách Khoang Độc Lập (`/capstone`)**: Tách bài 16 thành Khoang Capstone riêng biệt, bao quát toàn bộ 15 buổi học.
+- **Zone 01 (Deep-linking Split-View)**: 5 Thẻ Module tương tác, bấm thẻ nào mở ngay ngăn kéo Split-View focus vào tab đó (Zero-context-switching).
+- **Zone 02 (Closed-loop Mindset Shift)**: Callout `[📌 Nhìn lại: Mục tiêu 90 ngày viết ở Buổi 02]` hiển thị nguyên văn câu Mad Libs ban đầu đối chiếu với Kế hoạch 90 ngày mới.
+- **Zone 03 (Actionable Garbage Filter & Gamified Preview)**:
+  - Các dòng lỗi Garbage Filter là Hyperlinks nhảy thẳng đến Module cần sửa trong Split-View.
+  - Nút `[👁️ Xem trước (Preview)]` luôn mở được bản nháp Playbook có Watermark mờ kích thích học viên hoàn thiện dữ liệu.
+  - Bộ xuất bản in ấn kết xuất chuẩn hóa **Bộ 03 Playbook Xuất Khẩu B2B**:
+    1. *Playbook 01: Market & Outreach (M01–M03)*
+    2. *Playbook 02: Commercial Deal Desk (M04)*
+    3. *Playbook 03: Execution & JBP Growth (M05)*
+- **Trực Quan Hóa Ngăn Kéo Split-View**: Thay thế 100% mã JSON thô bằng Lưới thanh tiến độ Năng lực Radar 1-5 ⭐ (M01), Thẻ Thị trường & ICP (M02), Bảng F-N-A-C-M (M03), Bảng P-B-T-P-C (M04), Thẻ CAPA 3 bước (M05) và nút `[✏️ Sửa tại Module]`.
 
 ---
 
-## 4. 🛠️ BỘ CÔNG CỤ TỰ ĐỘNG (SKILLS & TOOLS)
+### 1.3. Hạ Tầng Chống Sập & Khắc Phục Lỗi Runtime
+- **React ErrorBoundary (`src/components/common/ErrorBoundary.tsx`)**: Bọc an toàn các module và Capstone, bắt chính xác lỗi React và hiển thị hộp thoại khắc phục thay vì màn hình đen "This page couldn't load".
+- **Sửa Lỗi React Child Object (`Minified React error #31`)**: Viết hàm `formatM01Goal` và `formatPain` để bóc tách an toàn object `{ input1, input2, input3 }` của Mad Libs thành câu hoàn chỉnh, triệt tiêu lỗi render object trực tiếp.
+- **Route Protection Middleware (`src/proxy.ts`)**: Bổ sung `/capstone` và `/admin` vào danh sách route yêu cầu xác thực.
+- **Dọn Dẹp Xung Đột Route**: Xóa thư mục trùng lặp `(modules)/capstone` tránh xung đột Next.js App Router.
 
-| Tên Tool / Skill | Vị trí | Công dụng & Cách gọi |
+---
+
+## 2. ⏳ NHỮNG ĐIỂM CẦN LƯU Ý & CẢI TIẾN TIẾP THEO (PENDING / NEXT STEPS)
+
+1. **Khóa Supabase Enum Constraint**:
+   - Khi chạy `submitModule('CAPSTONE')`, nếu bảng `module_submissions` trong Supabase có ràng buộc `CHECK (module_id IN ('M01','M02','M03','M04','M05'))` thì cần chạy lệnh SQL trên Supabase:
+     ```sql
+     ALTER TABLE module_submissions DROP CONSTRAINT IF EXISTS module_submissions_module_id_check;
+     ALTER TABLE module_submissions ADD CONSTRAINT module_submissions_module_id_check 
+       CHECK (module_id IN ('M01', 'M02', 'M03', 'M04', 'M05', 'CAPSTONE'));
+     ```
+2. **Video Hosting Dự Phòng**:
+   - Khi tải lên các video bài giảng thực tế dung lượng lớn (>50MB), ưu tiên dùng YouTube Unlisted / Vimeo và nhúng qua thẻ `<iframe>` trong component PiP player.
+3. **Mở Rộng Dữ Liệu Demo**:
+   - Cho phép giáo viên / admin nạp bộ dữ liệu mẫu (Seed Data) để học viên mới có thể bấm xem thử trọn vẹn 1 Deal hoàn chỉnh từ M01 đến M05.
+
+---
+
+## 3. 🧠 TƯ DUY & Ý TƯỞNG CỐT LÕI (CORE MINDSET & PHILOSOPHY)
+
+1. **Tư Duy Máy Ép Kỷ Luật (Gating System)**:
+   - Không cho phép học viên điền tắt hoặc điền bừa. Mọi bước đi đều có chốt chặn logic:
+     - Chưa qua SLA $\rightarrow$ Khóa Timeline & Kanban (B13).
+     - Chưa có SGS $\rightarrow$ Khóa cam kết đền bù pháp lý (B14).
+     - Trust Score thấp $\rightarrow$ Khóa Up-sell, ép tập trung vào Repeat Order (B15).
+     - Chưa qua Garbage Filter $\rightarrow$ Khóa tải PDF chính thức (Capstone).
+2. **Tư Duy Đóng Kín Vòng Lặp (Closed-Loop Data Inheritance)**:
+   - Dữ liệu không biến mất mà luôn chảy xuyên suốt từ bài trước sang bài sau:
+     - Nỗi đau Buyer B05 $\rightarrow$ Gợi ý TAKE trong Đàm phán B11.
+     - Buyer Map B04 $\rightarrow$ Danh sách họp QBR B15.
+     - Mục tiêu ban đầu B02 $\rightarrow$ Đối chiếu Kế hoạch 90 ngày Capstone.
+3. **Phản Hồi Xúc Giác & Động Lực (Gamification & Tactile UX)**:
+   - Bấm mở xem trước Playbook bị làm mờ (Blur + Watermark) tạo động lực hoàn thành dữ liệu.
+   - Thao tác nhấp lỗi đỏ tự động dẫn đến đúng vị trí cần sửa (Zero friction).
+4. **Phòng Vệ Dữ Liệu Tuyệt Đối (Bulletproof Defensive Coding)**:
+   - Luôn kiểm tra `Array.isArray()`, `typeof === 'object'`, fallback chuỗi rỗng `(val || '')`, bọc `ErrorBoundary` ở mọi cấp.
+
+---
+
+## 4. 🛠️ BỘ CÔNG CỤ TỰ ĐỘNG HÓA (SKILLS & TOOLS)
+
+| Công cụ / Skill | Đường dẫn | Công dụng & Cách kích hoạt |
 | :--- | :--- | :--- |
-| **`@standardize-prd`** | `.agents/skills/standardize-prd` | Tự động đọc file `.docx` mới và đồng bộ vào `PRD_Master.md`. Dùng nhanh qua file `PRD/🚀_1_CLICK_CHUAN_HOA_PRD.md`. |
-| **`@module-ui-architect`** | `.agents/skills/module-ui-architect` | Tự động thiết kế và code giao diện chuẩn hóa (Dynamic Design, 3-column layout, Gates, Fallbacks). |
+| **`@module-ui-architect`** | [`.agents/skills/module-ui-architect/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/module-ui-architect/SKILL.md) | Tự động thiết kế, lập trình và chuẩn hóa UI/UX các Module theo đúng chuẩn Dynamic Design, Gating, State Management & ErrorBoundary. |
+| **`@standardize-prd`** | [`.agents/skills/standardize-prd/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/standardize-prd/SKILL.md) | Đọc file Word `.docx` mới và đồng bộ tự động vào `PRD_Master.md`. |
+| **1-Click Chuẩn Hóa Tool** | [`🚀_1_CLICK_CAP_NHAT_CHUAN_HOA.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/%F0%9F%9A%80_1_CLICK_CAP_NHAT_CHUAN_HOA.md) | File lệnh mẫu 1-click dán vào chat để AI tự động kiểm tra, rà soát và chuẩn hóa toàn bộ hệ thống. |
 
 ---
 
-**💡 CÂU LỆNH MỞ ĐẦU CHO PHIÊN TIẾP THEO:**
-> *"Hãy sử dụng skill `@module-ui-architect` để thiết kế và lập trình giao diện cho Module 05 (Module cuối cùng) nhé!"*
+## 5. 💡 HƯỚNG DẪN KÍCH HOẠT NHANH PHIÊN TIẾP THEO
+
+Khi bắt đầu phiên làm việc mới, bạn chỉ cần gõ:
+> *"Đọc file `HANDBOOK.md` và sử dụng skill `@module-ui-architect` để tiếp tục chuẩn hóa và kiểm thử hệ thống."*
