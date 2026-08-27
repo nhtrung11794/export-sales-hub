@@ -8,13 +8,14 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X, Sparkles, Copy, Check } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
-import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName } from '@/lib/courseMaterials';
 
 export default function M04Page() {
   const supabase = createClient();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>('');
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
   
@@ -72,7 +73,11 @@ export default function M04Page() {
   };
 
   const handleOpenDocument = (lessonId: string) => {
-    openCourseSlide(lessonId);
+    const embedUrl = getLessonSlideEmbedUrl(lessonId);
+    const fileName = getLessonStandardFileName(lessonId);
+    const material = COURSE_MATERIALS[lessonId];
+    setPreviewTitle(`${fileName} — ${material?.title || 'Slide Bài Giảng'}`);
+    setPreviewUrl(embedUrl);
   };
 
   const handleOpenVideo = async (fileName: string) => {
@@ -289,6 +294,7 @@ export default function M04Page() {
         formContent={<M04_CombinedForm />}
         aiTutorContent={aiTutorContent}
         previewUrl={previewUrl}
+        previewTitle={previewTitle}
         onClosePreview={() => setPreviewUrl(null)}
         headerActionNode={
           isLocked ? (

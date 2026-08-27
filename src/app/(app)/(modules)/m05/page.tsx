@@ -8,7 +8,7 @@ import M05_CombinedForm, { isB13Complete, isB14Complete, isB15Complete, M05FormD
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
 
-import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS } from '@/lib/courseMaterials';
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName } from '@/lib/courseMaterials';
 
 const LESSONS = [
   { lessonKey: 'B13', id: 13, title: COURSE_MATERIALS.B13.title, description: COURSE_MATERIALS.B13.description, pdf: COURSE_MATERIALS.B13.standardFileName, video: COURSE_MATERIALS.B13.videoFileName || 'M05_Video13.mp4' },
@@ -21,6 +21,7 @@ export default function M05Page() {
   const { submitModule, unlockModule, submissions } = useModuleStore();
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>('');
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,7 +34,11 @@ export default function M05Page() {
   }, [supabase]);
 
   const handleOpenDocument = (lessonKey: string) => {
-    openCourseSlide(lessonKey);
+    const embedUrl = getLessonSlideEmbedUrl(lessonKey);
+    const fileName = getLessonStandardFileName(lessonKey);
+    const material = COURSE_MATERIALS[lessonKey];
+    setPreviewTitle(`${fileName} — ${material?.title || 'Slide Bài Giảng'}`);
+    setPreviewUrl(embedUrl);
   };
 
   const handleOpenVideo = async (fileName: string) => {
@@ -162,6 +167,7 @@ export default function M05Page() {
         formContent={<M05_CombinedForm />}
         aiTutorContent={aiTutorContent}
         previewUrl={previewUrl}
+        previewTitle={previewTitle}
         onClosePreview={() => setPreviewUrl(null)}
         headerActionNode={isLocked ? (
           <button className="btn" onClick={handleUnlock} disabled={isSubmitting} style={{ background: '#f59e0b', color: '#0f172a', fontWeight: 800 }}>{isSubmitting ? 'Đang mở...' : 'Mở khóa để sửa'}</button>

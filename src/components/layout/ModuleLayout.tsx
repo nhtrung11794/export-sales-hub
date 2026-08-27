@@ -8,8 +8,9 @@ interface ModuleLayoutProps {
   formContent: React.ReactNode;
   aiTutorContent: React.ReactNode;
   previewUrl?: string | null;
+  previewTitle?: string;
   onClosePreview?: () => void;
-  headerActionNode?: React.ReactNode; // Thêm prop này
+  headerActionNode?: React.ReactNode;
 }
 
 export default function ModuleLayout({
@@ -18,6 +19,7 @@ export default function ModuleLayout({
   formContent,
   aiTutorContent,
   previewUrl,
+  previewTitle,
   onClosePreview,
   headerActionNode
 }: ModuleLayoutProps) {
@@ -48,21 +50,42 @@ export default function ModuleLayout({
       >
         {previewUrl ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-secondary)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 20px', borderBottom: '1px solid var(--border-color)' }}>
-              <h2 style={{ color: 'var(--accent-primary)', fontSize: '1rem', margin: 0 }}>📖 Đọc Tài Liệu</h2>
-              <button 
-                onClick={onClosePreview}
-                className="btn"
-                style={{ background: 'var(--accent-danger)', color: 'white', padding: '6px 16px', fontSize: '0.875rem' }}
-              >
-                Đóng lại (X)
-              </button>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: '1rem' }}>📖</span>
+                <div>
+                  <h2 style={{ color: 'var(--accent-primary)', fontSize: '0.92rem', margin: 0 }}>
+                    {previewTitle || 'Đọc Slide Bài Giảng'}
+                  </h2>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Xem trực tiếp từ Google Drive Embed</span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <a
+                  href={previewUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary"
+                  style={{ padding: '5px 12px', fontSize: '0.76rem' }}
+                  title="Mở tài liệu trên tab mới"
+                >
+                  Mở tab mới ↗
+                </a>
+                <button 
+                  onClick={onClosePreview}
+                  className="btn"
+                  style={{ background: 'var(--accent-danger)', color: 'white', padding: '5px 14px', fontSize: '0.76rem' }}
+                >
+                  Đóng lại (X)
+                </button>
+              </div>
             </div>
-            <div style={{ flex: 1, padding: '0' }}>
+            <div style={{ flex: 1, padding: '0', position: 'relative' }}>
               <iframe 
                 src={previewUrl} 
-                style={{ width: '100%', height: '100%', border: 'none', backgroundColor: 'white' }}
-                title="PDF Preview"
+                style={{ width: '100%', height: '100%', border: 'none', backgroundColor: '#1e293b' }}
+                title={previewTitle || 'PDF Preview'}
+                allow="autoplay"
               />
             </div>
           </div>
