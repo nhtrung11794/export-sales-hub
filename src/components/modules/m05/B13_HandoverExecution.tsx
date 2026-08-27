@@ -25,6 +25,7 @@ import {
   ShieldAlert,
   Trash2,
   Truck,
+  ShieldCheck,
 } from 'lucide-react';
 import { ExecutionMilestone, ExecutionStatus, M05FormData } from './M05_CombinedForm';
 
@@ -37,18 +38,18 @@ interface Props {
 }
 
 const SLA_ITEMS: Array<{ key: keyof M05FormData['b13_execution']['sla_checklist']; label: string; hint: string }> = [
-  { key: 'order_scope_confirmed', label: 'Phạm vi đơn hàng đã chốt', hint: 'SKU, specs, số lượng, tolerance và Incoterm khớp PO/SC.' },
-  { key: 'payment_verified', label: 'Điều kiện thanh toán đã xác minh', hint: 'Tài khoản nhận tiền, mốc thanh toán và điều kiện phát hành chứng từ.' },
-  { key: 'production_capacity_confirmed', label: 'Năng lực sản xuất đã giữ chỗ', hint: 'Nhà máy xác nhận lead time, nguyên liệu và kế hoạch QA/QC.' },
-  { key: 'logistics_booking_confirmed', label: 'Phương án logistics khả thi', hint: 'Có tuyến, cut-off, ETD/ETA dự kiến và phương án dự phòng.' },
-  { key: 'document_owner_assigned', label: 'Chủ sở hữu bộ chứng từ đã rõ', hint: 'Mỗi chứng từ có người chịu trách nhiệm và hạn bàn giao.' },
+  { key: 'order_scope_confirmed', label: '1. Phạm vi đơn hàng đã chốt (Scope Confirmation)', hint: 'SKU, specs, số lượng, dung sai (tolerance) và Incoterms khớp 100% với PO/SC.' },
+  { key: 'payment_verified', label: '2. Điều kiện thanh toán đã xác minh (Payment Verification)', hint: 'Đã nhận tiền cọc T/T hoặc nhận được bản gốc/Swift L/C at sight hợp lệ từ ngân hàng.' },
+  { key: 'production_capacity_confirmed', label: '3. Năng lực sản xuất đã giữ chỗ (Production Slot)', hint: 'Nhà máy xác nhận lead time sản xuất, nguyên liệu đầu vào và kế hoạch QA/QC theo lịch.' },
+  { key: 'logistics_booking_confirmed', label: '4. Phương án logistics & Lịch tàu khả thi (Booking)', hint: 'Forwarder/Hãng tàu xác nhận có chỗ, ngày cut-off CY và ETA dự kiến không bị trễ mùa.' },
+  { key: 'document_owner_assigned', label: '5. Chủ sở hữu bộ chứng từ đã phân công (Doc Owner)', hint: 'Mỗi chứng từ (B/L, C/O, Phyto, SGS) có người chịu trách nhiệm và hạn bàn giao rõ ràng.' },
 ];
 
 const STAGES: Array<{ id: ExecutionStatus; label: string; subtitle: string; color: string }> = [
   { id: 'todo', label: 'To-do', subtitle: 'Chờ triển khai', color: '#64748b' },
-  { id: 'production', label: 'Production', subtitle: 'Sản xuất & QA', color: '#8b5cf6' },
-  { id: 'logistics', label: 'Logistics', subtitle: 'Booking & chứng từ', color: '#f59e0b' },
-  { id: 'delivered', label: 'Delivered', subtitle: 'Đã giao & xác nhận', color: '#10b981' },
+  { id: 'production', label: 'Production', subtitle: 'Sản xuất & QA/QC', color: '#8b5cf6' },
+  { id: 'logistics', label: 'Logistics', subtitle: 'Booking & Chứng từ', color: '#f59e0b' },
+  { id: 'delivered', label: 'Delivered', subtitle: 'Giao hàng & POD', color: '#10b981' },
 ];
 
 function MilestoneCard({ item, disabled, isOverlay = false }: { item: ExecutionMilestone; disabled: boolean; isOverlay?: boolean }) {
@@ -61,8 +62,8 @@ function MilestoneCard({ item, disabled, isOverlay = false }: { item: ExecutionM
       style={{
         padding: 12,
         borderRadius: 10,
-        border: item.is_no_return ? '1px solid rgba(239,68,68,.45)' : '1px solid rgba(255,255,255,.1)',
-        background: isOverlay ? '#1e293b' : (item.is_no_return ? 'rgba(239,68,68,.08)' : 'rgba(15,23,42,.78)'),
+        border: item.is_no_return ? '1px solid rgba(239,68,68,.5)' : '1px solid rgba(255,255,255,.1)',
+        background: isOverlay ? '#1e293b' : (item.is_no_return ? 'rgba(51, 65, 85, 0.6)' : 'rgba(15,23,42,.78)'),
         cursor: disabled ? 'not-allowed' : 'grab',
         opacity: isDragging && !isOverlay ? 0.3 : 1,
         boxShadow: isOverlay ? '0 16px 35px rgba(0,0,0,.45)' : '0 4px 12px rgba(0,0,0,.12)',
@@ -75,8 +76,8 @@ function MilestoneCard({ item, disabled, isOverlay = false }: { item: ExecutionM
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
             <span style={{ color: 'var(--text-primary)', fontSize: '.84rem', fontWeight: 700 }}>{item.title || 'Milestone chưa đặt tên'}</span>
             {item.is_no_return && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 6px', borderRadius: 4, background: 'rgba(239,68,68,.2)', color: '#f87171', fontSize: '.68rem', fontWeight: 700 }}>
-                <ShieldAlert size={11} /> No-Return
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 6px', borderRadius: 4, background: 'rgba(239,68,68,.25)', color: '#fca5a5', fontSize: '.68rem', fontWeight: 700 }}>
+                <Lock size={10} /> Khóa No-Return
               </span>
             )}
           </div>
@@ -123,9 +124,7 @@ export default function B13_HandoverExecution({ data, setData, handleBlur, isDis
   const milestones = execution?.milestones || [];
   const checklist = execution?.sla_checklist || {};
   const checkedCount = Object.values(checklist).filter(Boolean).length;
-  const timelineReady = milestones.length > 0 && milestones.every(item =>
-    (item.title || '').trim() && (item.owner || '').trim() && (item.due_date || '').trim()
-  );
+  const isSlaApproved = checkedCount >= 4; // Tối thiểu 4/5 tiêu chí SLA
   const locked = isDisabled || !isPrerequisiteComplete;
 
   const totalLeadTime = milestones.reduce((sum, item) => sum + (Number(item.lead_time_days) || 0), 0);
@@ -154,7 +153,7 @@ export default function B13_HandoverExecution({ data, setData, handleBlur, isDis
   };
 
   const addMilestone = () => {
-    if (locked) return;
+    if (locked || !isSlaApproved) return;
     const newId = `ms-${Date.now()}`;
     const newMilestone: ExecutionMilestone = {
       id: newId,
@@ -177,7 +176,7 @@ export default function B13_HandoverExecution({ data, setData, handleBlur, isDis
   };
 
   const deleteMilestone = (id: string) => {
-    if (locked) return;
+    if (locked || !isSlaApproved) return;
     setData(prev => ({
       ...prev,
       b13_execution: {
@@ -188,142 +187,234 @@ export default function B13_HandoverExecution({ data, setData, handleBlur, isDis
     setTimeout(handleBlur, 100);
   };
 
+  const handleDragStart = (event: DragStartEvent) => {
+    if (locked || !isSlaApproved) return;
+    setActiveId(String(event.active.id));
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
     setActiveId(null);
-    if (locked || !event.over) return;
-    const nextStatus = event.over.id as ExecutionStatus;
-    if (!STAGES.some(stage => stage.id === nextStatus)) return;
-    setData(prev => ({
-      ...prev,
-      b13_execution: {
-        ...prev.b13_execution,
-        milestones: prev.b13_execution.milestones.map(item => item.id === event.active.id ? { ...item, status: nextStatus } : item),
-      },
-    }));
+    if (!over || locked || !isSlaApproved) return;
+    const targetStatus = over.id as ExecutionStatus;
+    updateMilestone(String(active.id), 'status', targetStatus);
     setTimeout(handleBlur, 100);
   };
 
-  if (!isPrerequisiteComplete) {
-    return (
-      <section className="glass-panel" style={{ padding: 32, opacity: .4, filter: 'grayscale(100%)', pointerEvents: 'none' }}>
-        <h2 style={{ fontSize: '1.4rem', color: 'var(--text-muted)', marginBottom: 12 }}>Bài 13: Handover & Execution</h2>
-        <div style={{ display: 'flex', gap: 8, color: 'var(--accent-warning)' }}><Lock size={18} /> Hoàn tất Payment & Safe Order Checklist ở Bài 12 để mở khóa bàn giao.</div>
-      </section>
-    );
-  }
+  const activeItem = milestones.find(item => item.id === activeId);
 
   return (
-    <section className="glass-panel" style={{ padding: 32, opacity: isDisabled ? .6 : 1 }}>
-      <style>{`
-        .m05-focus-card { transition: all .25s ease; border: 1px solid rgba(255,255,255,.08); }
-        .m05-focus-card:focus-within { border-color: var(--accent-primary) !important; box-shadow: 0 4px 20px rgba(59,130,246,.15); transform: translateY(-2px); }
-      `}</style>
-      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap' }}>
-        <div>
-          <h2 style={{ color: 'var(--accent-primary)', fontSize: '1.4rem', marginBottom: 8 }}>Bài 13: Bàn giao & Vận hành Đơn hàng (Execution & Kanban)</h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '.9rem' }}>Biến cam kết bán hàng thành SLA nội bộ rõ người, rõ việc, kiểm soát No-Return points và tính toán Lead time chuỗi cung ứng.</p>
-        </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <div style={{ textAlign: 'center', padding: '10px 16px', borderRadius: 12, background: 'rgba(59,130,246,.1)', color: 'var(--accent-primary)', border: '1px solid rgba(59,130,246,.25)' }}>
-            <div style={{ fontSize: '1.15rem', fontWeight: 900 }}>{totalLeadTime} ngày</div>
-            <div style={{ fontSize: '.72rem', color: 'var(--text-muted)' }}>Tổng Lead-Time</div>
-          </div>
-          <div style={{ textAlign: 'center', padding: '10px 14px', borderRadius: 12, background: checkedCount === SLA_ITEMS.length ? 'rgba(16,185,129,.12)' : 'rgba(245,158,11,.1)', color: checkedCount === SLA_ITEMS.length ? '#10b981' : '#f59e0b', fontWeight: 800, border: `1px solid ${checkedCount === SLA_ITEMS.length ? 'rgba(16,185,129,.3)' : 'rgba(245,158,11,.3)'}` }}>
-            <div style={{ fontSize: '1.15rem' }}>{checkedCount}/{SLA_ITEMS.length}</div>
-            <div style={{ fontSize: '.72rem' }}>SLA Ký Duyệt</div>
-          </div>
-        </div>
+    <section className="glass-panel" style={{ padding: '28px', opacity: isDisabled ? .6 : 1 }}>
+      <div className="flex items-center gap-2 mb-1">
+        <h2 className="text-xl font-bold" style={{ color: 'var(--accent-primary)' }}>
+          Bài 13: Bàn Giao Nội Bộ & Quản Trị Vận Hành (Internal Handover & Execution SLA)
+        </h2>
       </div>
+      <p className="text-secondary text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
+        Thiết lập ranh giới trách nhiệm giữa Sales - Sản xuất - Logistics bằng bản cam kết SLA nội bộ và kiểm soát các điểm không thể đảo ngược (Point of No Return).
+      </p>
 
-      <div style={{ marginBottom: 30 }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '1.05rem', marginBottom: 14 }}><ClipboardCheck size={19} color="#10b981" /> 1. Internal SLA & Handover Checklist (Điểm kiểm duyệt trước sản xuất)</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+      {/* 1. INTERNAL SLA CHECKLIST */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <h3 style={{ fontSize: '1.02rem', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+            <ClipboardCheck size={18} color="var(--accent-primary)" /> 1. Cam kết Dịch vụ Nội bộ (Internal SLA Approval)
+          </h3>
+          <span style={{ fontSize: '.8rem', color: isSlaApproved ? '#10b981' : 'var(--accent-danger)', fontWeight: 700 }}>
+            {checkedCount}/5 tiêu chuẩn phê duyệt
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gap: 8 }}>
           {SLA_ITEMS.map(item => {
-            const checked = Boolean(checklist[item.key]);
+            const isChecked = Boolean(checklist[item.key]);
             return (
-              <label key={item.key} className="m05-focus-card" style={{ display: 'flex', gap: 12, padding: 14, borderRadius: 10, background: checked ? 'rgba(16,185,129,.08)' : 'rgba(15,23,42,.4)', cursor: locked ? 'not-allowed' : 'pointer' }}>
-                <input type="checkbox" checked={checked} disabled={locked} onChange={event => updateChecklist(item.key, event.target.checked)} onBlur={handleBlur} style={{ marginTop: 4 }} />
-                <span>
-                  <strong style={{ display: 'block', fontSize: '.88rem', color: checked ? '#10b981' : 'var(--text-primary)' }}>{item.label}</strong>
-                  <span style={{ display: 'block', fontSize: '.78rem', color: 'var(--text-secondary)', marginTop: 4 }}>{item.hint}</span>
-                </span>
+              <label
+                key={item.key}
+                style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 12,
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: isChecked ? 'rgba(16, 185, 129, 0.08)' : 'rgba(15, 23, 42, 0.45)',
+                  border: `1px solid ${isChecked ? '#10b981' : 'rgba(255, 255, 255, 0.08)'}`,
+                  cursor: locked ? 'not-allowed' : 'pointer',
+                  transition: 'all .2s ease'
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={e => updateChecklist(item.key, e.target.checked)}
+                  disabled={locked}
+                  style={{ marginTop: 2, width: 16, height: 16, accentColor: '#10b981' }}
+                />
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '.86rem', fontWeight: 700, color: isChecked ? '#10b981' : 'var(--text-primary)' }}>
+                    {item.label}
+                  </div>
+                  <div style={{ fontSize: '.76rem', color: 'var(--text-secondary)', marginTop: 2 }}>
+                    {item.hint}
+                  </div>
+                </div>
               </label>
             );
           })}
         </div>
-      </div>
 
-      <div style={{ marginBottom: 28 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, flexWrap: 'wrap', gap: 12 }}>
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '1.05rem', margin: 0 }}>
-            <CalendarClock size={19} color="var(--accent-primary)" /> 2. Execution Milestones & Lead-time Tracker ({milestones.length} mốc)
-          </h3>
-          <button
-            type="button"
-            className="btn btn-secondary"
-            disabled={locked}
-            onClick={addMilestone}
-            style={{ fontSize: '.78rem', padding: '6px 12px', gap: 6 }}
-          >
-            <Plus size={15} /> Thêm Milestone
-          </button>
-        </div>
-
-        <div style={{ display: 'grid', gap: 10 }}>
-          {milestones.map(item => (
-            <div key={item.id} className="m05-focus-card" style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.9fr 130px 90px 1.2fr auto auto', gap: 10, padding: 12, borderRadius: 10, background: item.is_no_return ? 'rgba(239,68,68,.05)' : 'rgba(0,0,0,.16)', alignItems: 'center' }}>
-              <div>
-                <input className="form-input" value={item.title || ''} placeholder="Tên milestone..." disabled={locked} onChange={event => updateMilestone(item.id, 'title', event.target.value)} onBlur={handleBlur} aria-label="Tên milestone" style={{ fontSize: '.84rem' }} />
-              </div>
-              <div>
-                <input className="form-input" value={item.owner || ''} placeholder="Người/Team phụ trách" disabled={locked} onChange={event => updateMilestone(item.id, 'owner', event.target.value)} onBlur={handleBlur} aria-label="Người phụ trách" style={{ fontSize: '.84rem' }} />
-              </div>
-              <div>
-                <input type="date" className="form-input" value={item.due_date || ''} disabled={locked} onChange={event => updateMilestone(item.id, 'due_date', event.target.value)} onBlur={handleBlur} aria-label="Hạn milestone" style={{ fontSize: '.82rem' }} />
-              </div>
-              <div title="Lead time dự kiến cho mốc này (ngày)">
-                <input type="number" min="0" className="form-input" value={item.lead_time_days ?? 0} placeholder="Ngày" disabled={locked} onChange={event => updateMilestone(item.id, 'lead_time_days', Number(event.target.value))} onBlur={handleBlur} aria-label="Số ngày lead time" style={{ fontSize: '.84rem', textAlign: 'center' }} />
-              </div>
-              <div>
-                <input className="form-input" value={item.note || ''} disabled={locked} onChange={event => updateMilestone(item.id, 'note', event.target.value)} onBlur={handleBlur} placeholder="Ghi chú rủi ro / Specs..." aria-label="Ghi chú milestone" style={{ fontSize: '.82rem' }} />
-              </div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 5, cursor: locked ? 'not-allowed' : 'pointer', fontSize: '.74rem', whiteSpace: 'nowrap', color: item.is_no_return ? '#f87171' : 'var(--text-muted)' }} title="Đánh dấu mốc không thể quay đầu (VD: Đóng cont, Cut-off cảng)">
-                <input type="checkbox" checked={Boolean(item.is_no_return)} disabled={locked} onChange={event => updateMilestone(item.id, 'is_no_return', event.target.checked)} onBlur={handleBlur} />
-                <span>No-Return</span>
-              </label>
-              <button
-                type="button"
-                disabled={locked || milestones.length <= 1}
-                onClick={() => deleteMilestone(item.id)}
-                style={{ border: 0, background: 'transparent', color: 'var(--text-muted)', cursor: locked || milestones.length <= 1 ? 'not-allowed' : 'pointer', padding: 4 }}
-                title="Xóa milestone"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 24 }}>
-        <h3 style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '1.05rem', marginBottom: 14 }}>
-          <Truck size={19} color="#3b82f6" /> 3. Execution Kanban Board (Kéo thả quản trị luồng vận hành)
-        </h3>
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={(event: DragStartEvent) => setActiveId(String(event.active.id))} onDragEnd={handleDragEnd} onDragCancel={() => setActiveId(null)}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(170px, 1fr))', gap: 12, overflowX: 'auto' }}>
-            {STAGES.map(stage => <StageColumn key={stage.id} stage={stage} items={milestones.filter(item => item.status === stage.id)} disabled={locked} />)}
+        {!isSlaApproved && (
+          <div style={{ marginTop: 12, padding: '10px 14px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.12)', border: '1px solid var(--accent-danger)', color: '#fca5a5', fontSize: '.82rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <AlertTriangle size={16} color="var(--accent-danger)" style={{ flexShrink: 0 }} />
+            <span><strong>Chốt chặn SLA kích hoạt:</strong> Bắt buộc tick tối thiểu 4/5 tiêu chí SLA nội bộ để mở khóa kế hoạch Milestones và bảng Kanban Board bên dưới.</span>
           </div>
-          <DragOverlay>{activeId ? <MilestoneCard item={milestones.find(item => item.id === activeId) || milestones[0]} disabled={locked} isOverlay /> : null}</DragOverlay>
-        </DndContext>
+        )}
       </div>
 
-      {checkedCount === SLA_ITEMS.length && timelineReady && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 18, color: '#10b981', fontSize: '.85rem' }}><CheckCircle2 size={18} /> Internal SLA & Timeline đã hoàn chỉnh. Trạm xử lý sự cố B14 đã sẵn sàng!</div>
-      )}
-      {checkedCount === SLA_ITEMS.length && !timelineReady && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 18, color: '#f59e0b', fontSize: '.85rem' }}><CalendarClock size={18} /> Hãy điền đủ Tên, Người phụ trách và Hạn hoàn thành cho toàn bộ milestone để mở B14.</div>
-      )}
+      {/* KHU VỰC 2 & 3: BỊ KHÓA NẾU CHƯA ĐỦ SLA */}
+      <div style={{ opacity: isSlaApproved ? 1 : 0.45, filter: isSlaApproved ? 'none' : 'grayscale(60%)', pointerEvents: isSlaApproved ? 'auto' : 'none', transition: 'all .3s ease' }}>
+        
+        {/* 2. EXECUTION MILESTONES */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+            <div>
+              <h3 style={{ fontSize: '1.02rem', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+                <CalendarClock size={18} color="var(--accent-primary)" /> 2. Kế hoạch Mốc Thời gian & Điểm Không Thể Đảo Ngược (Milestones)
+              </h3>
+              <span style={{ fontSize: '.76rem', color: 'var(--text-muted)' }}>Tổng Lead Time: {totalLeadTime} ngày · {noReturnCount} mốc No-Return</span>
+            </div>
+
+            <button
+              type="button"
+              onClick={addMilestone}
+              disabled={locked || !isSlaApproved}
+              className="btn btn-secondary"
+              style={{ fontSize: '.78rem', padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 6 }}
+            >
+              <Plus size={14} /> Thêm Mốc
+            </button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {milestones.map(item => {
+              const isNoReturn = Boolean(item.is_no_return);
+
+              return (
+                <div
+                  key={item.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1.8fr 1.2fr 130px 100px 140px auto',
+                    gap: 10,
+                    alignItems: 'center',
+                    padding: '12px 14px',
+                    borderRadius: 10,
+                    background: isNoReturn ? 'rgba(51, 65, 85, 0.45)' : 'rgba(15, 23, 42, 0.5)',
+                    border: `1px solid ${isNoReturn ? 'rgba(239, 68, 68, 0.4)' : 'rgba(255, 255, 255, 0.08)'}`,
+                    transition: 'all .2s ease'
+                  }}
+                >
+                  <div>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={item.title}
+                      onChange={e => updateMilestone(item.id, 'title', e.target.value)}
+                      onBlur={handleBlur}
+                      disabled={locked || isNoReturn}
+                      placeholder="Tên mốc..."
+                      style={{ fontSize: '.84rem', fontWeight: 600 }}
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={item.owner}
+                      onChange={e => updateMilestone(item.id, 'owner', e.target.value)}
+                      onBlur={handleBlur}
+                      disabled={locked || isNoReturn}
+                      placeholder="Bộ phận phụ trách..."
+                      style={{ fontSize: '.82rem' }}
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      type="date"
+                      className="form-input"
+                      value={item.due_date}
+                      onChange={e => updateMilestone(item.id, 'due_date', e.target.value)}
+                      onBlur={handleBlur}
+                      disabled={locked || isNoReturn}
+                      style={{ fontSize: '.8rem', opacity: isNoReturn ? 0.7 : 1 }}
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      type="number"
+                      className="form-input"
+                      value={item.lead_time_days ?? ''}
+                      onChange={e => updateMilestone(item.id, 'lead_time_days', Number(e.target.value) || 0)}
+                      onBlur={handleBlur}
+                      disabled={locked || isNoReturn}
+                      placeholder="Ngày"
+                      style={{ fontSize: '.82rem', textAlign: 'center', opacity: isNoReturn ? 0.7 : 1 }}
+                    />
+                  </div>
+
+                  {/* CHECKBOX NO-RETURN */}
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '.76rem', color: isNoReturn ? '#f87171' : 'var(--text-muted)', cursor: locked ? 'not-allowed' : 'pointer', fontWeight: isNoReturn ? 700 : 500 }}>
+                    <input
+                      type="checkbox"
+                      checked={isNoReturn}
+                      onChange={e => updateMilestone(item.id, 'is_no_return', e.target.checked)}
+                      disabled={locked}
+                      style={{ accentColor: '#ef4444' }}
+                    />
+                    <span>{isNoReturn ? '🔒 Đã khóa No-Return' : 'No-Return Point'}</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() => deleteMilestone(item.id)}
+                    disabled={locked || milestones.length <= 1 || isNoReturn}
+                    style={{ border: 0, background: 'transparent', color: isNoReturn ? 'var(--text-muted)' : 'var(--accent-danger)', cursor: (locked || isNoReturn) ? 'not-allowed' : 'pointer' }}
+                    title={isNoReturn ? 'Không thể xóa mốc No-Return' : 'Xóa mốc'}
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 3. KANBAN BOARD */}
+        <div>
+          <h3 style={{ fontSize: '1.02rem', fontWeight: 'bold', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)' }}>
+            <Truck size={18} color="var(--accent-primary)" /> 3. Bảng Kanban Điều Phối Tiến Độ Vận Hành
+          </h3>
+
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+              {STAGES.map(stage => (
+                <StageColumn
+                  key={stage.id}
+                  stage={stage}
+                  items={milestones.filter(m => m.status === stage.id)}
+                  disabled={locked || !isSlaApproved}
+                />
+              ))}
+            </div>
+            <DragOverlay>
+              {activeItem ? <MilestoneCard item={activeItem} disabled={false} isOverlay /> : null}
+            </DragOverlay>
+          </DndContext>
+        </div>
+      </div>
     </section>
   );
 }
-
