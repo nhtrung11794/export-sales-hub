@@ -14,6 +14,8 @@ export interface M02FormData {
   target_market: string;
   route_to_market: string;
   strategic_reason: string;
+  b03_fact_check_url?: string;
+  b03_scan_notes?: Record<string, { ai_output: string; fact_check_url: string }>;
   
   // B04
   icp_size: string;
@@ -35,6 +37,14 @@ const initialData: M02FormData = {
   target_market: '',
   route_to_market: '',
   strategic_reason: '',
+  b03_fact_check_url: '',
+  b03_scan_notes: {
+    layer1: { ai_output: '', fact_check_url: '' },
+    layer2: { ai_output: '', fact_check_url: '' },
+    layer3: { ai_output: '', fact_check_url: '' },
+    layer4: { ai_output: '', fact_check_url: '' },
+    layer5: { ai_output: '', fact_check_url: '' },
+  },
   
   icp_size: '',
   icp_industry: '',

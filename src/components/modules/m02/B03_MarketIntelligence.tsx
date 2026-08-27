@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { M02FormData } from './M02_CombinedForm';
-import { Target, Search, BarChart3, Globe, Copy, Check } from 'lucide-react';
+import { Target, Search, BarChart3, Globe, Copy, Check, ChevronDown, ChevronUp, Link2, Sparkles, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 const PROMPT_SCAN = `BỐI CẢNH:
 Sản phẩm: [ĐIỀN DỮ LIỆU TẠI ĐÂY]
@@ -64,6 +64,14 @@ Cột 3: Phân tích Tác động (Chỉ rõ: Thị trường mở ra hay siết
 Cột 4: Đề xuất hành động ứng phó.
 Kết luận: 1 câu định hướng kèm 1 hành động trọng tâm.`;
 
+const SCAN_LAYERS = [
+  { id: 'layer1', label: '1. Cung (Supply)', desc: 'Nguồn cung, các nước xuất khẩu chính và đối thủ cạnh tranh lớn.' },
+  { id: 'layer2', label: '2. Cầu (Demand)', desc: 'Quy mô thị trường, xu hướng tăng trưởng và thói quen tiêu dùng.' },
+  { id: 'layer3', label: '3. Giá & Chi phí', desc: 'Mức giá tham chiếu CIF/FOB, biến động nguyên vật liệu và cước vận tải.' },
+  { id: 'layer4', label: '4. Đối thủ (Competitors)', desc: 'Thế mạnh của đối thủ bản địa & khoảng trống phân khúc chưa đáp ứng.' },
+  { id: 'layer5', label: '5. Pháp lý & Rào cản', desc: 'Thuế quan, chứng chỉ BRC/IFS/FDA, rào cản kỹ thuật và kiểm dịch.' },
+];
+
 function PromptPanel({ title, promptText }: { title: string; promptText: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -75,25 +83,23 @@ function PromptPanel({ title, promptText }: { title: string; promptText: string 
   };
 
   return (
-    <div style={{ marginTop: '20px', border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
+    <div style={{ marginTop: '16px', border: '1px solid var(--border-color)', borderRadius: '8px', overflow: 'hidden' }}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        style={{ width: '100%', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 'bold', transition: 'background 0.2s' }}
-        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'}
-        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.02)'}
+        style={{ width: '100%', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.02)', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}
       >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>✨ {title}</span>
-        <span>{isOpen ? '▲' : '▼'}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Sparkles size={15} /> {title}</span>
+        <span>{isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}</span>
       </button>
       {isOpen && (
-        <div style={{ padding: '16px', background: 'rgba(0,0,0,0.3)', borderTop: '1px solid var(--border-color)', position: 'relative' }}>
+        <div style={{ padding: '14px', background: 'rgba(0,0,0,0.3)', borderTop: '1px solid var(--border-color)', position: 'relative' }}>
           <button 
             onClick={handleCopy}
-            style={{ position: 'absolute', top: '12px', right: '12px', padding: '6px 12px', background: 'var(--accent-primary)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem' }}
+            style={{ position: 'absolute', top: '10px', right: '10px', padding: '4px 10px', background: 'var(--accent-primary)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem' }}
           >
-            {copied ? <><Check size={14} /> Đã Copy</> : <><Copy size={14} /> Copy</>}
+            {copied ? <><Check size={13} /> Đã Copy</> : <><Copy size={13} /> Copy Prompt</>}
           </button>
-          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.85rem', color: 'var(--text-secondary)', fontFamily: 'inherit', lineHeight: '1.6', margin: 0, paddingRight: '90px' }}>
+          <pre style={{ whiteSpace: 'pre-wrap', fontSize: '0.8rem', color: 'var(--text-secondary)', fontFamily: 'inherit', lineHeight: '1.5', margin: 0, paddingRight: '90px' }}>
             {promptText}
           </pre>
         </div>
@@ -111,30 +117,56 @@ interface B03Props {
 
 export default function B03_MarketIntelligence({ data, setData, handleBlur, isDisabled }: B03Props) {
   const [activeTab, setActiveTab] = useState<'scan' | 'lens' | 'pestel'>('scan');
+  const [activeScanLayer, setActiveScanLayer] = useState<string>('layer1');
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
   
   const [isOtherMarket, setIsOtherMarket] = useState(() => {
     const standardMarkets = ['US', 'EU', 'JP', 'KR', 'CN', 'ASEAN', ''];
     return data.target_market ? !standardMarkets.includes(data.target_market) : false;
   });
 
-  const handleFieldChange = (field: keyof M02FormData, value: string) => {
+  const scanNotes = data.b03_scan_notes || {
+    layer1: { ai_output: '', fact_check_url: '' },
+    layer2: { ai_output: '', fact_check_url: '' },
+    layer3: { ai_output: '', fact_check_url: '' },
+    layer4: { ai_output: '', fact_check_url: '' },
+    layer5: { ai_output: '', fact_check_url: '' },
+  };
+
+  const handleFieldChange = (field: keyof M02FormData, value: any) => {
     setData(prev => ({ ...prev, [field]: value }));
   };
 
-  const isFormComplete = data.target_market && data.route_to_market && data.strategic_reason;
+  const handleScanNoteChange = (layerId: string, field: 'ai_output' | 'fact_check_url', value: string) => {
+    if (isDisabled) return;
+    setData(prev => ({
+      ...prev,
+      b03_scan_notes: {
+        ...(prev.b03_scan_notes || {}),
+        [layerId]: {
+          ...(prev.b03_scan_notes?.[layerId] || { ai_output: '', fact_check_url: '' }),
+          [field]: value
+        }
+      }
+    }));
+  };
+
+  // Check if at least one fact-check URL is entered
+  const hasFactCheck = Object.values(scanNotes).some(item => (item?.fact_check_url || '').trim().length > 0) || (data.b03_fact_check_url || '').trim().length > 0;
+  const isFormComplete = Boolean(data.target_market && data.route_to_market && data.strategic_reason && hasFactCheck);
 
   return (
     <section className="glass-panel" style={{ padding: '32px' }}>
       <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
         Bài 03: Market Intelligence cho Sales xuất khẩu
       </h2>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '32px' }}>
-        Xác định bối cảnh thị trường và chốt phương án tiếp cận. Bạn bắt buộc phải hoàn thành <strong>Quyết định chiến lược</strong> để mở khóa bài tiếp theo.
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '28px' }}>
+        Nghiên cứu thị trường 5 lớp với AI và nguồn kiểm chứng (Fact-Check). Bắt buộc hoàn thành <strong>Quyết định chiến lược</strong> và có <strong>Link kiểm chứng</strong> để mở khóa bài tiếp theo.
       </p>
 
       <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
         
-        {/* CỘT TRÁI: TABBED DASHBOARD (65%) */}
+        {/* CỘT TRÁI: TABBED DASHBOARD (62%) */}
         <div style={{ flex: '0 0 62%', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           
           {/* Tabs Navigation */}
@@ -144,7 +176,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
               className={activeTab === 'scan' ? 'btn btn-primary' : 'btn btn-secondary'}
               style={{ fontSize: '0.875rem', padding: '6px 12px', display: 'flex', gap: '6px', alignItems: 'center' }}
             >
-              <Search size={16} /> Scan 5 Lớp
+              <Search size={16} /> Scan 5 Lớp & Fact-Check
             </button>
             <button 
               onClick={() => setActiveTab('lens')}
@@ -166,26 +198,120 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
           <div style={{ 
             background: 'rgba(15, 23, 42, 0.4)', 
             border: '1px solid rgba(255,255,255,0.05)', 
-            padding: '24px', 
+            padding: '20px', 
             borderRadius: '12px',
             minHeight: '300px'
           }}>
             {activeTab === 'scan' && (
               <div>
-                <h4 style={{ color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Search size={18} color="var(--accent-primary)" /> Hướng dẫn: Quét 5 lớp thị trường
-                </h4>
-                <ul style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: '1.8', paddingLeft: '20px' }}>
-                  <li><strong>Lớp 1 (Cung):</strong> Tổng quan nguồn cung, các quốc gia/khu vực xuất khẩu chính.</li>
-                  <li><strong>Lớp 2 (Cầu):</strong> Nhu cầu tiêu thụ, quy mô và xu hướng tăng/giảm của thị trường.</li>
-                  <li><strong>Lớp 3 (Giá):</strong> Mức giá tham chiếu, biến động giá nguyên vật liệu và thành phẩm.</li>
-                  <li><strong>Lớp 4 (Đối thủ):</strong> Đối thủ cạnh tranh trực tiếp, năng lực và lợi thế của họ.</li>
-                  <li><strong>Lớp 5 (Pháp lý):</strong> Thuế, luật lệ, rào cản kỹ thuật, chính sách xuất nhập khẩu.</li>
-                </ul>
-                <p style={{ marginTop: '16px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                  * Lưu ý: Bạn có thể sử dụng Trợ lý AI (Gemini Spark) ở góc dưới màn hình để cào dữ liệu nhanh cho thị trường bạn quan tâm.
-                </p>
-                <PromptPanel title="Prompt Mẫu: Quét 5 lớp thị trường" promptText={PROMPT_SCAN} />
+                {/* ACCORDION HƯỚNG DẪN THU GỌN */}
+                <div style={{ border: '1px solid rgba(59,130,246,0.2)', background: 'rgba(59,130,246,0.05)', borderRadius: '8px', marginBottom: '16px', overflow: 'hidden' }}>
+                  <button
+                    type="button"
+                    onClick={() => setIsGuideOpen(!isGuideOpen)}
+                    style={{ width: '100%', padding: '10px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'transparent', border: 0, color: 'var(--accent-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem' }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Search size={15} /> ℹ️ Xem Hướng dẫn Phương pháp luận Quét 5 Lớp & Prompt AI
+                    </span>
+                    {isGuideOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </button>
+
+                  {isGuideOpen && (
+                    <div style={{ padding: '14px', borderTop: '1px solid rgba(59,130,246,0.15)', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+                      <ul style={{ paddingLeft: '18px', margin: 0 }}>
+                        <li><strong>Lớp 1 (Cung):</strong> Tổng quan nguồn cung, đối thủ cạnh tranh từ các nước lớn.</li>
+                        <li><strong>Lớp 2 (Cầu):</strong> Nhu cầu tiêu thụ, dung lượng thị trường và tốc độ tăng trưởng.</li>
+                        <li><strong>Lớp 3 (Giá):</strong> Mức giá tham chiếu, biến động giá nguyên vật liệu và cước biển.</li>
+                        <li><strong>Lớp 4 (Đối thủ):</strong> Đối thủ cạnh tranh trực tiếp, khoảng trống thị trường.</li>
+                        <li><strong>Lớp 5 (Pháp lý):</strong> Thuế quan FTA, chứng chỉ (FDA/BRC/ISO), rào cản kỹ thuật.</li>
+                      </ul>
+                      <PromptPanel title="Prompt Mẫu: Quét 5 Lớp Thị Trường" promptText={PROMPT_SCAN} />
+                    </div>
+                  )}
+                </div>
+
+                {/* 5 SUB-TABS CHO 5 LỚP SCAN */}
+                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '10px', marginBottom: '14px' }}>
+                  {SCAN_LAYERS.map(layer => {
+                    const isSelected = activeScanLayer === layer.id;
+                    const layerData = scanNotes[layer.id];
+                    const hasData = Boolean(layerData?.ai_output || layerData?.fact_check_url);
+
+                    return (
+                      <button
+                        key={layer.id}
+                        type="button"
+                        onClick={() => setActiveScanLayer(layer.id)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '6px',
+                          border: isSelected ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.08)',
+                          background: isSelected ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.02)',
+                          color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                          fontSize: '0.78rem',
+                          fontWeight: isSelected ? 700 : 500,
+                          cursor: 'pointer',
+                          whiteSpace: 'nowrap',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px'
+                        }}
+                      >
+                        {layer.label}
+                        {hasData && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* KHÔNG GIAN NHẬP LIỆU CHO LỚP SCAN HIỆN TẠI */}
+                {(() => {
+                  const currentConfig = SCAN_LAYERS.find(l => l.id === activeScanLayer) || SCAN_LAYERS[0];
+                  const currentNote = scanNotes[activeScanLayer] || { ai_output: '', fact_check_url: '' };
+
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        <strong>Mục tiêu lớp này:</strong> {currentConfig.desc}
+                      </div>
+
+                      {/* TEXTAREA DÁN KẾT QUẢ AI */}
+                      <div>
+                        <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                          📥 Dán kết quả phân tích AI (Gemini Spark / GPT):
+                        </label>
+                        <textarea
+                          className="form-input"
+                          rows={6}
+                          placeholder={`Dán tóm tắt dữ liệu cho ${currentConfig.label} tại đây (Ví dụ: Số liệu kim ngạch nhập khẩu, tên các đối thủ lớn, mức thuế MFN/FTA...)...`}
+                          value={currentNote.ai_output || ''}
+                          onChange={(e) => handleScanNoteChange(activeScanLayer, 'ai_output', e.target.value)}
+                          onBlur={handleBlur}
+                          disabled={isDisabled}
+                          style={{ fontSize: '0.85rem', lineHeight: '1.5' }}
+                        />
+                      </div>
+
+                      {/* INPUT URL FACT-CHECK */}
+                      <div>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: 'var(--accent-primary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                          <Link2 size={14} /> 🔗 URL Nguồn kiểm chứng (Fact-Check URL) <span style={{ color: 'var(--accent-danger)' }}>*</span>
+                        </label>
+                        <input
+                          type="url"
+                          className="form-input"
+                          placeholder="VD: https://www.trademap.org/ hoặc https://fas.usda.gov/ hoặc https://customs.gov.vn..."
+                          value={currentNote.fact_check_url || ''}
+                          onChange={(e) => handleScanNoteChange(activeScanLayer, 'fact_check_url', e.target.value)}
+                          onBlur={handleBlur}
+                          disabled={isDisabled}
+                          style={{ fontSize: '0.85rem' }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
@@ -198,9 +324,9 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   Không chỉ nhìn từ góc độ người bán, hãy đặt mình vào vị trí của Buyer:
                 </p>
                 <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', borderRadius: '8px', borderLeft: '3px solid var(--accent-warning)' }}>
-                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0', marginBottom: '8px' }}>- <strong>Tâm lý cốt lõi:</strong> Họ đang gặp áp lực gì lớn nhất tại thị trường nội địa (Doanh thu, cạnh tranh, chi phí)?</p>
-                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0', marginBottom: '8px' }}>- <strong>Ưu tiên lựa chọn:</strong> Tiêu chí hàng đầu khi chọn nhà cung cấp mới là gì (Chất lượng, giá, tốc độ, tính ổn định)?</p>
-                  <p style={{ fontSize: '0.9rem', color: '#e2e8f0' }}>- <strong>Rủi ro đứt gãy:</strong> Nguồn cung hiện tại của họ đang vướng mắc điểm yếu chí mạng nào mà bạn có thể lấp đầy?</p>
+                  <p style={{ fontSize: '0.88rem', color: '#e2e8f0', marginBottom: '8px' }}>- <strong>Tâm lý cốt lõi:</strong> Họ đang gặp áp lực gì lớn nhất tại thị trường nội địa (Doanh thu, cạnh tranh, chi phí)?</p>
+                  <p style={{ fontSize: '0.88rem', color: '#e2e8f0', marginBottom: '8px' }}>- <strong>Ưu tiên lựa chọn:</strong> Tiêu chí hàng đầu khi chọn nhà cung cấp mới là gì (Chất lượng, giá, tốc độ, tính ổn định)?</p>
+                  <p style={{ fontSize: '0.88rem', color: '#e2e8f0' }}>- <strong>Rủi ro đứt gãy:</strong> Nguồn cung hiện tại của họ đang vướng mắc điểm yếu chí mạng nào mà bạn có thể lấp đầy?</p>
                 </div>
                 <PromptPanel title="Prompt Mẫu: Phân tích Buyer Lens" promptText={PROMPT_LENS} />
               </div>
@@ -211,13 +337,13 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                 <h4 style={{ color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <BarChart3 size={18} color="var(--accent-success)" /> Mô hình PESTEL
                 </h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '0.875rem' }}>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}><strong>P (Politics):</strong> Ổn định chính trị, chiến tranh thương mại.</div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}><strong>E (Economics):</strong> Lạm phát, tỷ giá hối đoái.</div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}><strong>S (Social):</strong> Văn hóa, xu hướng tiêu dùng.</div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}><strong>T (Technology):</strong> Chuyển đổi số, logistics mới.</div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}><strong>E (Environment):</strong> Quy định xanh, tiêu chuẩn carbon.</div>
-                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '6px' }}><strong>L (Legal):</strong> Rào cản kỹ thuật, chống bán phá giá.</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '0.84rem' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '6px' }}><strong>P (Politics):</strong> Ổn định chính trị, chiến tranh thương mại.</div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '6px' }}><strong>E (Economics):</strong> Lạm phát, tỷ giá hối đoái.</div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '6px' }}><strong>S (Social):</strong> Văn hóa, xu hướng tiêu dùng.</div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '6px' }}><strong>T (Technology):</strong> Chuyển đổi số, logistics mới.</div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '6px' }}><strong>E (Environment):</strong> Quy định xanh, tiêu chuẩn carbon.</div>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', padding: '10px', borderRadius: '6px' }}><strong>L (Legal):</strong> Rào cản kỹ thuật, chống bán phá giá.</div>
                 </div>
                 <PromptPanel title="Prompt Mẫu: Phân tích PESTEL" promptText={PROMPT_PESTEL} />
               </div>
@@ -225,7 +351,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
           </div>
         </div>
 
-        {/* CỘT PHẢI: FORM QUYẾT ĐỊNH CHIẾN LƯỢC (STICKY) (35%) */}
+        {/* CỘT PHẢI: FORM QUYẾT ĐỊNH CHIẾN LƯỢC (STICKY) (38%) */}
         <div style={{ 
           flex: '1', 
           position: 'sticky', 
@@ -236,14 +362,14 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
           padding: '24px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
         }}>
-          <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Globe size={20} color={isFormComplete ? "var(--accent-success)" : "var(--accent-primary)"} /> 
             Quyết định Chiến lược
           </h3>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
                 1. Chọn thị trường mục tiêu <span style={{color: 'var(--accent-danger)'}}>*</span>
               </label>
               <select 
@@ -260,9 +386,9 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                 }}
                 onBlur={handleBlur}
                 disabled={isDisabled}
-                style={{ width: '100%', padding: '10px', marginBottom: isOtherMarket ? '8px' : '0' }}
+                style={{ width: '100%', padding: '9px', marginBottom: isOtherMarket ? '6px' : '0' }}
               >
-                <option value="" disabled>-- Lựa chọn --</option>
+                <option value="" disabled>-- Lựa chọn thị trường --</option>
                 <option value="US">Mỹ (US)</option>
                 <option value="EU">Châu Âu (EU)</option>
                 <option value="JP">Nhật Bản (JP)</option>
@@ -281,50 +407,74 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   onChange={(e) => handleFieldChange('target_market', e.target.value)}
                   onBlur={handleBlur}
                   disabled={isDisabled}
-                  style={{ width: '100%', padding: '10px' }}
+                  style={{ width: '100%', padding: '9px' }}
                 />
               )}
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
                 2. Kênh Route-to-market <span style={{color: 'var(--accent-danger)'}}>*</span>
               </label>
               <input 
                 type="text"
                 className="form-input"
-                placeholder="VD: Bán qua Distributor, Bán trực tiếp B2B..."
+                placeholder="VD: Importer / B2B Distributor / Food Service..."
                 value={data.route_to_market || ''}
                 onChange={(e) => handleFieldChange('route_to_market', e.target.value)}
                 onBlur={handleBlur}
                 disabled={isDisabled}
-                style={{ width: '100%', padding: '10px' }}
+                style={{ width: '100%', padding: '9px' }}
               />
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
                 3. Lý do lựa chọn cốt lõi <span style={{color: 'var(--accent-danger)'}}>*</span>
               </label>
               <textarea 
                 className="form-input"
-                placeholder="Phân tích lợi thế, độ khó, và cơ hội..."
+                placeholder="Phân tích lợi thế, độ khó, khoảng trống thị trường..."
                 value={data.strategic_reason || ''}
                 onChange={(e) => handleFieldChange('strategic_reason', e.target.value)}
                 onBlur={handleBlur}
                 disabled={isDisabled}
-                rows={5}
-                style={{ width: '100%', padding: '10px', resize: 'vertical' }}
+                rows={4}
+                style={{ width: '100%', padding: '9px', resize: 'vertical', fontSize: '0.85rem' }}
               />
             </div>
 
+            {/* FACT-CHECK VERIFICATION STATUS */}
+            <div style={{
+              padding: '10px 12px',
+              borderRadius: '8px',
+              background: hasFactCheck ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+              border: `1px solid ${hasFactCheck ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
+              fontSize: '0.8rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              {hasFactCheck ? (
+                <>
+                  <ShieldCheck size={16} color="#10b981" />
+                  <span style={{ color: '#10b981', fontWeight: 600 }}>Đã có Link kiểm chứng (Fact-Check OK)</span>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle size={16} color="var(--accent-danger)" />
+                  <span style={{ color: '#fca5a5' }}>Thiếu Fact-Check URL ở tab Scan 5 Lớp</span>
+                </>
+              )}
+            </div>
+
             {isFormComplete ? (
-              <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--accent-success)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', fontWeight: 'bold' }}>
+              <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-success)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--accent-success)' }}>
                 ✓ Đã hoàn thành (Bài 04 được mở khóa)
               </div>
             ) : (
-              <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--accent-danger)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center' }}>
-                ⚠️ Vui lòng điền đủ 3 trường để mở khóa
+              <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--accent-danger)', padding: '10px', borderRadius: '8px', fontSize: '0.82rem', textAlign: 'center', lineHeight: '1.4' }}>
+                ⚠️ Vui lòng điền đủ 3 trường chiến lược và ít nhất 1 Fact-Check URL để mở khóa Bài 04.
               </div>
             )}
           </div>
@@ -334,3 +484,4 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
     </section>
   );
 }
+

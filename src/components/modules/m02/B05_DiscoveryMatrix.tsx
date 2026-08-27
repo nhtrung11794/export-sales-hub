@@ -1,6 +1,8 @@
+'use client';
+
 import React from 'react';
 import { M02FormData } from './M02_CombinedForm';
-import { FileText, Lock, Unlock } from 'lucide-react';
+import { FileText, Lock, Unlock, ShieldAlert, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface B05Props {
   data: M02FormData;
@@ -21,48 +23,115 @@ const ROW_CONFIG: {
     key: 'context', 
     label: '1. Context (Bối cảnh)', 
     placeholders: { 
-      surface_signal: 'Đổi nhân sự, đứt gãy cung ứng, ra mắt sản phẩm mới.', 
-      core_hypothesis: 'Áp lực tìm NCC dự phòng, đa dạng hóa rủi ro.', 
-      approach_strategy: 'Cung cấp Insight ngành, báo cáo mùa vụ/nguồn cung.' 
+      surface_signal: 'VD: Doanh nghiệp đổi Giám đốc Thu mua, chuỗi cung ứng châu Á đứt gãy, mở rộng chuỗi cửa hàng...', 
+      core_hypothesis: 'VD: Áp lực tìm nhà cung cấp dự phòng đạt chuẩn, phân tán rủi ro địa chính trị và tối ưu thuế...', 
+      approach_strategy: 'VD: Gửi bản tin thị trường mùa vụ, báo cáo năng lực vùng trồng và chứng chỉ chất lượng quốc tế...' 
     } 
   },
   { 
     key: 'need', 
     label: '2. Need (Nhu cầu thực)', 
     placeholders: { 
-      surface_signal: 'Đăng RFQ, chiến dịch quảng cáo, xu hướng tiêu dùng.', 
-      core_hypothesis: 'Tối ưu biên lợi nhuận, tìm nguyên liệu phân khúc ngách.', 
-      approach_strategy: 'Case Study tối ưu chi phí, gợi ý giải pháp nguyên liệu.' 
+      surface_signal: 'VD: Đăng RFQ tìm kiếm nguồn hàng organic, bao bì bền vững, xuất hiện tại các hội chợ quốc tế...', 
+      core_hypothesis: 'VD: Cần sản phẩm phân khúc cao cấp để cải thiện biên lợi nhuận, đáp ứng thị hiếu người tiêu dùng trẻ...', 
+      approach_strategy: 'VD: Gửi Case study tối ưu chi phí bao bì, gửi mẫu thử dòng sản phẩm cao cấp có chứng nhận xanh...' 
     } 
   },
   { 
     key: 'pain', 
     label: '3. Pain (Nỗi đau)', 
     placeholders: { 
-      surface_signal: 'Review tiêu cực, tin tức thu hồi, lợi nhuận sụt giảm.', 
-      core_hypothesis: 'NCC cũ giao trễ, chất lượng kém, rủi ro phạt hợp đồng.', 
-      approach_strategy: 'Pitching quy trình kiểm soát QA/QC, gửi Test Report mẫu.' 
+      surface_signal: 'VD: Nhận review xấu về chất lượng sản phẩm, tỷ lệ giao trễ tăng, nhà cung cấp cũ tăng giá bất ngờ...', 
+      core_hypothesis: 'VD: Nhà cung cấp cũ kiểm soát QA kém, giao trễ làm gián đoạn kế hoạch marketing và mất kệ siêu thị...', 
+      approach_strategy: 'VD: Cam kết quy trình kiểm soát QA 3 lớp, bảo hiểm rủi ro giao hàng và phạt chậm trễ trong hợp đồng...' 
     } 
   },
   { 
     key: 'criteria', 
     label: '4. Criteria (Tiêu chí)', 
     placeholders: { 
-      surface_signal: 'Logo chứng nhận (BRC, Halal...), luật nhập khẩu nội địa.', 
-      core_hypothesis: 'Bảo vệ uy tín thương hiệu, đáp ứng tiêu chuẩn Audit.', 
-      approach_strategy: 'Gửi hồ sơ năng lực nhà máy, bản sao chứng chỉ quốc tế.' 
+      surface_signal: 'VD: Yêu cầu chứng nhận BRC/IFS/Halal/FDA, tiêu chuẩn bao bì tái chế và trách nhiệm xã hội SMETA...', 
+      core_hypothesis: 'VD: Tuân thủ nghiêm ngặt luật nhập khẩu nước sở tại, vượt qua các đợt audit định kỳ của bên thứ ba...', 
+      approach_strategy: 'VD: Gửi trọn bộ hồ sơ chứng chỉ quốc tế đã kiểm định, mời audit trực tuyến nhà xưởng 360 độ...' 
     } 
   },
   { 
     key: 'risk_concern', 
     label: '5. Risk (Rủi ro)', 
     placeholders: { 
-      surface_signal: 'Im lặng, chần chừ, yêu cầu thanh toán khắt khe.', 
-      core_hypothesis: 'Sợ lừa đảo chứng từ, kẹt dòng tiền, rủi ro hải quan.', 
-      approach_strategy: 'Đề xuất thanh toán L/C, cung cấp Vận đơn (B/L) tham chiếu.' 
+      surface_signal: 'VD: Buyer ngập ngừng khi thảo luận thanh toán, yêu cầu điều khoản trả chậm D/A 60 ngày hoặc mẫu thử lớn...', 
+      core_hypothesis: 'VD: Sợ nhà cung cấp mới không đảm bảo độ đồng đều chất lượng, rủi ro tồn kho và tranh chấp hải quan...', 
+      approach_strategy: 'VD: Đề xuất thanh toán linh hoạt qua L/C at sight, gửi B/L và tham chiếu từ các khách hàng quốc tế tương đương...' 
     } 
   },
 ];
+
+function countMeaningfulWords(text: string): number {
+  if (!text) return 0;
+  const words = text.trim().split(/\s+/).filter(w => w.length >= 2);
+  return words.length;
+}
+
+function MatrixCell({
+  value,
+  placeholder,
+  onChange,
+  onBlur,
+  disabled
+}: {
+  value: string;
+  placeholder: string;
+  onChange: (val: string) => void;
+  onBlur: () => void;
+  disabled: boolean;
+}) {
+  const wordCount = countMeaningfulWords(value);
+  const hasText = value.trim().length > 0;
+  const isValid = wordCount >= 10;
+  const isSpamWarning = hasText && !isValid;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+      <textarea
+        className="form-input discovery-textarea"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        disabled={disabled}
+        rows={4}
+        style={{
+          resize: 'vertical',
+          fontSize: '0.82rem',
+          lineHeight: '1.45',
+          minHeight: '88px',
+          borderColor: isSpamWarning ? 'var(--accent-danger)' : isValid ? '#10b981' : undefined,
+          background: isSpamWarning ? 'rgba(239, 68, 68, 0.05)' : undefined
+        }}
+      />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0 2px' }}>
+        {isSpamWarning ? (
+          <span style={{ color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '3px' }}>
+            <AlertTriangle size={11} /> Cần $\ge$ 10 từ thực chất (bộ lọc rác)
+          </span>
+        ) : isValid ? (
+          <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 600 }}>
+            <CheckCircle2 size={11} /> Đạt chuẩn Insight
+          </span>
+        ) : (
+          <span style={{ color: 'var(--text-muted)' }}>Tối thiểu 10 từ</span>
+        )}
+
+        <span style={{
+          color: isValid ? '#10b981' : isSpamWarning ? 'var(--accent-danger)' : 'var(--text-muted)',
+          fontWeight: 'bold'
+        }}>
+          {wordCount}/10 từ
+        </span>
+      </div>
+    </div>
+  );
+}
 
 export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisabled }: B05Props) {
   const isB03Completed = data.target_market && data.route_to_market && data.strategic_reason;
@@ -84,10 +153,18 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
     if (isDisabled || !isB03Completed) return false;
     if (index === 0) return true; // Hàng đầu tiên luôn mở nếu B03 hoàn thành
     
-    // Kiểm tra hàng trước đó đã có ít nhất 1 ô Insight (hoặc Giả thuyết) được điền chưa
+    // Kiểm tra hàng trước đó: Cần có ít nhất 2 ô đạt chuẩn >= 10 từ hoặc tổng số từ >= 20
     const prevRowKey = ROW_CONFIG[index - 1].key;
     const prevRowData = data.discovery_matrix[prevRowKey] || {};
-    return ((prevRowData.surface_signal || '').trim().length > 0 || (prevRowData.approach_strategy || '').trim().length > 0);
+    
+    const countSignal = countMeaningfulWords(prevRowData.surface_signal || '');
+    const countHypo = countMeaningfulWords(prevRowData.core_hypothesis || '');
+    const countStrategy = countMeaningfulWords(prevRowData.approach_strategy || '');
+
+    const validBoxes = [countSignal, countHypo, countStrategy].filter(c => c >= 10).length;
+    const totalWords = countSignal + countHypo + countStrategy;
+
+    return validBoxes >= 2 || totalWords >= 22;
   };
 
   if (!isB03Completed) {
@@ -121,10 +198,6 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
           filter: grayscale(100%);
           pointer-events: none;
         }
-        .discovery-row.active-empty:not(:focus-within) {
-          border-color: rgba(59, 130, 246, 0.4);
-          box-shadow: 0 0 10px rgba(59, 130, 246, 0.1);
-        }
         .discovery-row:focus-within {
           background: rgba(15, 23, 42, 0.8);
           border-color: var(--accent-primary);
@@ -134,15 +207,15 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
         }
         .discovery-textarea {
           background: rgba(0,0,0,0.2) !important;
-          border: 1px solid rgba(255,255,255,0.05) !important;
+          border: 1px solid rgba(255,255,255,0.08) !important;
           color: var(--text-primary) !important;
           transition: all 0.2s ease;
         }
         .discovery-textarea::placeholder {
-          color: rgba(255,255,255,0.4) !important;
+          color: rgba(255,255,255,0.35) !important;
         }
         .discovery-textarea:hover {
-          border-color: rgba(255,255,255,0.15) !important;
+          border-color: rgba(255,255,255,0.2) !important;
           background: rgba(0,0,0,0.3) !important;
         }
         .discovery-textarea:focus {
@@ -151,92 +224,84 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
           box-shadow: 0 0 0 1px var(--accent-primary);
         }
       `}</style>
+
       <h2 style={{ marginBottom: '8px', color: 'var(--accent-primary)', fontSize: '1.4rem', fontWeight: 'bold' }}>
-        Bài 05: Discovery Insight Note (Góc tiếp cận)
+        Bài 05: Discovery Insight Note (Ma Trận Khám Phá Nỗi Đau & Góc Tiếp Cận)
       </h2>
-      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '32px' }}>
-        Bóc tách từ nhu cầu bề mặt thành vấn đề cốt lõi. Hãy hoàn thành các hàng theo thứ tự từ trên xuống dưới. Dữ liệu này sẽ làm Ngân hàng Góc tiếp cận cho các module sau.
+      <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+        Bóc tách từ tín hiệu bề mặt thành giả thuyết nỗi đau và chiến lược tiếp cận. Cơ chế <strong>Bộ lọc rác (Garbage Filter)</strong> yêu cầu tối thiểu 10 từ thực chất cho mỗi ô để mở khóa tầng tiếp theo.
       </p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         
         {/* Tiêu đề Cột */}
-        {/* Tiêu đề Cột */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', padding: '0 16px', color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '16px', textAlign: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 3fr 3fr 3fr', gap: '16px', padding: '0 16px', color: 'var(--text-primary)', fontSize: '0.95rem', fontWeight: 'bold', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px', textAlign: 'center' }}>
           <div style={{ textAlign: 'left' }}>Lớp thông tin</div>
-          <div>Tín hiệu<br/><span style={{fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Market Signal)</span></div>
-          <div>Giả thuyết<br/><span style={{fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Core Hypothesis)</span></div>
-          <div>Chiến lược tiếp cận<br/><span style={{fontSize: '0.85rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Outreach Hook)</span></div>
+          <div>Tín hiệu Bề mặt<br/><span style={{fontSize: '0.78rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Market / Buyer Signal)</span></div>
+          <div>Giả thuyết Cốt lõi<br/><span style={{fontSize: '0.78rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Core Hypothesis / Pain)</span></div>
+          <div>Chiến lược Tiếp cận<br/><span style={{fontSize: '0.78rem', fontWeight: 'normal', color: 'var(--text-secondary)'}}>(Outreach & Value Hook)</span></div>
         </div>
 
-        {/* Ma trận */}
+        {/* Ma trận 5 hàng */}
         {ROW_CONFIG.map((row, index) => {
           const unlocked = isRowUnlocked(index);
-          const rowData = data.discovery_matrix[row.key];
-          
-          const hasContent = (rowData.surface_signal || '').trim().length > 0 || 
-                             (rowData.core_hypothesis || '').trim().length > 0 || 
-                             (rowData.approach_strategy || '').trim().length > 0;
-          
-          const prevRowKey = index > 0 ? ROW_CONFIG[index-1].key : null;
-          const isPrevRowFilled = prevRowKey ? ((data.discovery_matrix[prevRowKey].surface_signal || '').trim().length > 0 || (data.discovery_matrix[prevRowKey].approach_strategy || '').trim().length > 0) : true;
-          const isActiveEmpty = unlocked && !hasContent && isPrevRowFilled;
+          const rowData = data.discovery_matrix[row.key] || { surface_signal: '', core_hypothesis: '', approach_strategy: '' };
           
           const [mainLabel, subLabel] = row.label.split(' (');
 
           return (
             <div 
               key={row.key}
-              className={`discovery-row ${!unlocked ? 'locked' : ''} ${isActiveEmpty ? 'active-empty' : ''}`}
-              style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 3fr 3fr', gap: '16px', alignItems: 'start' }}
+              className={`discovery-row ${!unlocked ? 'locked' : ''}`}
+              style={{ display: 'grid', gridTemplateColumns: '1.8fr 3fr 3fr 3fr', gap: '16px', alignItems: 'start' }}
             >
               {/* Tiêu đề Hàng */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingTop: '8px' }}>
-                <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  {!unlocked ? <Lock size={14} color="var(--text-muted)" /> : <Unlock className="row-icon" size={14} color={hasContent ? "var(--text-primary)" : "var(--accent-primary)"} style={{ transition: 'color 0.3s' }} />}
+                <div style={{ fontWeight: 'bold', color: 'var(--text-primary)', fontSize: '0.92rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  {!unlocked ? (
+                    <Lock size={15} color="var(--accent-danger)" />
+                  ) : (
+                    <Unlock size={15} color="var(--accent-primary)" />
+                  )}
                   <span>{mainLabel}</span>
                 </div>
                 {subLabel && (
-                  <div style={{ paddingLeft: '20px', fontSize: '0.9rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+                  <div style={{ paddingLeft: '21px', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-secondary)' }}>
                     ({subLabel}
+                  </div>
+                )}
+                {!unlocked && (
+                  <div style={{ paddingLeft: '21px', fontSize: '0.72rem', color: '#fca5a5' }}>
+                    🔒 Hoàn thành tầng trên để mở
                   </div>
                 )}
               </div>
 
-              {/* Ô Surface Signal */}
-              <textarea
-                className="form-input discovery-textarea"
-                placeholder={row.placeholders.surface_signal}
+              {/* Ô 1: Surface Signal */}
+              <MatrixCell
                 value={rowData.surface_signal || ''}
-                onChange={(e) => handleFieldChange(row.key, 'surface_signal', e.target.value)}
+                placeholder={row.placeholders.surface_signal}
+                onChange={(val) => handleFieldChange(row.key, 'surface_signal', val)}
                 onBlur={handleBlur}
                 disabled={!unlocked || isDisabled}
-                rows={4}
-                style={{ resize: 'none', fontSize: '0.85rem' }}
               />
 
-              {/* Ô Core Hypothesis */}
-              <textarea
-                className="form-input discovery-textarea"
-                placeholder={row.placeholders.core_hypothesis}
+              {/* Ô 2: Core Hypothesis */}
+              <MatrixCell
                 value={rowData.core_hypothesis || ''}
-                onChange={(e) => handleFieldChange(row.key, 'core_hypothesis', e.target.value)}
+                placeholder={row.placeholders.core_hypothesis}
+                onChange={(val) => handleFieldChange(row.key, 'core_hypothesis', val)}
                 onBlur={handleBlur}
                 disabled={!unlocked || isDisabled}
-                rows={4}
-                style={{ resize: 'none', fontSize: '0.85rem' }}
               />
 
-              {/* Ô Approach Strategy */}
-              <textarea
-                className="form-input discovery-textarea"
-                placeholder={row.placeholders.approach_strategy}
+              {/* Ô 3: Approach Strategy */}
+              <MatrixCell
                 value={rowData.approach_strategy || ''}
-                onChange={(e) => handleFieldChange(row.key, 'approach_strategy', e.target.value)}
+                placeholder={row.placeholders.approach_strategy}
+                onChange={(val) => handleFieldChange(row.key, 'approach_strategy', val)}
                 onBlur={handleBlur}
                 disabled={!unlocked || isDisabled}
-                rows={4}
-                style={{ resize: 'none', fontSize: '0.85rem' }}
               />
             </div>
           );
@@ -246,3 +311,4 @@ export default function B05_DiscoveryMatrix({ data, setData, handleBlur, isDisab
     </section>
   );
 }
+
