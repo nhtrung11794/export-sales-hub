@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { M04FormData, PricingOption } from './M04_CombinedForm';
-import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { M04FormData, PricingOption, CustomCostItem } from './M04_CombinedForm';
+import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2 } from 'lucide-react';
 
 interface Props {
   data: M04FormData;
@@ -21,6 +21,7 @@ const COST_ITEMS = [
 
 export default function B10_ProposalQuotation({ data, setData, handleBlur, isDisabled }: Props) {
   const b10 = data.b10_quotation;
+  const [newCostName, setNewCostName] = useState('');
   
   // TCO data của doanh nghiệp bạn
   const yourTco = b10.tco_calculator || {
@@ -40,18 +41,25 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
     doc_inspection_fee: 0
   };
 
-  // Tính tổng Landed Cost
+  const customCosts = b10.custom_costs || [];
+
+  // Tính tổng Landed Cost bao gồm cả custom_costs
+  const customYourSum = customCosts.reduce((acc, c) => acc + (Number(c.your_val) || 0), 0);
+  const customCompSum = customCosts.reduce((acc, c) => acc + (Number(c.competitor_val) || 0), 0);
+
   const yourLandedCost = (Number(yourTco.fob_price) || 0) + 
                          (Number(yourTco.freight) || 0) + 
                          (Number(yourTco.import_tax) || 0) + 
-                         (Number(yourTco.local_charges) || 0) +
-                         (Number(yourTco.doc_inspection_fee) || 0);
+                         (Number(yourTco.local_charges) || 0) + 
+                         (Number(yourTco.doc_inspection_fee) || 0) +
+                         customYourSum;
 
   const competitorLandedCost = (Number(competitorTco.fob_price) || 0) + 
                                (Number(competitorTco.freight) || 0) + 
                                (Number(competitorTco.import_tax) || 0) + 
-                               (Number(competitorTco.local_charges) || 0) +
-                               (Number(competitorTco.doc_inspection_fee) || 0);
+                               (Number(competitorTco.local_charges) || 0) + 
+                               (Number(competitorTco.doc_inspection_fee) || 0) +
+                               customCompSum;
 
   const netSavings = competitorLandedCost > 0 ? competitorLandedCost - yourLandedCost : 0;
   const savingsPercent = competitorLandedCost > 0 ? ((netSavings / competitorLandedCost) * 100).toFixed(1) : '0.0';
@@ -93,6 +101,53 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
         }
       }
     }));
+  };
+
+  const handleAddCustomCost = () => {
+    if (!newCostName.trim() || isDisabled) return;
+    const colors = ['#a855f7', '#14b8a6', '#f43f5e', '#eab308', '#6366f1', '#10b981'];
+    const randomColor = colors[customCosts.length % colors.length];
+    const newItem: CustomCostItem = {
+      id: `custom_cost_${Date.now()}`,
+      label: newCostName.trim(),
+      competitor_val: 0,
+      your_val: 0,
+      color: randomColor
+    };
+    setData(prev => ({
+      ...prev,
+      b10_quotation: {
+        ...prev.b10_quotation,
+        custom_costs: [...(prev.b10_quotation.custom_costs || []), newItem]
+      }
+    }));
+    setNewCostName('');
+    setTimeout(() => handleBlur(), 100);
+  };
+
+  const handleUpdateCustomCost = (id: string, field: 'label' | 'competitor_val' | 'your_val', val: any) => {
+    if (isDisabled) return;
+    setData(prev => ({
+      ...prev,
+      b10_quotation: {
+        ...prev.b10_quotation,
+        custom_costs: (prev.b10_quotation.custom_costs || []).map(c => 
+          c.id === id ? { ...c, [field]: field === 'label' ? val : Number(val) || 0 } : c
+        )
+      }
+    }));
+  };
+
+  const handleRemoveCustomCost = (id: string) => {
+    if (isDisabled) return;
+    setData(prev => ({
+      ...prev,
+      b10_quotation: {
+        ...prev.b10_quotation,
+        custom_costs: (prev.b10_quotation.custom_costs || []).filter(c => c.id !== id)
+      }
+    }));
+    setTimeout(() => handleBlur(), 100);
   };
 
   const handleOptionChange = (id: string, field: keyof PricingOption, value: any) => {
@@ -205,13 +260,13 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
             fontWeight: 'bold',
             color: 'var(--text-secondary)'
           }}>
-            <div>5 Cấu Phần Chi Phí TCO</div>
+            <div>Cấu Phần Chi Phí TCO</div>
             <div style={{ color: '#f87171' }}>Báo Giá Đối Thủ / NCC Cũ</div>
             <div style={{ color: '#10b981' }}>Báo Giá Doanh Nghiệp Bạn</div>
             <div style={{ textAlign: 'right' }}>Chênh Lệch ($)</div>
           </div>
 
-          {/* 5 Hàng Cấu Phần */}
+          {/* 5 Hàng Cấu Phần Chuẩn */}
           {COST_ITEMS.map((item, idx) => {
             const compVal = Number(competitorTco[item.id as keyof typeof competitorTco]) || 0;
             const yourVal = Number(yourTco[item.id as keyof typeof yourTco]) || 0;
@@ -226,7 +281,7 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
                   gap: '12px', 
                   padding: '10px 16px', 
                   alignItems: 'center',
-                  borderBottom: idx < COST_ITEMS.length - 1 ? '1px solid rgba(255, 255, 255, 0.04)' : 'none',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                   background: idx % 2 === 0 ? 'rgba(255, 255, 255, 0.01)' : 'transparent'
                 }}
               >
@@ -296,6 +351,171 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
             );
           })}
 
+          {/* Các Hàng Biến Chi Phí Tùy Biến (Custom Cost Items) */}
+          {customCosts.map((item) => {
+            const compVal = Number(item.competitor_val) || 0;
+            const yourVal = Number(item.your_val) || 0;
+            const diff = compVal - yourVal;
+
+            return (
+              <div 
+                key={item.id}
+                style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'minmax(200px, 1.8fr) 1.2fr 1.2fr 1fr', 
+                  gap: '12px', 
+                  padding: '9px 16px', 
+                  alignItems: 'center',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                  background: 'rgba(168, 85, 247, 0.03)'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.color || '#a855f7', flexShrink: 0 }} />
+                  <input
+                    type="text"
+                    value={item.label}
+                    onChange={(e) => handleUpdateCustomCost(item.id, 'label', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    placeholder="Tên chi phí tùy biến..."
+                    style={{
+                      flex: 1,
+                      padding: '5px 8px',
+                      background: 'rgba(0,0,0,0.25)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                      borderRadius: '5px',
+                      color: 'var(--text-primary)',
+                      fontSize: '0.82rem',
+                      fontWeight: 600
+                    }}
+                  />
+                  {!isDisabled && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveCustomCost(item.id)}
+                      style={{
+                        background: 'rgba(239, 68, 68, 0.1)',
+                        border: '1px solid rgba(239, 68, 68, 0.2)',
+                        color: '#fca5a5',
+                        cursor: 'pointer',
+                        padding: '4px 6px',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        flexShrink: 0
+                      }}
+                      title="Xóa biến chi phí này"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Input Đối Thủ */}
+                <div>
+                  <input
+                    type="number"
+                    value={item.competitor_val || ''}
+                    onChange={(e) => handleUpdateCustomCost(item.id, 'competitor_val', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    placeholder="0"
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px',
+                      background: 'rgba(239, 68, 68, 0.05)',
+                      border: '1px solid rgba(239, 68, 68, 0.2)',
+                      borderRadius: '6px',
+                      color: '#fca5a5',
+                      fontSize: '0.84rem',
+                      fontWeight: 600
+                    }}
+                  />
+                </div>
+
+                {/* Input Doanh Nghiệp Bạn */}
+                <div>
+                  <input
+                    type="number"
+                    value={item.your_val || ''}
+                    onChange={(e) => handleUpdateCustomCost(item.id, 'your_val', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    placeholder="0"
+                    style={{
+                      width: '100%',
+                      padding: '7px 10px',
+                      background: 'rgba(16, 185, 129, 0.05)',
+                      border: '1px solid rgba(16, 185, 129, 0.25)',
+                      borderRadius: '6px',
+                      color: '#6ee7b7',
+                      fontSize: '0.84rem',
+                      fontWeight: 600
+                    }}
+                  />
+                </div>
+
+                {/* Chênh Lệch */}
+                <div style={{ textAlign: 'right', fontSize: '0.82rem', fontWeight: 'bold' }}>
+                  {compVal > 0 || yourVal > 0 ? (
+                    <span style={{ color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : 'var(--text-muted)' }}>
+                      {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                    </span>
+                  ) : (
+                    <span style={{ color: 'var(--text-muted)' }}>-</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {/* Form thêm biến chi phí tùy biến */}
+          {!isDisabled && (
+            <div style={{ padding: '8px 16px', background: 'rgba(255, 255, 255, 0.02)', borderTop: '1px dashed rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  type="text"
+                  placeholder="+ Thêm biến chi phí tùy biến (VD: Phí lưu kho đích, Phí chuyển đổi NCC, Bảo hành...)..."
+                  value={newCostName}
+                  onChange={(e) => setNewCostName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustomCost();
+                    }
+                  }}
+                  style={{
+                    flex: 1,
+                    maxWidth: '480px',
+                    padding: '6px 10px',
+                    background: 'rgba(0,0,0,0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '6px',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.78rem'
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddCustomCost}
+                  disabled={!newCostName.trim()}
+                  className="btn btn-primary"
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '0.78rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    height: '32px'
+                  }}
+                >
+                  <Plus size={13} /> Thêm Biến Chi Phí
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Hàng Tổng TCO */}
           <div style={{ 
             display: 'grid', 
@@ -322,11 +542,17 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
           <div style={{ padding: '16px 20px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.06)', borderRadius: '10px', marginBottom: '14px' }}>
             <div style={{ fontSize: '0.82rem', fontWeight: 'bold', color: 'var(--text-secondary)', marginBottom: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>📊 Biểu Đồ Trực Quan Tỷ Trọng Chi Phí (Cost Composition Breakdown)</span>
-              <div style={{ display: 'flex', gap: '10px', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+              <div style={{ display: 'flex', gap: '10px', fontSize: '0.72rem', color: 'var(--text-muted)', flexWrap: 'wrap' }}>
                 {COST_ITEMS.map(c => (
                   <span key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.color }} />
                     {c.label.split('.')[1]?.trim().split('(')[0]?.trim()}
+                  </span>
+                ))}
+                {customCosts.map(c => (
+                  <span key={c.id} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: c.color || '#a855f7' }} />
+                    {c.label}
                   </span>
                 ))}
               </div>
@@ -350,6 +576,18 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
                     />
                   );
                 })}
+                {competitorLandedCost > 0 && customCosts.map(c => {
+                  const val = Number(c.competitor_val) || 0;
+                  const pct = (val / competitorLandedCost) * 100;
+                  if (pct <= 0) return null;
+                  return (
+                    <div 
+                      key={c.id} 
+                      style={{ width: `${pct}%`, background: c.color || '#a855f7', height: '100%' }} 
+                      title={`${c.label}: ${formatNumber(val)} (${pct.toFixed(0)}%)`}
+                    />
+                  );
+                })}
               </div>
             </div>
 
@@ -367,6 +605,18 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
                     <div 
                       key={c.id} 
                       style={{ width: `${pct}%`, background: c.color, height: '100%' }} 
+                      title={`${c.label}: ${formatNumber(val)} (${pct.toFixed(0)}%)`}
+                    />
+                  );
+                })}
+                {yourLandedCost > 0 && customCosts.map(c => {
+                  const val = Number(c.your_val) || 0;
+                  const pct = (val / yourLandedCost) * 100;
+                  if (pct <= 0) return null;
+                  return (
+                    <div 
+                      key={c.id} 
+                      style={{ width: `${pct}%`, background: c.color || '#a855f7', height: '100%' }} 
                       title={`${c.label}: ${formatNumber(val)} (${pct.toFixed(0)}%)`}
                     />
                   );

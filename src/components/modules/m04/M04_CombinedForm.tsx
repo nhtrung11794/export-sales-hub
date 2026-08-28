@@ -27,6 +27,14 @@ export interface ConcessionItem {
   take_note: string;
 }
 
+export interface CustomCostItem {
+  id: string;
+  label: string;
+  competitor_val: number;
+  your_val: number;
+  color?: string;
+}
+
 export interface M04FormData {
   // B09
   b09_clarification: {
@@ -52,6 +60,7 @@ export interface M04FormData {
       local_charges: number;
       doc_inspection_fee?: number;
     };
+    custom_costs?: CustomCostItem[];
     pricing_options: PricingOption[];
   };
   // B11
@@ -95,6 +104,7 @@ const initialData: M04FormData = {
       local_charges: 0,
       doc_inspection_fee: 0,
     },
+    custom_costs: [],
     pricing_options: [
       { id: 'opt_1', name: 'Tiêu chuẩn (Standard)', price: 0, features: '', is_active: true },
       { id: 'opt_2', name: 'Nâng cao (Premium / Value-Add)', price: 0, features: '', is_active: true },
