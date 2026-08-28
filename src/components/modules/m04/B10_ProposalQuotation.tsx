@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { M04FormData, PricingOption, CustomCostItem } from './M04_CombinedForm';
-import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2, Printer, Copy, Check, X, Download, Palette, ExternalLink } from 'lucide-react';
+import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2, Printer, Copy, Check, X, Download, Palette, ExternalLink, Languages, Globe } from 'lucide-react';
 
 interface Props {
   data: M04FormData;
@@ -12,11 +12,46 @@ interface Props {
 }
 
 const COST_ITEMS = [
-  { id: 'fob_price', label: '1. Đơn giá FOB / EXW (USD)', desc: 'Giá hàng xuất xưởng / giao mạn tàu', color: '#3b82f6' },
-  { id: 'freight', label: '2. Cước Biển & Bảo hiểm Quốc tế (USD)', desc: 'Cước tàu Ocean Freight + Marine Insurance', color: '#8b5cf6' },
-  { id: 'import_tax', label: '3. Thuế NK & Thuế Quan (USD)', desc: 'Thuế nhập khẩu nước đến (tận dụng C/O FTA)', color: '#f59e0b' },
-  { id: 'local_charges', label: '4. Phí Nội địa & Cảng Đến (USD)', desc: 'THC, D/O, nâng hạ, lưu bãi cont (Demurrage)', color: '#06b6d4' },
-  { id: 'doc_inspection_fee', label: '5. Phí Ẩn, Kiểm định & Phế phẩm (USD)', desc: 'Chứng từ SGS/Phyto, tỷ lệ hư hại bù hàng', color: '#ec4899' },
+  { 
+    id: 'fob_price', 
+    label: '1. Đơn giá FOB / EXW (USD)',
+    labelEn: '1. FOB / EXW Base Unit Price (USD)', 
+    desc: 'Giá hàng xuất xưởng / giao mạn tàu', 
+    descEn: 'Ex-Works / Free on Board cargo base quote',
+    color: '#3b82f6' 
+  },
+  { 
+    id: 'freight', 
+    label: '2. Cước Biển & Bảo hiểm Quốc tế (USD)', 
+    labelEn: '2. Ocean Freight & Marine Insurance (USD)', 
+    desc: 'Cước tàu Ocean Freight + Marine Insurance', 
+    descEn: 'Port-to-port ocean transit and cargo coverage',
+    color: '#8b5cf6' 
+  },
+  { 
+    id: 'import_tax', 
+    label: '3. Thuế NK & Thuế Quan (USD)', 
+    labelEn: '3. Customs Duty & Tariff Preferential Rate (USD)', 
+    desc: 'Thuế nhập khẩu nước đến (tận dụng C/O FTA)', 
+    descEn: 'Destination tariffs optimized via Free Trade C/O',
+    color: '#f59e0b' 
+  },
+  { 
+    id: 'local_charges', 
+    label: '4. Phí Nội địa & Cảng Đến (USD)', 
+    labelEn: '4. Destination Port & Handling Charges (USD)', 
+    desc: 'THC, D/O, nâng hạ, lưu bãi cont (Demurrage)', 
+    descEn: 'THC, D/O, terminal handling & free demurrage buffer',
+    color: '#06b6d4' 
+  },
+  { 
+    id: 'doc_inspection_fee', 
+    label: '5. Phí Ẩn, Kiểm định & Phế phẩm (USD)', 
+    labelEn: '5. Inspection, SGS/Phyto & Defect Buffer (USD)', 
+    desc: 'Chứng từ SGS/Phyto, tỷ lệ hư hại bù hàng', 
+    descEn: 'Pre-shipment audit & zero-defect replacement SLA',
+    color: '#ec4899' 
+  },
 ];
 
 const CANVA_TEMPLATE_URL = 'https://www.canva.com/templates/?query=b2b+quotation+proposal+presentation';
@@ -24,9 +59,18 @@ const CANVA_TEMPLATE_URL = 'https://www.canva.com/templates/?query=b2b+quotation
 export default function B10_ProposalQuotation({ data, setData, handleBlur, isDisabled }: Props) {
   const b10 = data.b10_quotation;
   const [newCostName, setNewCostName] = useState('');
+  
+  // TCO Modal State
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [tcoLanguage, setTcoLanguage] = useState<'en' | 'vi'>('en');
   const [isCopied, setIsCopied] = useState(false);
   const [canvaToast, setCanvaToast] = useState(false);
+
+  // Proposal Quotation Modal State
+  const [isProposalModalOpen, setIsProposalModalOpen] = useState(false);
+  const [proposalLanguage, setProposalLanguage] = useState<'en' | 'vi'>('en');
+  const [isProposalCopied, setIsProposalCopied] = useState(false);
+  const [proposalCanvaToast, setProposalCanvaToast] = useState(false);
   
   // TCO data của doanh nghiệp bạn
   const yourTco = b10.tco_calculator || {
@@ -70,7 +114,8 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
   const savingsPercent = competitorLandedCost > 0 ? ((netSavings / competitorLandedCost) * 100).toFixed(1) : '0.0';
   const isSaving = netSavings > 0;
 
-  const activeOptionsCount = b10.pricing_options.filter(opt => opt.is_active).length;
+  const activeOptions = b10.pricing_options.filter(opt => opt.is_active);
+  const activeOptionsCount = activeOptions.length;
   const isDecoyValid = activeOptionsCount >= 2;
 
   // Handlers
@@ -167,10 +212,37 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
     }));
   };
 
-  const generateReportText = () => {
+  const generateTcoReportText = (lang: 'en' | 'vi') => {
+    if (lang === 'en') {
+      return `
+=== TOTAL COST OF OWNERSHIP (TCO) BENCHMARK REPORT ===
+Date Issued: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+Validity: 30 Days
+
+1. EXECUTIVE FINANCIAL SUMMARY:
+- Incumbent / Competitor Quote: ${formatNumber(competitorLandedCost)}
+- Our Proposed Landed Cost: ${formatNumber(yourLandedCost)}
+- Net Cost Savings for Buyer: ${isSaving ? formatNumber(netSavings) + ' (Save ' + savingsPercent + '%)' : '$0'}
+
+2. COST BREAKDOWN ANALYSIS:
+${COST_ITEMS.map(c => `- ${c.labelEn}: Competitor: ${formatNumber(Number(competitorTco[c.id as keyof typeof competitorTco]) || 0)} | Our Solution: ${formatNumber(Number(yourTco[c.id as keyof typeof yourTco]) || 0)}`).join('\n')}
+${customCosts.map(c => `- ${c.label}: Competitor: ${formatNumber(Number(c.competitor_val) || 0)} | Our Solution: ${formatNumber(Number(c.your_val) || 0)}`).join('\n')}
+
+=> TOTAL BUYER LANDED TCO:
+- Incumbent / Competitor: ${formatNumber(competitorLandedCost)}
+- Our Proposed Solution: ${formatNumber(yourLandedCost)}
+- Net Advantage: ${isSaving ? '-' + formatNumber(netSavings) : formatNumber(netSavings)}
+
+3. VALUE-ADDED COMMITMENT & SLA:
+While initial FOB unit prices may appear comparable, our optimized container load logistics, preferential FTA customs facilitation, and zero-defect SLA reduce your overall Total Landed Cost significantly.
+======================================================
+      `.trim();
+    }
+
     return `
 === BẢNG PHÂN TÍCH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK REPORT) ===
 Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}
+Hiệu lực: 30 ngày
 
 1. TỔNG QUAN TÀI CHÍNH:
 - Báo giá Đối thủ / NCC Hiện tại: ${formatNumber(competitorLandedCost)}
@@ -192,18 +264,71 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
     `.trim();
   };
 
+  const generateProposalText = (lang: 'en' | 'vi') => {
+    if (lang === 'en') {
+      return `
+=== COMMERCIAL SALES PROPOSAL & TIERED PRICING ARCHITECTURE ===
+Date Issued: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+Incoterms: FOB / CIF 2020 | Payment: 30% T/T Advance, 70% against B/L copy | Validity: 30 Days
+
+TIERED PACKAGES OFFERED:
+${activeOptions.map((opt, i) => `
+PACKAGE ${i + 1}: ${opt.name}
+- Proposed Price: ${formatNumber(Number(opt.price) || 0)}
+- Scope & SLA: ${opt.features || 'Standard export packaging, QA inspection, direct customer support.'}
+`).join('\n')}
+
+COMMERCIAL COMMITMENT:
+All offerings comply with international export standards, accompanied by full commercial invoices, packing lists, Certificate of Origin (C/O), and phytosanitary/quality test certificates.
+===============================================================
+      `.trim();
+    }
+
+    return `
+=== BẢN ĐỀ XUẤT BÁO GIÁ THƯƠNG MẠI & ĐA TẦNG GIÁ TRỊ ===
+Ngày lập: ${new Date().toLocaleDateString('vi-VN')}
+Điều kiện: FOB / CIF 2020 | Thanh toán: 30% T/T Tạm ứng, 70% khi có Bill | Hiệu lực: 30 ngày
+
+CÁC GÓI BÁO GIÁ ĐỀ XUẤT:
+${activeOptions.map((opt, i) => `
+GÓI ${i + 1}: ${opt.name}
+- Mức giá: ${formatNumber(Number(opt.price) || 0)}
+- Phạm vi & SLA: ${opt.features || 'Đóng gói tiêu chuẩn xuất khẩu, kiểm định chất lượng xuất xưởng.'}
+`).join('\n')}
+
+CAM KẾT THƯƠNG MẠI:
+Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, C/O ưu đãi thuế quan, kiểm định chất lượng) và bảo hành chất lượng hàng hóa.
+======================================================
+    `.trim();
+  };
+
   const handleCopyTcoReport = () => {
-    const reportText = generateReportText();
+    const reportText = generateTcoReportText(tcoLanguage);
     navigator.clipboard.writeText(reportText);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2500);
   };
 
   const handleOpenCanvaTemplate = () => {
-    const reportText = generateReportText();
+    const reportText = generateTcoReportText(tcoLanguage);
     navigator.clipboard.writeText(reportText);
     setCanvaToast(true);
     setTimeout(() => setCanvaToast(false), 4000);
+    window.open(CANVA_TEMPLATE_URL, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCopyProposal = () => {
+    const text = generateProposalText(proposalLanguage);
+    navigator.clipboard.writeText(text);
+    setIsProposalCopied(true);
+    setTimeout(() => setIsProposalCopied(false), 2500);
+  };
+
+  const handleOpenProposalCanva = () => {
+    const text = generateProposalText(proposalLanguage);
+    navigator.clipboard.writeText(text);
+    setProposalCanvaToast(true);
+    setTimeout(() => setProposalCanvaToast(false), 4000);
     window.open(CANVA_TEMPLATE_URL, '_blank', 'noopener,noreferrer');
   };
 
@@ -213,7 +338,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
 
   const handleExportProposal = () => {
     if (!isDecoyValid) return;
-    alert('✓ Đã khởi tạo Bản Đề xuất Báo giá (Draft Proposal) với cấu trúc giá đa tầng thành công!');
+    setIsProposalModalOpen(true);
   };
 
   const formatNumber = (num: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
@@ -904,10 +1029,31 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <FileText size={18} color="var(--accent-primary)" />
                 <span style={{ fontWeight: 'bold', fontSize: '0.92rem', color: 'var(--text-primary)' }}>
-                  Bản Xem Trước Báo Cáo TCO (Có Thể Chỉnh Sửa Trực Tiếp Trước Khi Lưu PDF)
+                  {tcoLanguage === 'en' ? 'TCO Benchmark Report (Client-Ready A4 Document)' : 'Báo Cáo TCO Benchmark (Bản Xem Trước Chuẩn A4)'}
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Language Switcher */}
+                <button
+                  type="button"
+                  onClick={() => setTcoLanguage(prev => prev === 'en' ? 'vi' : 'en')}
+                  className="btn btn-secondary"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontSize: '0.78rem',
+                    padding: '6px 12px',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    border: '1px solid var(--accent-primary)',
+                    color: '#93c5fd',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                  title="Chuyển đổi ngôn ngữ Tiếng Anh / Tiếng Việt"
+                >
+                  <Globe size={14} /> {tcoLanguage === 'en' ? '🇬🇧 English' : '🇻🇳 Tiếng Việt'}
+                </button>
                 <button
                   type="button"
                   onClick={handleOpenCanvaTemplate}
@@ -926,7 +1072,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   }}
                   title="Mở Mẫu Thiết Kế trên Canva & Tự Động Sao Chép Số Liệu"
                 >
-                  <Palette size={14} color="#c084fc" /> 🎨 Mở Canva
+                  <Palette size={14} color="#c084fc" /> 🎨 {tcoLanguage === 'en' ? 'Open Canva' : 'Mở Canva'}
                 </button>
                 <button
                   type="button"
@@ -935,7 +1081,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', padding: '6px 10px' }}
                 >
                   {isCopied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-                  {isCopied ? 'Đã copy!' : 'Sao chép'}
+                  {isCopied ? (tcoLanguage === 'en' ? 'Copied!' : 'Đã copy!') : (tcoLanguage === 'en' ? 'Copy Text' : 'Sao chép')}
                 </button>
                 <button
                   type="button"
@@ -943,7 +1089,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   className="btn btn-primary"
                   style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', padding: '6px 14px', fontWeight: 'bold' }}
                 >
-                  <Printer size={14} /> 🖨 In / Lưu PDF
+                  <Printer size={14} /> 🖨 {tcoLanguage === 'en' ? 'Print / Save PDF' : 'In / Lưu PDF'}
                 </button>
                 <button
                   type="button"
@@ -972,7 +1118,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
                 }}
               >
-                <CheckCircle2 size={15} /> ✓ Đã tự động sao chép bảng số liệu TCO! Đang chuyển sang Canva...
+                <CheckCircle2 size={15} /> {tcoLanguage === 'en' ? '✓ TCO dataset copied! Opening Canva template...' : '✓ Đã tự động sao chép bảng số liệu TCO! Đang chuyển sang Canva...'}
               </div>
             )}
 
@@ -1004,10 +1150,12 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               >
                 <div style={{ flex: 1, minWidth: '260px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold', color: '#c084fc', fontSize: '0.84rem' }}>
-                    <Palette size={15} /> Tùy Biến Nhận Diện Thương Hiệu Doanh Nghiệp (Canva Pro Link)
+                    <Palette size={15} /> {tcoLanguage === 'en' ? 'Brand Customization on Canva (1-Click Canva Pro)' : 'Tùy Biến Nhận Diện Thương Hiệu Doanh Nghiệp (Canva Pro Link)'}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginTop: '2px', lineHeight: '1.4' }}>
-                    💡 <strong>3 Bước Tùy Biến:</strong> [1] Bấm <i>Mở Canva</i> ➔ [2] Đổi Logo, màu sắc & ảnh nhà máy ➔ [3] Dán (Ctrl+V) bảng số liệu và tải PDF!
+                    {tcoLanguage === 'en' 
+                      ? '💡 3 Quick Steps: [1] Click "Open Canva" ➔ [2] Insert your corporate Logo & colors ➔ [3] Paste (Ctrl+V) pre-formatted TCO dataset!'
+                      : '💡 3 Bước Tùy Biến: [1] Bấm Mở Canva ➔ [2] Đổi Logo, màu sắc & ảnh nhà máy ➔ [3] Dán (Ctrl+V) bảng số liệu và tải PDF!'}
                   </div>
                 </div>
                 <button
@@ -1029,7 +1177,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  <ExternalLink size={13} /> Mở Mẫu Canva
+                  <ExternalLink size={13} /> {tcoLanguage === 'en' ? 'Open Canva Template' : 'Mở Mẫu Canva'}
                 </button>
               </div>
 
@@ -1049,7 +1197,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   gap: '6px'
                 }}
               >
-                <Sparkles size={14} /> Bạn có thể nhấp trực tiếp vào bất kỳ dòng văn bản nào bên dưới (Tên Công ty, Tiêu đề, SLA, Chữ ký...) để chỉnh sửa trước khi bấm In / Lưu PDF!
+                <Sparkles size={14} /> {tcoLanguage === 'en' ? 'Click on any text below (Company name, title, SLA, signature) to edit before printing/saving to PDF.' : 'Bạn có thể nhấp trực tiếp vào bất kỳ dòng văn bản nào bên dưới để chỉnh sửa trước khi bấm In / Lưu PDF!'}
               </div>
 
               {/* Report Header - Editable */}
@@ -1058,9 +1206,10 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   {/* Tên Doanh Nghiệp Bạn */}
                   <input
                     type="text"
-                    defaultValue="CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU B2B"
+                    key={`company_${tcoLanguage}`}
+                    defaultValue={tcoLanguage === 'en' ? 'VIETNAM GLOBAL EXPORT CORPORATION' : 'CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU B2B'}
                     className="report-editable-input"
-                    placeholder="Nhập tên doanh nghiệp của bạn..."
+                    placeholder="Enter company name..."
                     style={{
                       fontSize: '0.9rem',
                       fontWeight: 800,
@@ -1078,10 +1227,11 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   {/* Tiêu đề Báo Cáo */}
                   <input
                     type="text"
-                    defaultValue="BẢNG SO SÁNH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK)"
+                    key={`title_${tcoLanguage}`}
+                    defaultValue={tcoLanguage === 'en' ? 'TOTAL COST OF OWNERSHIP (TCO) BENCHMARK REPORT' : 'BẢNG SO SÁNH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK)'}
                     className="report-editable-input"
                     style={{
-                      fontSize: '1.25rem',
+                      fontSize: '1.2rem',
                       fontWeight: 900,
                       color: '#38bdf8',
                       textTransform: 'uppercase',
@@ -1096,7 +1246,8 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   {/* Kính gửi Buyer */}
                   <input
                     type="text"
-                    defaultValue="Kính gửi: Bộ Phận Thu Mua / Global Sourcing Dept"
+                    key={`buyer_${tcoLanguage}`}
+                    defaultValue={tcoLanguage === 'en' ? 'ATTN: Global Procurement & Sourcing Department' : 'Kính gửi: Bộ Phận Thu Mua / Global Sourcing Dept'}
                     className="report-editable-input"
                     style={{
                       fontSize: '0.8rem',
@@ -1111,12 +1262,13 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   />
                 </div>
                 <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8' }}>
-                  <div><strong>Ngày lập:</strong> {new Date().toLocaleDateString('vi-VN')}</div>
+                  <div><strong>{tcoLanguage === 'en' ? 'Date Issued:' : 'Ngày lập:'}</strong> {tcoLanguage === 'en' ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('vi-VN')}</div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '2px' }}>
-                    <strong>Hiệu lực:</strong>
+                    <strong>{tcoLanguage === 'en' ? 'Validity:' : 'Hiệu lực:'}</strong>
                     <input
                       type="text"
-                      defaultValue="30 ngày"
+                      key={`validity_${tcoLanguage}`}
+                      defaultValue={tcoLanguage === 'en' ? '30 Days' : '30 ngày'}
                       className="report-editable-input"
                       style={{
                         fontSize: '0.78rem',
@@ -1124,7 +1276,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                         fontWeight: 'bold',
                         background: 'transparent',
                         border: '1px dashed transparent',
-                        width: '70px',
+                        width: '80px',
                         textAlign: 'right'
                       }}
                     />
@@ -1135,15 +1287,21 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               {/* 3 Metrics Box */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
                 <div style={{ padding: '10px 14px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#fca5a5', textTransform: 'uppercase', fontWeight: 700 }}>Đối thủ / NCC Cũ</div>
+                  <div style={{ fontSize: '0.72rem', color: '#fca5a5', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {tcoLanguage === 'en' ? 'Incumbent / Competitor' : 'Đối thủ / NCC Cũ'}
+                  </div>
                   <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f87171', marginTop: '2px' }}>{formatNumber(competitorLandedCost)}</div>
                 </div>
                 <div style={{ padding: '10px 14px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#6ee7b7', textTransform: 'uppercase', fontWeight: 700 }}>Đề Xuất Doanh Nghiệp Bạn</div>
+                  <div style={{ fontSize: '0.72rem', color: '#6ee7b7', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {tcoLanguage === 'en' ? 'Our Proposed Solution' : 'Đề Xuất Doanh Nghiệp Bạn'}
+                  </div>
                   <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#10b981', marginTop: '2px' }}>{formatNumber(yourLandedCost)}</div>
                 </div>
                 <div style={{ padding: '10px 14px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: 700 }}>Tiết Kiệm Cho Khách Hàng</div>
+                  <div style={{ fontSize: '0.72rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: 700 }}>
+                    {tcoLanguage === 'en' ? 'Net Savings for Buyer' : 'Tiết Kiệm Cho Khách Hàng'}
+                  </div>
                   <div style={{ fontSize: '1.25rem', fontWeight: 900, color: isSaving ? '#38bdf8' : '#f59e0b', marginTop: '2px' }}>
                     {isSaving ? `+${formatNumber(netSavings)}` : formatNumber(netSavings)}
                     {competitorLandedCost > 0 && <span style={{ fontSize: '0.75rem', marginLeft: '6px' }}>({savingsPercent}%)</span>}
@@ -1156,10 +1314,18 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <thead>
                     <tr style={{ background: 'rgba(30, 41, 59, 0.8)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      <th style={{ padding: '9px 12px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1' }}>CẤU PHẦN CHI PHÍ</th>
-                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '22%' }}>ĐỐI THỦ / NCC CŨ</th>
-                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '22%' }}>DOANH NGHIỆP BẠN</th>
-                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '18%' }}>CHÊNH LỆCH</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1' }}>
+                        {tcoLanguage === 'en' ? 'COST COMPONENTS' : 'CẤU PHẦN CHI PHÍ'}
+                      </th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '22%' }}>
+                        {tcoLanguage === 'en' ? 'INCUMBENT / COMPETITOR' : 'ĐỐI THỦ / NCC CŨ'}
+                      </th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '22%' }}>
+                        {tcoLanguage === 'en' ? 'OUR PROPOSAL' : 'DOANH NGHIỆP BẠN'}
+                      </th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '18%' }}>
+                        {tcoLanguage === 'en' ? 'VARIANCE' : 'CHÊNH LỆCH'}
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1170,7 +1336,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                       return (
                         <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: idx % 2 === 0 ? 'rgba(255, 255, 255, 0.015)' : 'transparent' }}>
                           <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600 }}>
-                            {item.label}
+                            {tcoLanguage === 'en' ? item.labelEn : item.label}
                           </td>
                           <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
                             {formatNumber(compVal)}
@@ -1211,7 +1377,7 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                     {/* Total Row */}
                     <tr style={{ background: 'rgba(15, 23, 42, 0.9)', borderTop: '2px solid rgba(255, 255, 255, 0.15)' }}>
                       <td style={{ padding: '11px 12px', fontWeight: 900, color: '#38bdf8' }}>
-                        TỔNG CHI PHÍ ĐÍCH SỞ HỮU (TCO)
+                        {tcoLanguage === 'en' ? 'TOTAL LANDED COST OF OWNERSHIP (TCO)' : 'TỔNG CHI PHÍ ĐÍCH SỞ HỮU (TCO)'}
                       </td>
                       <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#f87171', fontSize: '0.92rem' }}>
                         {formatNumber(competitorLandedCost)}
@@ -1229,9 +1395,14 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
 
               {/* Value Pitch - Editable */}
               <div style={{ padding: '12px 16px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '18px', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '4px' }}>✓ Cam Kết Giá Trị Gia Tăng (Value-Added SLA): </strong>
+                <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '4px' }}>
+                  {tcoLanguage === 'en' ? '✓ Value-Added Service Level Agreement (SLA):' : '✓ Cam Kết Giá Trị Gia Tăng (Value-Added SLA):'}
+                </strong>
                 <textarea
-                  defaultValue="Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật."
+                  key={`sla_${tcoLanguage}`}
+                  defaultValue={tcoLanguage === 'en' 
+                    ? "We enforce strict factory quality control, full C/O documentation for preferential tariff reductions, optimized container loading, and a guaranteed 100% defect replacement policy."
+                    : "Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật."}
                   rows={2}
                   className="report-editable-input"
                   style={{
@@ -1251,19 +1422,308 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                 <div>
                   <input
                     type="text"
-                    defaultValue="Đại diện Bán hàng: Bộ phận Xuất Khẩu B2B"
+                    key={`sign_${tcoLanguage}`}
+                    defaultValue={tcoLanguage === 'en' ? 'Authorized Sales Rep: International B2B Export Division' : 'Đại diện Bán hàng: Bộ phận Xuất Khẩu B2B'}
                     className="report-editable-input"
-                    style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '260px' }}
+                    style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '320px' }}
                   />
                   <input
                     type="text"
-                    defaultValue="Email: sales@b2bexports.com | Hotline: +84 (0) 90 123 4567"
+                    defaultValue="Email: sales@b2bexports.com | Tel: +84 (0) 90 123 4567"
                     className="report-editable-input"
-                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '300px', display: 'block', marginTop: '2px' }}
+                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '320px', display: 'block', marginTop: '2px' }}
                   />
                 </div>
                 <div style={{ textAlign: 'right', fontStyle: 'italic', color: '#64748b' }}>
-                  Xác nhận đề xuất báo giá có giá trị thương mại
+                  {tcoLanguage === 'en' ? 'Commercial quotation subject to formal confirmation' : 'Xác nhận đề xuất báo giá có giá trị thương mại'}
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* MODAL XUẤT BẢN ĐỀ XUẤT GIÁ ĐA TẦNG (DRAFT PROPOSAL QUOTATION) */}
+      {isProposalModalOpen && (
+        <div 
+          className="tco-modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 9999,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px'
+          }}
+        >
+          <div 
+            className="tco-modal-content"
+            style={{
+              background: '#0f172a',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '850px',
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Header Modal (Actions bar) - ẨN KHI IN */}
+            <div 
+              className="no-print"
+              style={{
+                padding: '14px 20px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: 'rgba(0, 0, 0, 0.25)',
+                flexWrap: 'wrap',
+                gap: '10px'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={18} color="var(--accent-primary)" />
+                <span style={{ fontWeight: 'bold', fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+                  {proposalLanguage === 'en' ? 'Commercial Sales Proposal (Tiered Quotation)' : 'Bản Đề Xuất Báo Giá Đa Tầng (Draft Proposal)'}
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Language Switcher */}
+                <button
+                  type="button"
+                  onClick={() => setProposalLanguage(prev => prev === 'en' ? 'vi' : 'en')}
+                  className="btn btn-secondary"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    fontSize: '0.78rem',
+                    padding: '6px 12px',
+                    background: 'rgba(59, 130, 246, 0.15)',
+                    border: '1px solid var(--accent-primary)',
+                    color: '#93c5fd',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                  title="Chuyển đổi ngôn ngữ Tiếng Anh / Tiếng Việt"
+                >
+                  <Globe size={14} /> {proposalLanguage === 'en' ? '🇬🇧 English' : '🇻🇳 Tiếng Việt'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleOpenProposalCanva}
+                  className="btn btn-secondary"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.78rem',
+                    padding: '6px 12px',
+                    background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2))',
+                    border: '1px solid #a855f7',
+                    color: '#e9d5ff',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <Palette size={14} color="#c084fc" /> 🎨 {proposalLanguage === 'en' ? 'Open Canva' : 'Mở Canva'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyProposal}
+                  className="btn btn-secondary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', padding: '6px 10px' }}
+                >
+                  {isProposalCopied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                  {isProposalCopied ? (proposalLanguage === 'en' ? 'Copied!' : 'Đã copy!') : (proposalLanguage === 'en' ? 'Copy Text' : 'Sao chép')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrintReport}
+                  className="btn btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', padding: '6px 14px', fontWeight: 'bold' }}
+                >
+                  <Printer size={14} /> 🖨 {proposalLanguage === 'en' ? 'Print / Save PDF' : 'In / Lưu PDF'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsProposalModalOpen(false)}
+                  style={{ background: 'transparent', border: 0, color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            {/* Thông Báo Toast Canva Proposal */}
+            {proposalCanvaToast && (
+              <div 
+                className="no-print"
+                style={{
+                  padding: '8px 16px',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: '#fff',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
+                }}
+              >
+                <CheckCircle2 size={15} /> {proposalLanguage === 'en' ? '✓ Proposal text copied! Opening Canva proposal template...' : '✓ Đã sao chép nội dung đề xuất giá! Đang mở Canva...'}
+              </div>
+            )}
+
+            {/* Nội Dung Bản Đề Xuất Giá In / Xuất (Printable Container) */}
+            <div id="proposal-printable-report" style={{
+              padding: '28px',
+              overflowY: 'auto',
+              flex: 1,
+              background: '#0b1120',
+              color: '#f8fafc',
+              fontSize: '0.86rem',
+              lineHeight: '1.5'
+            }}>
+              {/* Proposal Header */}
+              <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ flex: 1, minWidth: '280px' }}>
+                  <input
+                    type="text"
+                    key={`prop_comp_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'VIETNAM GLOBAL EXPORT CORPORATION' : 'CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU B2B'}
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '100%',
+                      marginBottom: '4px'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    key={`prop_title_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'COMMERCIAL SALES PROPOSAL & TIERED PRICING' : 'BẢN ĐỀ XUẤT BÁO GIÁ THƯƠNG MẠI & ĐA TẦNG GIÁ TRỊ'}
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '1.2rem',
+                      fontWeight: 900,
+                      color: '#38bdf8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '100%'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    key={`prop_buyer_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'TO: Global Sourcing Committee / Category Buyer' : 'Kính gửi: Hội Đồng Thu Mua & Quản Lý Ngành Hàng'}
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '0.8rem',
+                      color: '#cbd5e1',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '100%',
+                      marginTop: '2px'
+                    }}
+                  />
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8' }}>
+                  <div><strong>{proposalLanguage === 'en' ? 'Date Issued:' : 'Ngày lập:'}</strong> {proposalLanguage === 'en' ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('vi-VN')}</div>
+                  <div><strong>{proposalLanguage === 'en' ? 'Ref No:' : 'Số hiệu:'}</strong> EXP-{Date.now().toString().slice(-6)}</div>
+                </div>
+              </div>
+
+              {/* 3 Tiered Options Grid */}
+              <div style={{ marginBottom: '22px' }}>
+                <div style={{ fontSize: '0.86rem', fontWeight: 'bold', color: '#e2e8f0', marginBottom: '10px' }}>
+                  {proposalLanguage === 'en' ? '1. TIERED COMMERCIAL PRICING OPTIONS (SELECT ONE)' : '1. CÁC PHƯƠNG ÁN BÁO GIÁ ĐA TẦNG (LỰA CHỌN PHÙ HỢP)'}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${activeOptions.length || 1}, 1fr)`, gap: '14px' }}>
+                  {activeOptions.map((opt, idx) => (
+                    <div 
+                      key={opt.id}
+                      style={{
+                        padding: '16px',
+                        border: idx === 1 ? '2px solid #3b82f6' : '1px solid rgba(255,255,255,0.12)',
+                        borderRadius: '10px',
+                        background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'rgba(255, 255, 255, 0.02)',
+                        display: 'flex',
+                        flexDirection: 'column'
+                      }}
+                    >
+                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: idx === 1 ? '#38bdf8' : '#94a3b8', textTransform: 'uppercase' }}>
+                        {idx === 0 ? (proposalLanguage === 'en' ? 'Option A (Economy)' : 'Gói A (Tối Ưu)') : idx === 1 ? (proposalLanguage === 'en' ? 'Option B (Recommended Standard)' : 'Gói B (Tiêu Chuẩn Đề Xuất)') : (proposalLanguage === 'en' ? 'Option C (Premium SLA)' : 'Gói C (Nâng Cao SLA)')}
+                      </div>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#f8fafc', margin: '4px 0 10px 0' }}>
+                        {opt.name}
+                      </div>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#10b981', marginBottom: '10px' }}>
+                        {formatNumber(Number(opt.price) || 0)} <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 'normal' }}>/ unit</span>
+                      </div>
+                      <div style={{ flex: 1, borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '10px', fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.45' }}>
+                        {opt.features || (proposalLanguage === 'en' ? 'Standard packaging, export QA inspection, prompt customer service.' : 'Đóng gói chuẩn xuất khẩu, kiểm định QA và hỗ trợ kỹ thuật.')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Commercial Terms & Conditions */}
+              <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '14px 18px', background: 'rgba(255, 255, 255, 0.02)', marginBottom: '18px', fontSize: '0.8rem' }}>
+                <div style={{ fontWeight: 'bold', color: '#38bdf8', marginBottom: '8px' }}>
+                  {proposalLanguage === 'en' ? '2. STANDARD COMMERCIAL TERMS & SPECIFICATIONS' : '2. ĐIỀU KHOẢN THƯƠNG MẠI & QUY CHUẨN XUẤT KHẨU'}
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', color: '#cbd5e1' }}>
+                  <div>• <strong>{proposalLanguage === 'en' ? 'Incoterms:' : 'Điều kiện giao hàng:'}</strong> FOB Hochiminh Port / CIF Destination (Incoterms 2020)</div>
+                  <div>• <strong>{proposalLanguage === 'en' ? 'Payment Terms:' : 'Phương thức thanh toán:'}</strong> 30% T/T Advance, 70% against B/L copy (or Irrevocable L/C)</div>
+                  <div>• <strong>{proposalLanguage === 'en' ? 'Production Lead Time:' : 'Thời gian sản xuất:'}</strong> 14 - 21 business days upon deposit</div>
+                  <div>• <strong>{proposalLanguage === 'en' ? 'Certifications:' : 'Chứng từ chất lượng:'}</strong> ISO, HACCP, FDA, Form FTA C/O, Phytosanitary Certificate</div>
+                </div>
+              </div>
+
+              {/* Footer Sign-off - Proposal */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <input
+                    type="text"
+                    key={`prop_sign_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'Issued by: International Export Sales Directorate' : 'Đại diện Ký Duyệt: Ban Giám Đốc Kinh Doanh Xuất Khẩu'}
+                    className="report-editable-input"
+                    style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '340px' }}
+                  />
+                  <div style={{ color: '#94a3b8', marginTop: '2px' }}>
+                    Email: export@vietnamglobal.com | Direct: +84 (0) 90 123 4567
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', fontStyle: 'italic', color: '#64748b' }}>
+                  {proposalLanguage === 'en' ? 'Official Commercial Proposal — Valid for 30 Days' : 'Bản Báo Giá Thương Mại Chính Thức — Hiệu lực 30 ngày'}
                 </div>
               </div>
             </div>
@@ -1287,8 +1747,9 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
             display: none !important;
             visibility: hidden !important;
           }
-          /* Chỉ hiển thị duy nhất container báo cáo */
-          #tco-printable-report, #tco-printable-report * {
+          /* Chỉ hiển thị duy nhất container báo cáo đang mở */
+          #tco-printable-report, #tco-printable-report *,
+          #proposal-printable-report, #proposal-printable-report * {
             visibility: visible !important;
           }
           .tco-modal-overlay {
@@ -1307,7 +1768,8 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
             border: none !important;
             background: transparent !important;
           }
-          #tco-printable-report {
+          #tco-printable-report,
+          #proposal-printable-report {
             position: fixed !important;
             left: 0 !important;
             top: 0 !important;
@@ -1321,21 +1783,26 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
             overflow: visible !important;
           }
           #tco-printable-report input,
-          #tco-printable-report textarea {
+          #tco-printable-report textarea,
+          #proposal-printable-report input,
+          #proposal-printable-report textarea {
             border: none !important;
             background: transparent !important;
             color: #0f172a !important;
             padding: 0 !important;
           }
-          #tco-printable-report table {
+          #tco-printable-report table,
+          #proposal-printable-report table {
             border: 1px solid #cbd5e1 !important;
             color: #0f172a !important;
           }
-          #tco-printable-report th {
+          #tco-printable-report th,
+          #proposal-printable-report th {
             background-color: #f1f5f9 !important;
             color: #0f172a !important;
           }
-          #tco-printable-report td {
+          #tco-printable-report td,
+          #proposal-printable-report td {
             color: #0f172a !important;
             border-bottom: 1px solid #e2e8f0 !important;
           }
