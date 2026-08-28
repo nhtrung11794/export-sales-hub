@@ -855,45 +855,56 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
 
       {/* MODAL XUẤT BÁO CÁO TCO CHUYÊN NGHIỆP GỬI KHÁCH */}
       {isExportModalOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.8)',
-          backdropFilter: 'blur(8px)',
-          zIndex: 9999,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '20px'
-        }}>
-          <div style={{
-            background: '#0f172a',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            borderRadius: '16px',
-            width: '100%',
-            maxWidth: '850px',
-            maxHeight: '90vh',
+        <div 
+          className="tco-modal-overlay"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(8px)',
+            zIndex: 9999,
             display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-            overflow: 'hidden'
-          }}>
-            {/* Header Modal (Actions bar) */}
-            <div style={{
-              padding: '16px 24px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '20px'
+          }}
+        >
+          <div 
+            className="tco-modal-content"
+            style={{
+              background: '#0f172a',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              borderRadius: '16px',
+              width: '100%',
+              maxWidth: '850px',
+              maxHeight: '90vh',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              background: 'rgba(0, 0, 0, 0.25)'
-            }}>
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Header Modal (Actions bar) - ẨN KHI IN */}
+            <div 
+              className="no-print"
+              style={{
+                padding: '14px 20px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                background: 'rgba(0, 0, 0, 0.25)',
+                flexWrap: 'wrap',
+                gap: '10px'
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <FileText size={20} color="var(--accent-primary)" />
-                <span style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-primary)' }}>
-                  Bản Xem Trước Báo Cáo TCO Xuất Khách (Client-Ready Report)
+                <FileText size={18} color="var(--accent-primary)" />
+                <span style={{ fontWeight: 'bold', fontSize: '0.92rem', color: 'var(--text-primary)' }}>
+                  Bản Xem Trước Báo Cáo TCO (Có Thể Chỉnh Sửa Trực Tiếp Trước Khi Lưu PDF)
                 </span>
               </div>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -905,8 +916,8 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    fontSize: '0.8rem',
-                    padding: '6px 14px',
+                    fontSize: '0.78rem',
+                    padding: '6px 12px',
                     background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2))',
                     border: '1px solid #a855f7',
                     color: '#e9d5ff',
@@ -915,50 +926,53 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   }}
                   title="Mở Mẫu Thiết Kế trên Canva & Tự Động Sao Chép Số Liệu"
                 >
-                  <Palette size={14} color="#c084fc" /> 🎨 Mở Mẫu Canva (Canva Template)
+                  <Palette size={14} color="#c084fc" /> 🎨 Mở Canva
                 </button>
                 <button
                   type="button"
                   onClick={handleCopyTcoReport}
                   className="btn btn-secondary"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', padding: '6px 12px' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', padding: '6px 10px' }}
                 >
                   {isCopied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
-                  {isCopied ? 'Đã sao chép!' : 'Sao chép văn bản'}
+                  {isCopied ? 'Đã copy!' : 'Sao chép'}
                 </button>
                 <button
                   type="button"
                   onClick={handlePrintReport}
                   className="btn btn-primary"
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', padding: '6px 14px' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', padding: '6px 14px', fontWeight: 'bold' }}
                 >
-                  <Printer size={14} /> In / Xuất PDF
+                  <Printer size={14} /> 🖨 In / Lưu PDF
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsExportModalOpen(false)}
                   style={{ background: 'transparent', border: 0, color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
             </div>
 
-            {/* Thông Báo Toast khi bấm Mở Canva */}
+            {/* Thông Báo Toast khi bấm Mở Canva - ẨN KHI IN */}
             {canvaToast && (
-              <div style={{
-                padding: '10px 18px',
-                background: 'linear-gradient(135deg, #10b981, #059669)',
-                color: '#fff',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
-              }}>
-                <CheckCircle2 size={16} /> ✓ Đã tự động sao chép bảng số liệu TCO! Đang chuyển sang Canva để bạn dán và gắn Logo thương hiệu...
+              <div 
+                className="no-print"
+                style={{
+                  padding: '8px 16px',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: '#fff',
+                  fontSize: '0.78rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  justifyContent: 'center',
+                  boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
+                }}
+              >
+                <CheckCircle2 size={15} /> ✓ Đã tự động sao chép bảng số liệu TCO! Đang chuyển sang Canva...
               </div>
             )}
 
@@ -972,25 +986,28 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               fontSize: '0.86rem',
               lineHeight: '1.5'
             }}>
-              {/* Banner Tùy Biến Thương Hiệu Trên Canva (3 Bước Siêu Tốc) */}
-              <div style={{ 
-                padding: '14px 18px', 
-                background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.12), rgba(59, 130, 246, 0.12))', 
-                border: '1px solid rgba(168, 85, 247, 0.35)', 
-                borderRadius: '10px', 
-                marginBottom: '22px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '12px'
-              }}>
-                <div style={{ flex: 1, minWidth: '280px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#c084fc', fontSize: '0.88rem' }}>
-                    <Palette size={16} /> Tùy Biến Nhận Diện Thương Hiệu Doanh Nghiệp (Canva Pro Link)
+              {/* Banner Tùy Biến Thương Hiệu Trên Canva - ẨN KHI IN */}
+              <div 
+                className="no-print"
+                style={{ 
+                  padding: '12px 16px', 
+                  background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.12), rgba(59, 130, 246, 0.12))', 
+                  border: '1px solid rgba(168, 85, 247, 0.35)', 
+                  borderRadius: '10px', 
+                  marginBottom: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '10px'
+                }}
+              >
+                <div style={{ flex: 1, minWidth: '260px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold', color: '#c084fc', fontSize: '0.84rem' }}>
+                    <Palette size={15} /> Tùy Biến Nhận Diện Thương Hiệu Doanh Nghiệp (Canva Pro Link)
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: '#cbd5e1', marginTop: '4px', lineHeight: '1.4' }}>
-                    💡 <strong>3 Bước Tùy Biến:</strong> [1] Bấm <i>Mở Mẫu Canva</i> ➔ [2] Đổi Logo, màu chủ đạo & chèn ảnh sản phẩm/nhà xưởng ➔ [3] Dán (Ctrl+V) bảng số liệu TCO đã copy sẵn và tải PDF gửi Buyer!
+                  <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginTop: '2px', lineHeight: '1.4' }}>
+                    💡 <strong>3 Bước Tùy Biến:</strong> [1] Bấm <i>Mở Canva</i> ➔ [2] Đổi Logo, màu sắc & ảnh nhà máy ➔ [3] Dán (Ctrl+V) bảng số liệu và tải PDF!
                   </div>
                 </div>
                 <button
@@ -1000,51 +1017,134 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                     background: 'linear-gradient(135deg, #a855f7, #6366f1)',
                     color: '#fff',
                     border: 'none',
-                    borderRadius: '8px',
-                    padding: '8px 16px',
-                    fontSize: '0.82rem',
+                    borderRadius: '6px',
+                    padding: '6px 14px',
+                    fontSize: '0.78rem',
                     fontWeight: 'bold',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '6px',
+                    gap: '5px',
                     cursor: 'pointer',
                     boxShadow: '0 4px 12px rgba(168, 85, 247, 0.35)',
                     whiteSpace: 'nowrap'
                   }}
                 >
-                  <ExternalLink size={14} /> Mở Mẫu Canva Thiết Kế
+                  <ExternalLink size={13} /> Mở Mẫu Canva
                 </button>
               </div>
 
-              {/* Report Header */}
-              <div style={{ borderBottom: '2px solid rgba(59, 130, 246, 0.4)', paddingBottom: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <h1 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#38bdf8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                    BẢNG SO SÁNH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK)
-                  </h1>
-                  <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '4px' }}>
-                    Phân tích chi phí đích (Buyer Landed Cost) & Tối ưu hóa ngân sách nhập khẩu
-                  </div>
+              {/* Thông báo hướng dẫn chỉnh sửa trực tiếp - ẨN KHI IN */}
+              <div 
+                className="no-print"
+                style={{
+                  padding: '8px 12px',
+                  background: 'rgba(59, 130, 246, 0.08)',
+                  border: '1px dashed rgba(59, 130, 246, 0.3)',
+                  borderRadius: '6px',
+                  marginBottom: '16px',
+                  fontSize: '0.76rem',
+                  color: '#93c5fd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Sparkles size={14} /> Bạn có thể nhấp trực tiếp vào bất kỳ dòng văn bản nào bên dưới (Tên Công ty, Tiêu đề, SLA, Chữ ký...) để chỉnh sửa trước khi bấm In / Lưu PDF!
+              </div>
+
+              {/* Report Header - Editable */}
+              <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ flex: 1, minWidth: '280px' }}>
+                  {/* Tên Doanh Nghiệp Bạn */}
+                  <input
+                    type="text"
+                    defaultValue="CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU B2B"
+                    className="report-editable-input"
+                    placeholder="Nhập tên doanh nghiệp của bạn..."
+                    style={{
+                      fontSize: '0.9rem',
+                      fontWeight: 800,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '100%',
+                      marginBottom: '4px'
+                    }}
+                  />
+                  {/* Tiêu đề Báo Cáo */}
+                  <input
+                    type="text"
+                    defaultValue="BẢNG SO SÁNH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK)"
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 900,
+                      color: '#38bdf8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '100%'
+                    }}
+                  />
+                  {/* Kính gửi Buyer */}
+                  <input
+                    type="text"
+                    defaultValue="Kính gửi: Bộ Phận Thu Mua / Global Sourcing Dept"
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '0.8rem',
+                      color: '#cbd5e1',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '100%',
+                      marginTop: '2px'
+                    }}
+                  />
                 </div>
                 <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8' }}>
                   <div><strong>Ngày lập:</strong> {new Date().toLocaleDateString('vi-VN')}</div>
-                  <div><strong>Hiệu lực:</strong> 30 ngày</div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '2px' }}>
+                    <strong>Hiệu lực:</strong>
+                    <input
+                      type="text"
+                      defaultValue="30 ngày"
+                      className="report-editable-input"
+                      style={{
+                        fontSize: '0.78rem',
+                        color: 'inherit',
+                        fontWeight: 'bold',
+                        background: 'transparent',
+                        border: '1px dashed transparent',
+                        width: '70px',
+                        textAlign: 'right'
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
 
               {/* 3 Metrics Box */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '22px' }}>
-                <div style={{ padding: '12px 14px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
+                <div style={{ padding: '10px 14px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '0.72rem', color: '#fca5a5', textTransform: 'uppercase', fontWeight: 700 }}>Đối thủ / NCC Cũ</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#f87171', marginTop: '2px' }}>{formatNumber(competitorLandedCost)}</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f87171', marginTop: '2px' }}>{formatNumber(competitorLandedCost)}</div>
                 </div>
-                <div style={{ padding: '12px 14px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px' }}>
+                <div style={{ padding: '10px 14px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '0.72rem', color: '#6ee7b7', textTransform: 'uppercase', fontWeight: 700 }}>Đề Xuất Doanh Nghiệp Bạn</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#10b981', marginTop: '2px' }}>{formatNumber(yourLandedCost)}</div>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#10b981', marginTop: '2px' }}>{formatNumber(yourLandedCost)}</div>
                 </div>
-                <div style={{ padding: '12px 14px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px' }}>
+                <div style={{ padding: '10px 14px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '0.72rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: 700 }}>Tiết Kiệm Cho Khách Hàng</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: isSaving ? '#38bdf8' : '#f59e0b', marginTop: '2px' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: isSaving ? '#38bdf8' : '#f59e0b', marginTop: '2px' }}>
                     {isSaving ? `+${formatNumber(netSavings)}` : formatNumber(netSavings)}
                     {competitorLandedCost > 0 && <span style={{ fontSize: '0.75rem', marginLeft: '6px' }}>({savingsPercent}%)</span>}
                   </div>
@@ -1052,14 +1152,14 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               </div>
 
               {/* Bảng Chi Tiết Chuẩn Hóa Hoàn Toàn (Không Input, Không Thùng Rác) */}
-              <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '22px' }}>
+              <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <thead>
                     <tr style={{ background: 'rgba(30, 41, 59, 0.8)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1' }}>CẤU PHẦN CHI PHÍ</th>
-                      <th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '22%' }}>ĐỐI THỦ / NCC CŨ</th>
-                      <th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '22%' }}>DOANH NGHIỆP BẠN</th>
-                      <th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '18%' }}>CHÊNH LỆCH</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1' }}>CẤU PHẦN CHI PHÍ</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '22%' }}>ĐỐI THỦ / NCC CŨ</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '22%' }}>DOANH NGHIỆP BẠN</th>
+                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '18%' }}>CHÊNH LỆCH</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1069,16 +1169,16 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                       const diff = compVal - yourVal;
                       return (
                         <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: idx % 2 === 0 ? 'rgba(255, 255, 255, 0.015)' : 'transparent' }}>
-                          <td style={{ padding: '9px 14px', color: '#f1f5f9', fontWeight: 600 }}>
+                          <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600 }}>
                             {item.label}
                           </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
                             {formatNumber(compVal)}
                           </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
                             {formatNumber(yourVal)}
                           </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
                             {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
                           </td>
                         </tr>
@@ -1092,16 +1192,16 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                       const diff = compVal - yourVal;
                       return (
                         <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(168, 85, 247, 0.03)' }}>
-                          <td style={{ padding: '9px 14px', color: '#f1f5f9', fontWeight: 600 }}>
+                          <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600 }}>
                             {item.label}
                           </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
                             {formatNumber(compVal)}
                           </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
                             {formatNumber(yourVal)}
                           </td>
-                          <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
+                          <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
                             {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
                           </td>
                         </tr>
@@ -1110,16 +1210,16 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
 
                     {/* Total Row */}
                     <tr style={{ background: 'rgba(15, 23, 42, 0.9)', borderTop: '2px solid rgba(255, 255, 255, 0.15)' }}>
-                      <td style={{ padding: '12px 14px', fontWeight: 900, color: '#38bdf8' }}>
+                      <td style={{ padding: '11px 12px', fontWeight: 900, color: '#38bdf8' }}>
                         TỔNG CHI PHÍ ĐÍCH SỞ HỮU (TCO)
                       </td>
-                      <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 900, color: '#f87171', fontSize: '0.95rem' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#f87171', fontSize: '0.92rem' }}>
                         {formatNumber(competitorLandedCost)}
                       </td>
-                      <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 900, color: '#10b981', fontSize: '0.95rem' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#10b981', fontSize: '0.92rem' }}>
                         {formatNumber(yourLandedCost)}
                       </td>
-                      <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 900, color: isSaving ? '#38bdf8' : '#94a3b8', fontSize: '0.95rem' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: isSaving ? '#38bdf8' : '#94a3b8', fontSize: '0.92rem' }}>
                         {isSaving ? `-${formatNumber(netSavings)}` : formatNumber(netSavings)}
                       </td>
                     </tr>
@@ -1127,19 +1227,42 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                 </table>
               </div>
 
-              {/* Value Pitch */}
-              <div style={{ padding: '14px 18px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '20px', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                <strong style={{ color: '#38bdf8' }}>✓ Cam Kết Giá Trị Gia Tăng (Value-Added SLA): </strong>
-                Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật.
+              {/* Value Pitch - Editable */}
+              <div style={{ padding: '12px 16px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '18px', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '4px' }}>✓ Cam Kết Giá Trị Gia Tăng (Value-Added SLA): </strong>
+                <textarea
+                  defaultValue="Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật."
+                  rows={2}
+                  className="report-editable-input"
+                  style={{
+                    width: '100%',
+                    background: 'transparent',
+                    border: '1px dashed transparent',
+                    color: 'inherit',
+                    fontSize: '0.8rem',
+                    lineHeight: '1.4',
+                    resize: 'vertical'
+                  }}
+                />
               </div>
 
-              {/* Footer Sign-off */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8' }}>
+              {/* Footer Sign-off - Editable */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8', flexWrap: 'wrap', gap: '10px' }}>
                 <div>
-                  <div><strong>Đại diện Bán hàng:</strong> Bộ phận Xuất Khẩu B2B</div>
-                  <div><strong>Email:</strong> sales@b2bexports.com</div>
+                  <input
+                    type="text"
+                    defaultValue="Đại diện Bán hàng: Bộ phận Xuất Khẩu B2B"
+                    className="report-editable-input"
+                    style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '260px' }}
+                  />
+                  <input
+                    type="text"
+                    defaultValue="Email: sales@b2bexports.com | Hotline: +84 (0) 90 123 4567"
+                    className="report-editable-input"
+                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '300px', display: 'block', marginTop: '2px' }}
+                  />
                 </div>
-                <div style={{ textAlign: 'right', fontStyle: 'italic' }}>
+                <div style={{ textAlign: 'right', fontStyle: 'italic', color: '#64748b' }}>
                   Xác nhận đề xuất báo giá có giá trị thương mại
                 </div>
               </div>
@@ -1148,6 +1271,83 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
           </div>
         </div>
       )}
+
+      {/* Global CSS Style Cho In & Xuất PDF */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          /* Ẩn toàn bộ thành phần bên ngoài */
+          body {
+            background: #ffffff !important;
+            color: #0f172a !important;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          .no-print, .no-print * {
+            display: none !important;
+            visibility: hidden !important;
+          }
+          /* Chỉ hiển thị duy nhất container báo cáo */
+          #tco-printable-report, #tco-printable-report * {
+            visibility: visible !important;
+          }
+          .tco-modal-overlay {
+            position: static !important;
+            background: transparent !important;
+            padding: 0 !important;
+            display: block !important;
+            backdrop-filter: none !important;
+          }
+          .tco-modal-content {
+            position: static !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            max-height: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: transparent !important;
+          }
+          #tco-printable-report {
+            position: fixed !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100vw !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 24px 32px !important;
+            background: #ffffff !important;
+            color: #0f172a !important;
+            z-index: 999999 !important;
+            overflow: visible !important;
+          }
+          #tco-printable-report input,
+          #tco-printable-report textarea {
+            border: none !important;
+            background: transparent !important;
+            color: #0f172a !important;
+            padding: 0 !important;
+          }
+          #tco-printable-report table {
+            border: 1px solid #cbd5e1 !important;
+            color: #0f172a !important;
+          }
+          #tco-printable-report th {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+          }
+          #tco-printable-report td {
+            color: #0f172a !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+          }
+        }
+
+        .report-editable-input:hover,
+        .report-editable-input:focus {
+          border-color: rgba(59, 130, 246, 0.4) !important;
+          background: rgba(255, 255, 255, 0.04) !important;
+          outline: none;
+        }
+      ` }} />
     </section>
   );
 }
