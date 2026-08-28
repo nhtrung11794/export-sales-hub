@@ -109,22 +109,23 @@ function MatrixCell({
           background: isSpamWarning ? 'rgba(239, 68, 68, 0.05)' : undefined
         }}
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.72rem', padding: '0 2px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.74rem', padding: '2px 2px 0 2px' }}>
         {isSpamWarning ? (
-          <span style={{ color: '#fca5a5', display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <AlertTriangle size={11} /> Cần $\ge$ 10 từ thực chất (bộ lọc rác)
+          <span style={{ color: 'var(--accent-danger)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <AlertTriangle size={13} color="var(--accent-danger)" />
           </span>
         ) : isValid ? (
-          <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '3px', fontWeight: 600 }}>
-            <CheckCircle2 size={11} /> Đạt chuẩn Insight
+          <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <CheckCircle2 size={13} color="#10b981" />
           </span>
         ) : (
-          <span style={{ color: 'var(--text-muted)' }}>Tối thiểu 10 từ</span>
+          <span />
         )}
 
         <span style={{
           color: isValid ? '#10b981' : isSpamWarning ? 'var(--accent-danger)' : 'var(--text-muted)',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          marginLeft: 'auto'
         }}>
           {wordCount}/10 từ
         </span>
