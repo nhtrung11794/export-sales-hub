@@ -100,18 +100,25 @@ function DraggableRole({
           type="button"
           onClick={(e) => {
             e.stopPropagation();
+            e.preventDefault();
             onDeleteCustom(role.id);
           }}
-          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+          }}
+          onMouseDown={(e) => {
+            e.stopPropagation();
+          }}
           style={{
-            background: 'transparent',
-            border: 0,
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
             color: 'var(--text-muted)',
             cursor: 'pointer',
-            padding: '2px',
+            padding: '3px 5px',
             display: 'flex',
             alignItems: 'center',
-            borderRadius: '4px'
+            borderRadius: '4px',
+            zIndex: 10
           }}
           title="Xóa vai trò tự định nghĩa này"
         >
@@ -238,7 +245,15 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
   };
 
   const handleRemoveCustomRole = (idToRemove: string) => {
+    const roleToRemove = customRoles.find(r => r.id === idToRemove);
     setCustomRoles(prev => prev.filter(r => r.id !== idToRemove));
+    if (roleToRemove) {
+      setData(prev => ({
+        ...prev,
+        buyer_map_roles: (prev.buyer_map_roles || []).filter(r => r.role !== roleToRemove.label)
+      }));
+      setTimeout(() => handleBlur(), 100);
+    }
   };
 
   const handleFieldChange = (field: keyof M02FormData, value: string) => {
