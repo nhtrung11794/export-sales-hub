@@ -1,7 +1,7 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v7.0 (Chốt hạ toàn diện từ M01 -> M05, Khoang Final Capstone Độc Lập, ErrorBoundary, Split-View Dashboards & Trực quan hóa Dữ liệu)  
-**Ngày cập nhật:** 27/08/2026
+**Phiên bản:** v7.1 (Tích hợp Google Drive API, Nhúng Slide 15 Bài Học Trực Tiếp & Skill `@sync-drive-materials`)  
+**Ngày cập nhật:** 28/08/2026
 
 Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư duy, Kết quả, Kỹ thuật, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc bảo trì dự án ngay lập tức mà không bao giờ bị đứt gãy mạch logic.
 
@@ -57,6 +57,13 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 
 ---
 
+### 1.4. Tích Hợp Google Drive API & Trình Đọc Slide Nhúng 15 Buổi Học (Zero-Context Switching)
+- **Xác thực Service Account**: Tích hợp `googleapis` kết nối thông qua file `credentials.json` an toàn (đã cấu hình `.gitignore`).
+- **Trích xuất ID & Bỏ qua lỗi Quota**: Quét toàn bộ thư mục bài giảng bằng regex nhận diện bài `B01` - `B15`, trích xuất File ID trực tiếp và gắn link `https://drive.google.com/file/d/{fileId}/preview` vào `src/lib/courseMaterials.ts`.
+- **Trình đọc Slide Split-View**: Tích hợp Google Drive PDF Reader trực tiếp vào cột 1 của `ModuleLayout` cho toàn bộ 5 Module, cho phép học viên đọc slide mà không bao giờ phải rời khỏi giao diện học tập.
+
+---
+
 ## 2. ⏳ NHỮNG ĐIỂM CẦN LƯU Ý & CẢI TIẾN TIẾP THEO (PENDING / NEXT STEPS)
 
 1. **Khóa Supabase Enum Constraint**:
@@ -70,6 +77,8 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
    - Khi tải lên các video bài giảng thực tế dung lượng lớn (>50MB), ưu tiên dùng YouTube Unlisted / Vimeo và nhúng qua thẻ `<iframe>` trong component PiP player.
 3. **Mở Rộng Dữ Liệu Demo**:
    - Cho phép giáo viên / admin nạp bộ dữ liệu mẫu (Seed Data) để học viên mới có thể bấm xem thử trọn vẹn 1 Deal hoàn chỉnh từ M01 đến M05.
+4. **Cú pháp Lệnh Shell trên Windows**:
+   - Dùng dấu `;` thay vì `&&` khi chuỗi lệnh trong PowerShell (ví dụ: `git add . ; git commit -m "..." ; git push`).
 
 ---
 
@@ -98,6 +107,7 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 
 | Công cụ / Skill | Đường dẫn | Công dụng & Cách kích hoạt |
 | :--- | :--- | :--- |
+| **`@sync-drive-materials`** | [`.agents/skills/sync-drive-materials/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/sync-drive-materials/SKILL.md) | Tự động quét Google Drive bằng Service Account, lấy File ID và nhúng 15 Slide bài giảng vào `courseMaterials.ts`. |
 | **`@module-ui-architect`** | [`.agents/skills/module-ui-architect/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/module-ui-architect/SKILL.md) | Tự động thiết kế, lập trình và chuẩn hóa UI/UX các Module theo đúng chuẩn Dynamic Design, Gating, State Management & ErrorBoundary. |
 | **`@standardize-prd`** | [`.agents/skills/standardize-prd/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/standardize-prd/SKILL.md) | Đọc file Word `.docx` mới và đồng bộ tự động vào `PRD_Master.md`. |
 | **1-Click Chuẩn Hóa Tool** | [`🚀_1_CLICK_CAP_NHAT_CHUAN_HOA.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/%F0%9F%9A%80_1_CLICK_CAP_NHAT_CHUAN_HOA.md) | File lệnh mẫu 1-click dán vào chat để AI tự động kiểm tra, rà soát và chuẩn hóa toàn bộ hệ thống. |
@@ -107,4 +117,4 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 ## 5. 💡 HƯỚNG DẪN KÍCH HOẠT NHANH PHIÊN TIẾP THEO
 
 Khi bắt đầu phiên làm việc mới, bạn chỉ cần gõ:
-> *"Đọc file `HANDBOOK.md` và sử dụng skill `@module-ui-architect` để tiếp tục chuẩn hóa và kiểm thử hệ thống."*
+> *"Đọc file `HANDBOOK.md` và sử dụng skill `@module-ui-architect` hoặc `@sync-drive-materials` để tiếp tục chuẩn hóa và kiểm thử hệ thống."*
