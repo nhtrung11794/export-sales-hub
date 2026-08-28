@@ -1597,6 +1597,74 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
               fontSize: '0.86rem',
               lineHeight: '1.5'
             }}>
+              {/* Banner Tùy Biến Thương Hiệu Trên Canva - ẨN KHI IN */}
+              <div 
+                className="no-print"
+                style={{ 
+                  padding: '12px 16px', 
+                  background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.12), rgba(59, 130, 246, 0.12))', 
+                  border: '1px solid rgba(168, 85, 247, 0.35)', 
+                  borderRadius: '10px', 
+                  marginBottom: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '10px'
+                }}
+              >
+                <div style={{ flex: 1, minWidth: '260px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold', color: '#c084fc', fontSize: '0.84rem' }}>
+                    <Palette size={15} /> {proposalLanguage === 'en' ? 'Brand Customization on Canva (1-Click Canva Pro)' : 'Tùy Biến Nhận Diện Thương Hiệu Doanh Nghiệp (Canva Pro Link)'}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginTop: '2px', lineHeight: '1.4' }}>
+                    {proposalLanguage === 'en' 
+                      ? '💡 3 Quick Steps: [1] Click "Open Canva" ➔ [2] Insert your corporate Logo & colors ➔ [3] Paste (Ctrl+V) pre-formatted quotation proposal!'
+                      : '💡 3 Bước Tùy Biến: [1] Bấm Mở Canva ➔ [2] Đổi Logo, màu sắc & ảnh nhà máy ➔ [3] Dán (Ctrl+V) bản báo giá và tải PDF!'}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleOpenProposalCanva}
+                  style={{
+                    background: 'linear-gradient(135deg, #a855f7, #6366f1)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 14px',
+                    fontSize: '0.78rem',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(168, 85, 247, 0.35)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <ExternalLink size={13} /> {proposalLanguage === 'en' ? 'Open Canva Template' : 'Mở Mẫu Canva'}
+                </button>
+              </div>
+
+              {/* Thông báo hướng dẫn chỉnh sửa trực tiếp - ẨN KHI IN */}
+              <div 
+                className="no-print"
+                style={{
+                  padding: '8px 12px',
+                  background: 'rgba(59, 130, 246, 0.08)',
+                  border: '1px dashed rgba(59, 130, 246, 0.3)',
+                  borderRadius: '6px',
+                  marginBottom: '16px',
+                  fontSize: '0.76rem',
+                  color: '#93c5fd',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px'
+                }}
+              >
+                <Sparkles size={14} /> {proposalLanguage === 'en' ? 'Click on any text below (Package names, prices, SLA features, terms & signature) to edit before printing/saving to PDF.' : 'Bạn có thể nhấp trực tiếp vào bất kỳ dòng văn bản nào bên dưới (Tên gói, giá, tính năng, điều khoản thương mại, chữ ký...) để chỉnh sửa trước khi bấm In / Lưu PDF!'}
+              </div>
+
               {/* Proposal Header */}
               <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ flex: 1, minWidth: '280px' }}>
@@ -1660,11 +1728,25 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                 </div>
               </div>
 
-              {/* 3 Tiered Options Grid */}
+              {/* 3 Tiered Options Grid - Live Editable */}
               <div style={{ marginBottom: '22px' }}>
-                <div style={{ fontSize: '0.86rem', fontWeight: 'bold', color: '#e2e8f0', marginBottom: '10px' }}>
-                  {proposalLanguage === 'en' ? '1. TIERED COMMERCIAL PRICING OPTIONS (SELECT ONE)' : '1. CÁC PHƯƠNG ÁN BÁO GIÁ ĐA TẦNG (LỰA CHỌN PHÙ HỢP)'}
-                </div>
+                <input
+                  type="text"
+                  key={`prop_sec1_${proposalLanguage}`}
+                  defaultValue={proposalLanguage === 'en' ? '1. TIERED COMMERCIAL PRICING OPTIONS (SELECT ONE)' : '1. CÁC PHƯƠNG ÁN BÁO GIÁ ĐA TẦNG (LỰA CHỌN PHÙ HỢP)'}
+                  className="report-editable-input"
+                  style={{
+                    fontSize: '0.86rem',
+                    fontWeight: 'bold',
+                    color: '#e2e8f0',
+                    marginBottom: '10px',
+                    background: 'transparent',
+                    border: '1px dashed transparent',
+                    borderRadius: '4px',
+                    padding: '2px 4px',
+                    width: '100%'
+                  }}
+                />
                 <div style={{ display: 'grid', gridTemplateColumns: `repeat(${activeOptions.length || 1}, 1fr)`, gap: '14px' }}>
                   {activeOptions.map((opt, idx) => (
                     <div 
@@ -1678,33 +1760,145 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                         flexDirection: 'column'
                       }}
                     >
-                      <div style={{ fontSize: '0.78rem', fontWeight: 800, color: idx === 1 ? '#38bdf8' : '#94a3b8', textTransform: 'uppercase' }}>
-                        {idx === 0 ? (proposalLanguage === 'en' ? 'Option A (Economy)' : 'Gói A (Tối Ưu)') : idx === 1 ? (proposalLanguage === 'en' ? 'Option B (Recommended Standard)' : 'Gói B (Tiêu Chuẩn Đề Xuất)') : (proposalLanguage === 'en' ? 'Option C (Premium SLA)' : 'Gói C (Nâng Cao SLA)')}
+                      {/* Tier Tag */}
+                      <input
+                        type="text"
+                        key={`tier_tag_${opt.id}_${proposalLanguage}`}
+                        defaultValue={idx === 0 ? (proposalLanguage === 'en' ? 'OPTION A (ECONOMY / DECOY)' : 'GÓI A (TỐI ƯU / DECOY)') : idx === 1 ? (proposalLanguage === 'en' ? 'OPTION B (RECOMMENDED STANDARD)' : 'GÓI B (TIÊU CHUẨN ĐỀ XUẤT)') : (proposalLanguage === 'en' ? 'OPTION C (PREMIUM VALUE-ADD)' : 'GÓI C (NÂNG CAO SLA)')}
+                        className="report-editable-input"
+                        style={{
+                          fontSize: '0.78rem',
+                          fontWeight: 800,
+                          color: idx === 1 ? '#38bdf8' : '#94a3b8',
+                          textTransform: 'uppercase',
+                          background: 'transparent',
+                          border: '1px dashed transparent',
+                          borderRadius: '4px',
+                          padding: '2px 4px',
+                          width: '100%'
+                        }}
+                      />
+
+                      {/* Package Name */}
+                      <input
+                        type="text"
+                        key={`opt_name_${opt.id}`}
+                        defaultValue={opt.name}
+                        className="report-editable-input"
+                        style={{
+                          fontSize: '0.95rem',
+                          fontWeight: 'bold',
+                          color: '#f8fafc',
+                          margin: '4px 0 6px 0',
+                          background: 'transparent',
+                          border: '1px dashed transparent',
+                          borderRadius: '4px',
+                          padding: '2px 4px',
+                          width: '100%'
+                        }}
+                      />
+
+                      {/* Price Display / Editable */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
+                        <input
+                          type="text"
+                          key={`opt_price_${opt.id}`}
+                          defaultValue={formatNumber(Number(opt.price) || 0)}
+                          className="report-editable-input"
+                          style={{
+                            fontSize: '1.35rem',
+                            fontWeight: 900,
+                            color: '#10b981',
+                            background: 'transparent',
+                            border: '1px dashed transparent',
+                            borderRadius: '4px',
+                            padding: '2px 4px',
+                            width: '130px'
+                          }}
+                        />
+                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 'normal' }}>/ unit</span>
                       </div>
-                      <div style={{ fontSize: '0.95rem', fontWeight: 'bold', color: '#f8fafc', margin: '4px 0 10px 0' }}>
-                        {opt.name}
-                      </div>
-                      <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#10b981', marginBottom: '10px' }}>
-                        {formatNumber(Number(opt.price) || 0)} <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 'normal' }}>/ unit</span>
-                      </div>
-                      <div style={{ flex: 1, borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '10px', fontSize: '0.78rem', color: '#cbd5e1', lineHeight: '1.45' }}>
-                        {opt.features || (proposalLanguage === 'en' ? 'Standard packaging, export QA inspection, prompt customer service.' : 'Đóng gói chuẩn xuất khẩu, kiểm định QA và hỗ trợ kỹ thuật.')}
+
+                      {/* Scope & Features / SLA Textarea */}
+                      <div style={{ flex: 1, borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '8px' }}>
+                        <textarea
+                          key={`opt_feat_${opt.id}_${proposalLanguage}`}
+                          defaultValue={opt.features || (proposalLanguage === 'en' ? 'Standard export packaging, QA pre-shipment audit, prompt technical customer support.' : 'Đóng gói chuẩn xuất khẩu, kiểm định chất lượng xuất xưởng và hỗ trợ kỹ thuật tận tâm.')}
+                          rows={4}
+                          className="report-editable-input"
+                          style={{
+                            width: '100%',
+                            fontSize: '0.78rem',
+                            color: '#cbd5e1',
+                            lineHeight: '1.45',
+                            background: 'transparent',
+                            border: '1px dashed transparent',
+                            borderRadius: '4px',
+                            padding: '2px 4px',
+                            resize: 'vertical'
+                          }}
+                        />
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Commercial Terms & Conditions */}
+              {/* Commercial Terms & Conditions - Live Editable */}
               <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '14px 18px', background: 'rgba(255, 255, 255, 0.02)', marginBottom: '18px', fontSize: '0.8rem' }}>
-                <div style={{ fontWeight: 'bold', color: '#38bdf8', marginBottom: '8px' }}>
-                  {proposalLanguage === 'en' ? '2. STANDARD COMMERCIAL TERMS & SPECIFICATIONS' : '2. ĐIỀU KHOẢN THƯƠNG MẠI & QUY CHUẨN XUẤT KHẨU'}
-                </div>
+                <input
+                  type="text"
+                  key={`prop_sec2_${proposalLanguage}`}
+                  defaultValue={proposalLanguage === 'en' ? '2. STANDARD COMMERCIAL TERMS & SPECIFICATIONS' : '2. ĐIỀU KHOẢN THƯƠNG MẠI & QUY CHUẨN XUẤT KHẨU'}
+                  className="report-editable-input"
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#38bdf8',
+                    marginBottom: '8px',
+                    background: 'transparent',
+                    border: '1px dashed transparent',
+                    borderRadius: '4px',
+                    padding: '2px 4px',
+                    width: '100%'
+                  }}
+                />
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', color: '#cbd5e1' }}>
-                  <div>• <strong>{proposalLanguage === 'en' ? 'Incoterms:' : 'Điều kiện giao hàng:'}</strong> FOB Hochiminh Port / CIF Destination (Incoterms 2020)</div>
-                  <div>• <strong>{proposalLanguage === 'en' ? 'Payment Terms:' : 'Phương thức thanh toán:'}</strong> 30% T/T Advance, 70% against B/L copy (or Irrevocable L/C)</div>
-                  <div>• <strong>{proposalLanguage === 'en' ? 'Production Lead Time:' : 'Thời gian sản xuất:'}</strong> 14 - 21 business days upon deposit</div>
-                  <div>• <strong>{proposalLanguage === 'en' ? 'Certifications:' : 'Chứng từ chất lượng:'}</strong> ISO, HACCP, FDA, Form FTA C/O, Phytosanitary Certificate</div>
+                  <div>
+                    <input
+                      type="text"
+                      key={`term_inco_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? '• Incoterms: FOB Hochiminh Port / CIF Destination (Incoterms 2020)' : '• Điều kiện giao hàng: FOB Cảng TP.HCM / CIF Cảng Đến (Incoterms 2020)'}
+                      className="report-editable-input"
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      key={`term_pay_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? '• Payment Terms: 30% T/T Advance, 70% against B/L copy (or Irrevocable L/C)' : '• Thanh toán: 30% T/T Tạm ứng, 70% khi có Bill (hoặc L/C không hủy ngang)'}
+                      className="report-editable-input"
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      key={`term_lead_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? '• Production Lead Time: 14 - 21 business days upon deposit & sample approval' : '• Thời gian sản xuất: 14 - 21 ngày làm việc sau khi đặt cọc & duyệt mẫu'}
+                      className="report-editable-input"
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                    />
+                  </div>
+                  <div>
+                    <input
+                      type="text"
+                      key={`term_cert_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? '• Certifications: ISO, HACCP, FDA, Form FTA C/O, Phytosanitary Certificate' : '• Chứng từ chất lượng: ISO, HACCP, FDA, C/O ưu đãi thuế, Kiểm định Phyto'}
+                      className="report-editable-input"
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1714,16 +1908,25 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                   <input
                     type="text"
                     key={`prop_sign_${proposalLanguage}`}
-                    defaultValue={proposalLanguage === 'en' ? 'Issued by: International Export Sales Directorate' : 'Đại diện Ký Duyệt: Ban Giám Đốc Kinh Doanh Xuất Khẩu'}
+                    defaultValue={proposalLanguage === 'en' ? 'Authorized Directorate: International B2B Export Sales' : 'Đại diện Ký Duyệt: Ban Giám Đốc Kinh Doanh Xuất Khẩu'}
                     className="report-editable-input"
                     style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '340px' }}
                   />
-                  <div style={{ color: '#94a3b8', marginTop: '2px' }}>
-                    Email: export@vietnamglobal.com | Direct: +84 (0) 90 123 4567
-                  </div>
+                  <input
+                    type="text"
+                    defaultValue="Email: export@vietnamglobal.com | Direct: +84 (0) 90 123 4567"
+                    className="report-editable-input"
+                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '340px', display: 'block', marginTop: '2px' }}
+                  />
                 </div>
-                <div style={{ textAlign: 'right', fontStyle: 'italic', color: '#64748b' }}>
-                  {proposalLanguage === 'en' ? 'Official Commercial Proposal — Valid for 30 Days' : 'Bản Báo Giá Thương Mại Chính Thức — Hiệu lực 30 ngày'}
+                <div style={{ textAlign: 'right' }}>
+                  <input
+                    type="text"
+                    key={`prop_legal_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'Official Commercial Proposal — Valid for 30 Days' : 'Bản Báo Giá Thương Mại Chính Thức — Hiệu lực 30 ngày'}
+                    className="report-editable-input"
+                    style={{ fontStyle: 'italic', color: '#64748b', background: 'transparent', border: '1px dashed transparent', textAlign: 'right', width: '280px' }}
+                  />
                 </div>
               </div>
             </div>
