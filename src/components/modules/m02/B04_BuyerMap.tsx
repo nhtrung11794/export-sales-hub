@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { M02FormData } from './M02_CombinedForm';
 import { DndContext, useDraggable, useDroppable, DragEndEvent, DragOverlay, closestCenter, DragStartEvent } from '@dnd-kit/core';
-import { Users, Building, ShieldAlert, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Users, Building, ShieldAlert, AlertTriangle, CheckCircle2, Plus, Trash2 } from 'lucide-react';
 
 interface B04Props {
   data: M02FormData;
@@ -49,7 +49,17 @@ const SIZE_OPTIONS = [
   'OTHER'
 ];
 
-function DraggableRole({ role, disabled, isOverlay = false }: { role: { id: string; label: string }, disabled: boolean, isOverlay?: boolean }) {
+function DraggableRole({ 
+  role, 
+  disabled, 
+  isOverlay = false,
+  onDeleteCustom
+}: { 
+  role: { id: string; label: string }, 
+  disabled: boolean, 
+  isOverlay?: boolean,
+  onDeleteCustom?: (id: string) => void
+}) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: role.id,
     data: role,
@@ -65,7 +75,7 @@ function DraggableRole({ role, disabled, isOverlay = false }: { role: { id: stri
       {...(!isOverlay ? attributes : {})}
       className={`role-card ${disabled ? 'disabled' : ''}`}
       style={{
-        padding: '10px 14px',
+        padding: '9px 12px',
         background: 'var(--bg-secondary)',
         border: '1px solid var(--border-color)',
         borderRadius: '8px',
@@ -75,10 +85,39 @@ function DraggableRole({ role, disabled, isOverlay = false }: { role: { id: stri
         color: 'var(--text-primary)',
         opacity,
         transform: isOverlay ? 'scale(1.05)' : 'none',
-        pointerEvents: isOverlay ? 'none' : 'auto'
+        pointerEvents: isOverlay ? 'none' : 'auto',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '6px'
       }}
     >
-      {role.label}
+      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        {role.label}
+      </span>
+      {onDeleteCustom && !isOverlay && !disabled && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteCustom(role.id);
+          }}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{
+            background: 'transparent',
+            border: 0,
+            color: 'var(--text-muted)',
+            cursor: 'pointer',
+            padding: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            borderRadius: '4px'
+          }}
+          title="Xóa vai trò tự định nghĩa này"
+        >
+          <Trash2 size={13} color="#fca5a5" />
+        </button>
+      )}
     </div>
   );
 }
@@ -169,6 +208,38 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
   const [isOtherSize, setIsOtherSize] = useState(() => {
     return data.icp_size ? !SIZE_OPTIONS.includes(data.icp_size) : false;
   });
+
+  // Quản lý danh sách vai trò tự định nghĩa
+  const [customRoles, setCustomRoles] = useState<Array<{ id: string; label: string }>>(() => {
+    const defaultLabels = new Set(ROLES.map(r => r.label));
+    const customFromSaved = (data.buyer_map_roles || [])
+      .filter(r => !defaultLabels.has(r.role))
+      .map(r => ({ id: `saved-${r.role}`, label: r.role }));
+    
+    const unique = new Map<string, { id: string; label: string }>();
+    customFromSaved.forEach(item => unique.set(item.label, item));
+    return Array.from(unique.values());
+  });
+  const [newRoleName, setNewRoleName] = useState('');
+
+  const allRoles = [...ROLES, ...customRoles];
+
+  const handleAddCustomRole = () => {
+    if (!newRoleName.trim() || isDisabled) return;
+    const trimmed = newRoleName.trim();
+    if (ROLES.some(r => r.label.toLowerCase() === trimmed.toLowerCase()) || 
+        customRoles.some(r => r.label.toLowerCase() === trimmed.toLowerCase())) {
+      setNewRoleName('');
+      return;
+    }
+    const newRole = { id: `custom-${Date.now()}`, label: trimmed };
+    setCustomRoles(prev => [...prev, newRole]);
+    setNewRoleName('');
+  };
+
+  const handleRemoveCustomRole = (idToRemove: string) => {
+    setCustomRoles(prev => prev.filter(r => r.id !== idToRemove));
+  };
 
   const handleFieldChange = (field: keyof M02FormData, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));
@@ -355,11 +426,51 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
             <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
               
               {/* Cột Role Cards */}
-              <div style={{ flex: '1 1 180px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 600 }}>Kéo vai trò doanh nghiệp:</div>
-                {ROLES.map(role => (
-                  <DraggableRole key={role.id} role={role} disabled={isDisabled} />
-                ))}
+              <div style={{ flex: '1 1 190px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '2px', fontWeight: 600 }}>Kéo vai trò doanh nghiệp:</div>
+                {allRoles.map(role => {
+                  const isCustom = !ROLES.some(r => r.id === role.id);
+                  return (
+                    <DraggableRole 
+                      key={role.id} 
+                      role={role} 
+                      disabled={isDisabled} 
+                      onDeleteCustom={isCustom ? handleRemoveCustomRole : undefined}
+                    />
+                  );
+                })}
+
+                {/* Form thêm vai trò tự định nghĩa */}
+                {!isDisabled && (
+                  <div style={{ marginTop: '4px' }}>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      <input
+                        type="text"
+                        className="form-input"
+                        placeholder="+ Thêm vai trò khác..."
+                        value={newRoleName}
+                        onChange={(e) => setNewRoleName(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomRole();
+                          }
+                        }}
+                        style={{ fontSize: '0.78rem', padding: '6px 8px', height: '34px' }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddCustomRole}
+                        disabled={!newRoleName.trim()}
+                        className="btn btn-primary"
+                        style={{ padding: '0 10px', height: '34px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                        title="Thêm vai trò tự định nghĩa"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Lưới Buying Roles */}
@@ -383,7 +494,7 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
             }}>
               {activeId ? (
                 <DraggableRole 
-                  role={ROLES.find(r => r.id === activeId) || { id: activeId, label: 'Role' }} 
+                  role={allRoles.find(r => r.id === activeId) || { id: activeId, label: 'Role' }} 
                   disabled={isDisabled} 
                   isOverlay 
                 />
