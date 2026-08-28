@@ -1,30 +1,33 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v7.2 (Tích hợp Google Drive API Slide & Video Hybrid PiP Player, Strict Folder Scoping & Skill `@sync-drive-materials`)  
+**Phiên bản:** v8.0 (Chuẩn Hóa Đa Tầng Báo Giá Thương Mại, Báo Cáo TCO Quốc Tế, Zero-Truncation Typography, 1-Click Bilingual & Bộ Công Cụ Tự Động Hóa)  
 **Ngày cập nhật:** 28/08/2026
 
-Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư duy, Kết quả, Kỹ thuật, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc bảo trì dự án ngay lập tức mà không bao giờ bị đứt gãy mạch logic.
+Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toàn bộ **Tư duy Nghiệp vụ, Kết quả Đã làm, Điểm Tồn đọng, Kỹ thuật Cốt lõi, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc cập nhật dữ liệu ngay lập tức chỉ với 1 cú click.
 
 ---
 
 ## 1. 🏆 NHỮNG ĐIỂM ĐÃ LÀM ĐƯỢC (ACCOMPLISHED)
 
-### 1.1. Hoàn thiện 100% Hành trình 15 Buổi Học (M01 -> M05)
+### 1.1. Hoàn Thiện 100% Hành Trình 15 Buổi Học (M01 -> M05)
 - **Module 01: Mindset & Foundation (B01 - B02)**:
-  - B01: Radar 11 năng lực xuất khẩu B2B cốt lõi.
-  - B02: Cấu trúc mục tiêu 90 ngày dạng Mad Libs 3 thành phần.
+  - B01: Radar 11 năng lực xuất khẩu B2B cốt lõi với thanh trượt và biểu đồ mạng nhện.
+  - B02: Cấu trúc mục tiêu 90 ngày dạng Mad Libs 3 thành phần có kiểm tra độ sâu từ ngữ.
 - **Module 02: Market & ICP (B03 - B06)**:
-  - B03: Ma trận 6 cột Target Market & Route to Market + Tích hợp Rào cản pháp lý.
-  - B04: Sơ đồ tổ chức Buyer Map kéo thả `@dnd-kit` đa tầng quyền lực.
+  - B03: Ma trận 6 cột Target Market & Route to Market + Tích hợp Rào cản thuế quan/pháp lý.
+  - B04: Sơ đồ tổ chức Buyer Map kéo thả `@dnd-kit` đa tầng quyền lực (Procurement, QA, Board...).
   - B05: Discovery Matrix 5 lớp (*Context, Need, Pain, Criteria, Risk*) với Dynamic Focus Glow.
   - Trợ lý AI Cột 3: Tích hợp Gemini Spark và GPT Chuyên gia Nghiên cứu Thị trường.
 - **Module 03: Lead Generation & Qualification (B07 - B08)**:
-  - B06: Kênh tiếp cận & Lead Sourcing (tối đa 2 target accounts).
-  - B07: Ma trận sàng lọc F-N-A-C-M (*Fit, Need, Authority, Commercials, Market Timing*) và chấm điểm Access Score.
-  - B08: Kịch bản Follow-up đa kênh và quản trị Pipeline.
+  - B06: Kênh tiếp cận & Lead Sourcing (tối đa 2 target accounts chiến lược).
+  - B07: Ma trận sàng lọc F-N-A-C-M (*Fit, Need, Authority, Commercials, Market Timing*) và tự động chấm Access Score.
+  - B08: Kịch bản Follow-up đa kênh và quản trị Pipeline bán hàng.
 - **Module 04: Proposal, Negotiation & Safe Closing (B09 - B12)**:
   - B09: Trạm làm rõ yêu cầu P-B-T-P-C (*Product, Budget, Timeline, Payment, Compliance*) với Toggle tương tác và Placeholders chuyên sâu.
-  - B10: Bảng tính Landed Cost (bổ sung phí kiểm định SGS/C/O) & Rào cản Chào giá Chim mồi (Decoy Pricing Gate).
+  - B10: **Kiến Trúc Đa Tầng Báo Giá (Draft Proposal) & Báo Cáo TCO Benchmark**:
+    - Bảng tính Landed Cost với 7 cấu phần chi phí (FOB, Ocean Freight, Marine Insurance, FTA Tariff, Defect Buffer, Demurrage, Other Costs) và cho phép tùy biến thêm biến chi phí phát sinh.
+    - Modal Báo Cáo TCO với 3 thẻ chỉ số tổng quan (Đối thủ vs Doanh nghiệp bạn vs Số tiền tiết kiệm ròng `% Savings`).
+    - Modal Bản Đề Xuất Báo Giá Đa Tầng (Draft Proposal) theo nguyên lý tâm lý học hành vi (Hiệu ứng Chim mồi / Decoy Effect & Neo giá / Anchoring) với Bảng Ma Trận Đối Chiếu Tính Năng 8 hàng và Khung 6 Trụ Cột Điều Khoản Ngoại Thương Incoterms 2020.
   - B11: Bàn cân đàm phán Give–Take Bank (Tooltip trích xuất nỗi đau Buyer từ B05 để đòi hỏi điều kiện có lợi).
   - B12: Kiểm soát rủi ro thanh toán & Interactive Safe Order Checklist (bắt buộc tick đủ 3 bước để hoàn tất clearance M04).
 - **Module 05: Execution, Recovery & Account Growth (B13 - B15)**:
@@ -34,40 +37,35 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 
 ---
 
-### 1.2. Khoang Final Capstone Độc Lập & Cỗ Máy Xuất Bản 3 Playbook
-- **Tách Khoang Độc Lập (`/capstone`)**: Tách bài 16 thành Khoang Capstone riêng biệt, bao quát toàn bộ 15 buổi học.
+### 1.2. Chuẩn Hóa Typography & Kiến Trúc Xuất Bản In Ấn (Zero-Truncation Architecture)
+- **Triệt tiêu hoàn toàn lỗi cắt chữ (Zero-Truncation)**: Thay thế toàn bộ thẻ `<input type="text">` 1 dòng và `<textarea>` có thanh cuộn thô bằng các khối `contentEditable` tự co giãn thông minh với `white-space: normal`, `word-break: break-word`, `line-height: 1.45 - 1.5`.
+- **Khóa tỷ lệ cột cố định (`table-layout: fixed`)**: Chia đều tỷ lệ % các cột bảng ma trận (25% - 25% - 25% - 25% cho Proposal, 38% - 20% - 20% - 22% cho TCO) giúp các hàng luôn thẳng tắp, không bị lệch khi in ấn.
+- **100% Live Inline-Editing**: Mọi thông số trên bản in (Header, Tên công ty, Ref No, Ngày lập, Thời hạn hiệu lực, Kính gửi Buyer, Tiêu đề phân mục, Các ô ma trận giá/MOQ/SLA, Điều khoản Incoterms, Subtitle Decoy, và Chữ ký đại diện pháp lý) đều cho phép nhấp chuột sửa trực tiếp.
+- **Song ngữ Quốc tế 1-Click (`[ 🇬🇧 English | 🇻🇳 Tiếng Việt ]`)**: Tự động chuyển đổi toàn bộ cấu trúc báo cáo sang tiếng Anh thương mại quốc tế (Incoterms 2020, T/T against B/L, FTA Form C/O, Landed Cost, Net Variance...).
+- **Tích hợp Canva Pro Link (Auto-Copy Clipboard)**: Bấm `[🎨 Mở Canva]` tự động định dạng và copy bảng ma trận sang bộ nhớ tạm, hiển thị toast hướng dẫn dán vào Canva.
+- **Bản in A4 phẳng mịn (`@media print`)**: Ẩn toàn bộ nút bấm, thanh điều khiển, overlay; xuất PDF trắng đen/slate sắc nét.
+
+---
+
+### 1.3. Khoang Final Capstone Độc Lập & Cỗ Máy Xuất Bản 3 Playbook
+- **Tách Khoang Độc Lập (`/capstone`)**: Bao quát toàn bộ 15 buổi học.
 - **Zone 01 (Deep-linking Split-View)**: 5 Thẻ Module tương tác, bấm thẻ nào mở ngay ngăn kéo Split-View focus vào tab đó (Zero-context-switching).
 - **Zone 02 (Closed-loop Mindset Shift)**: Callout `[📌 Nhìn lại: Mục tiêu 90 ngày viết ở Buổi 02]` hiển thị nguyên văn câu Mad Libs ban đầu đối chiếu với Kế hoạch 90 ngày mới.
 - **Zone 03 (Actionable Garbage Filter & Gamified Preview)**:
-  - Các dòng lỗi Garbage Filter là Hyperlinks nhảy thẳng đến Module cần sửa trong Split-View.
-  - Nút `[👁️ Xem trước (Preview)]` luôn mở được bản nháp Playbook có Watermark mờ kích thích học viên hoàn thiện dữ liệu.
-  - Bộ xuất bản in ấn kết xuất chuẩn hóa **Bộ 03 Playbook Xuất Khẩu B2B**:
+  - Hyperlinks nhảy thẳng đến Module cần sửa trong Split-View.
+  - Nút `[👁️ Xem trước (Preview)]` mở bản nháp Playbook có Watermark mờ kích thích học viên hoàn thiện dữ liệu.
+  - Kết xuất chuẩn hóa **Bộ 03 Playbook Xuất Khẩu B2B**:
     1. *Playbook 01: Market & Outreach (M01–M03)*
     2. *Playbook 02: Commercial Deal Desk (M04)*
     3. *Playbook 03: Execution & JBP Growth (M05)*
-- **Trực Quan Hóa Ngăn Kéo Split-View**: Thay thế 100% mã JSON thô bằng Lưới thanh tiến độ Năng lực Radar 1-5 ⭐ (M01), Thẻ Thị trường & ICP (M02), Bảng F-N-A-C-M (M03), Bảng P-B-T-P-C (M04), Thẻ CAPA 3 bước (M05) và nút `[✏️ Sửa tại Module]`.
 
 ---
 
-### 1.3. Hạ Tầng Chống Sập & Khắc Phục Lỗi Runtime
-- **React ErrorBoundary (`src/components/common/ErrorBoundary.tsx`)**: Bọc an toàn các module và Capstone, bắt chính xác lỗi React và hiển thị hộp thoại khắc phục thay vì màn hình đen "This page couldn't load".
-- **Sửa Lỗi React Child Object (`Minified React error #31`)**: Viết hàm `formatM01Goal` và `formatPain` để bóc tách an toàn object `{ input1, input2, input3 }` của Mad Libs thành câu hoàn chỉnh, triệt tiêu lỗi render object trực tiếp.
-- **Route Protection Middleware (`src/proxy.ts`)**: Bổ sung `/capstone` và `/admin` vào danh sách route yêu cầu xác thực.
-- **Dọn Dẹp Xung Đột Route**: Xóa thư mục trùng lặp `(modules)/capstone` tránh xung đột Next.js App Router.
-
----
-
-### 1.4. Tích Hợp Google Drive API & Trình Đọc Slide Nhúng 15 Buổi Học (Zero-Context Switching)
-- **Xác thực Service Account**: Tích hợp `googleapis` kết nối thông qua file `credentials.json` an toàn (đã cấu hình `.gitignore`).
-- **Trích xuất ID & Bỏ qua lỗi Quota**: Quét toàn bộ thư mục bài giảng bằng regex nhận diện bài `B01` - `B15`, trích xuất File ID trực tiếp và gắn link `https://drive.google.com/file/d/{fileId}/preview` vào `src/lib/courseMaterials.ts`.
-- **Trình đọc Slide Split-View**: Tích hợp Google Drive PDF Reader trực tiếp vào cột 1 của `ModuleLayout` cho toàn bộ 5 Module, cho phép học viên đọc slide mà không bao giờ phải rời khỏi giao diện học tập.
-
----
-
-### 1.5. Trình Phát Video Nổi Hybrid PiP Video Player (Đồng Bộ 15 Video Google Drive 100%)
-- **Quét chính xác theo phân cấp**: Lọc chính xác 15 file MP4 từ thư mục `Website / Module [01..05] / Bài [01..15]`, tránh tuyệt đối quét nhầm các lớp học cũ.
-- **Hybrid Player**: Khung phát PiP kéo thả tự động nhúng `<iframe>` Google Drive Preview (`16:9`, hỗ trợ tua tốc độ $1.25\times, 1.5\times, 2.0\times$) hoặc fallback `<video>` HTML5 native.
-- **Tiết kiệm chi phí**: Tiết kiệm 100% dung lượng và băng thông Supabase Storage.
+### 1.4. Hạ Tầng Chống Sập & Tích Hợp Đa Phương Tiện
+- **React ErrorBoundary (`src/components/common/ErrorBoundary.tsx`)**: Bọc an toàn các module và Capstone, bắt chính xác lỗi React và hiển thị hộp thoại khắc phục thay vì sập trang.
+- **Sửa Lỗi React Child Object (`Minified React error #31`)**: Viết hàm `formatM01Goal` và `formatPain` để bóc tách an toàn object `{ input1, input2, input3 }` của Mad Libs thành chuỗi.
+- **Tích hợp Google Drive API & Trình Đọc Slide 15 Buổi**: Service Account quét thư mục Google Drive, trích xuất ID và nhúng PDF Reader trực tiếp vào cột 1 của `ModuleLayout`.
+- **Hybrid PiP Video Player**: Khung phát video nổi kéo thả tự động nhúng `<iframe>` Google Drive Preview (`16:9`, hỗ trợ tua tốc độ $1.25\times, 1.5\times, 2.0\times$) hoặc fallback `<video>` native, tiết kiệm 100% chi phí Supabase Storage.
 
 ---
 
@@ -82,12 +80,10 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
      ```
 2. **Video Hosting Dự Phòng**:
    - Khi tải lên các video bài giảng thực tế dung lượng lớn (>50MB), ưu tiên dùng YouTube Unlisted / Vimeo và nhúng qua thẻ `<iframe>` trong component PiP player.
-3. **Mở Rộng Dữ Liệu Demo**:
-   - Cho phép giáo viên / admin nạp bộ dữ liệu mẫu (Seed Data) để học viên mới có thể bấm xem thử trọn vẹn 1 Deal hoàn chỉnh từ M01 đến M05.
+3. **Mở Rộng Dữ Liệu Demo (Seed Data)**:
+   - Cho phép giáo viên / admin nạp bộ dữ liệu mẫu để học viên mới có thể bấm xem thử trọn vẹn 1 Deal hoàn chỉnh từ M01 đến M05.
 4. **Cú pháp Lệnh Shell trên Windows**:
-   - Dùng dấu `;` thay vì `&&` khi chuỗi lệnh trong PowerShell (ví dụ: `git add . ; git commit -m "..." ; git push`).
-5. **Quy Tắc Lọc Đường Dẫn Drive (Strict Folder Scoping)**:
-   - Khi viết script đồng bộ tài liệu/video, luôn bắt buộc kiểm tra `folderPath.includes('Website')` để tránh quét nhầm các lớp học khác (`Lớp C35S`...).
+   - Dùng lệnh `cmd.exe /c "npm.cmd run build"` để tránh lỗi PowerShell Execution Policy hoặc lỗi file lock trên thư mục `.next`.
 
 ---
 
@@ -99,14 +95,11 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
      - Chưa có SGS $\rightarrow$ Khóa cam kết đền bù pháp lý (B14).
      - Trust Score thấp $\rightarrow$ Khóa Up-sell, ép tập trung vào Repeat Order (B15).
      - Chưa qua Garbage Filter $\rightarrow$ Khóa tải PDF chính thức (Capstone).
-2. **Tư Duy Đóng Kín Vòng Lặp (Closed-Loop Data Inheritance)**:
-   - Dữ liệu không biến mất mà luôn chảy xuyên suốt từ bài trước sang bài sau:
-     - Nỗi đau Buyer B05 $\rightarrow$ Gợi ý TAKE trong Đàm phán B11.
-     - Buyer Map B04 $\rightarrow$ Danh sách họp QBR B15.
-     - Mục tiêu ban đầu B02 $\rightarrow$ Đối chiếu Kế hoạch 90 ngày Capstone.
-3. **Phản Hồi Xúc Giác & Động Lực (Gamification & Tactile UX)**:
-   - Bấm mở xem trước Playbook bị làm mờ (Blur + Watermark) tạo động lực hoàn thành dữ liệu.
-   - Thao tác nhấp lỗi đỏ tự động dẫn đến đúng vị trí cần sửa (Zero friction).
+2. **Tư Duy Định Giá Tâm Lý Học B2B (Decoy & Anchoring Architecture)**:
+   - Chào giá B2B không đơn thuần là con số, mà là một kiến trúc 3 tầng: Gói A (Tối ưu - Chim mồi), Gói B (Tiêu chuẩn - Lựa chọn khuyên dùng ⭐), Gói C (Nâng cao - Neo giá & Dịch vụ VIP).
+   - So sánh dạng Bảng Ma Trận Từng Dòng (Row-by-Row Feature Matrix) thay vì Card rời rạc giúp Buyer dễ dàng nhận ra giá trị vượt trội của gói Standard.
+3. **Tư Duy Đóng Kín Vòng Lặp (Closed-Loop Data Inheritance)**:
+   - Dữ liệu chảy xuyên suốt từ bài trước sang bài sau: Nỗi đau Buyer B05 $\rightarrow$ Gợi ý TAKE B11; Buyer Map B04 $\rightarrow$ QBR B15; Mục tiêu B02 $\rightarrow$ Kế hoạch 90 ngày Capstone.
 4. **Phòng Vệ Dữ Liệu Tuyệt Đối (Bulletproof Defensive Coding)**:
    - Luôn kiểm tra `Array.isArray()`, `typeof === 'object'`, fallback chuỗi rỗng `(val || '')`, bọc `ErrorBoundary` ở mọi cấp.
 
@@ -116,8 +109,8 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 
 | Công cụ / Skill | Đường dẫn | Công dụng & Cách kích hoạt |
 | :--- | :--- | :--- |
+| **`@module-ui-architect`** | [`.agents/skills/module-ui-architect/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/module-ui-architect/SKILL.md) | Tự động thiết kế, lập trình và chuẩn hóa UI/UX các Module theo đúng chuẩn Dynamic Design, Gating, State Management, Zero-Truncation Typography & ErrorBoundary. |
 | **`@sync-drive-materials`** | [`.agents/skills/sync-drive-materials/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/sync-drive-materials/SKILL.md) | Tự động quét Google Drive bằng Service Account, lấy File ID và nhúng 15 Slide bài giảng vào `courseMaterials.ts`. |
-| **`@module-ui-architect`** | [`.agents/skills/module-ui-architect/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/module-ui-architect/SKILL.md) | Tự động thiết kế, lập trình và chuẩn hóa UI/UX các Module theo đúng chuẩn Dynamic Design, Gating, State Management & ErrorBoundary. |
 | **`@standardize-prd`** | [`.agents/skills/standardize-prd/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/standardize-prd/SKILL.md) | Đọc file Word `.docx` mới và đồng bộ tự động vào `PRD_Master.md`. |
 | **1-Click Chuẩn Hóa Tool** | [`🚀_1_CLICK_CAP_NHAT_CHUAN_HOA.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/%F0%9F%9A%80_1_CLICK_CAP_NHAT_CHUAN_HOA.md) | File lệnh mẫu 1-click dán vào chat để AI tự động kiểm tra, rà soát và chuẩn hóa toàn bộ hệ thống. |
 
@@ -125,5 +118,5 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 
 ## 5. 💡 HƯỚNG DẪN KÍCH HOẠT NHANH PHIÊN TIẾP THEO
 
-Khi bắt đầu phiên làm việc mới, bạn chỉ cần gõ:
-> *"Đọc file `HANDBOOK.md` và sử dụng skill `@module-ui-architect` hoặc `@sync-drive-materials` để tiếp tục chuẩn hóa và kiểm thử hệ thống."*
+Khi bắt đầu phiên làm việc mới, bạn chỉ cần copy lệnh trong file [`🚀_1_CLICK_CAP_NHAT_CHUAN_HOA.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/%F0%9F%9A%80_1_CLICK_CAP_NHAT_CHUAN_HOA.md) hoặc gõ ngắn gọn:
+> *"Đọc file `HANDBOOK.md` và sử dụng skill `@module-ui-architect` để tiếp tục chuẩn hóa và kiểm thử hệ thống."*
