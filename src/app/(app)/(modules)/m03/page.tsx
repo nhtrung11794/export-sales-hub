@@ -255,7 +255,7 @@ export default function M03Page() {
           Gợi ý kịch bản mở lời hâm nóng khi khách hàng im lặng sau báo giá.
         </p>
         <button
-          onClick={() => handleCopyPrompt(promptFollowUp, 'followup', 'https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14')}
+          onClick={() => handleCopyPrompt(promptFollowUp, 'followup', 'https://notebook.google.com/notebook/3fdec64c-7c4e-4ca7-839e-41e69429efd8')}
           className="btn btn-primary"
           style={{ width: '100%', fontSize: '0.85rem', padding: '8px 12px' }}
         >

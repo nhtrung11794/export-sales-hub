@@ -12,6 +12,7 @@ export interface CourseMaterial {
 
 export const GOOGLE_DRIVE_SLIDES_ROOT = 'https://drive.google.com/drive/folders/1L2KWrNRg9UvNe9RR6sfAgAlRQc37K4Ye?usp=drive_link';
 export const GOOGLE_DRIVE_EMBED_FOLDER = 'https://drive.google.com/embeddedfolderview?id=1L2KWrNRg9UvNe9RR6sfAgAlRQc37K4Ye#list';
+export const NOTEBOOK_LM_COURSE_URL = 'https://notebook.google.com/notebook/3fdec64c-7c4e-4ca7-839e-41e69429efd8';
 
 export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
   // MODULE 01: Mindset & Foundation

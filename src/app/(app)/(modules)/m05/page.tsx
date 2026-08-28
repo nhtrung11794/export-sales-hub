@@ -116,7 +116,7 @@ export default function M05Page() {
       await navigator.clipboard.writeText(text);
       setCopiedPrompt(id);
       window.setTimeout(() => setCopiedPrompt(null), 2500);
-      window.open('https://notebook.google.com/', '_blank', 'noopener,noreferrer');
+      window.open('https://notebook.google.com/notebook/3fdec64c-7c4e-4ca7-839e-41e69429efd8', '_blank', 'noopener,noreferrer');
     } catch {
       window.alert('Không thể sao chép prompt. Vui lòng kiểm tra quyền Clipboard của trình duyệt.');
     }

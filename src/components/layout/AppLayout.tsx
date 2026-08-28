@@ -289,7 +289,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
           <a 
-            href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14"
+            href="https://notebook.google.com/notebook/3fdec64c-7c4e-4ca7-839e-41e69429efd8"
             target="_blank"
             rel="noopener noreferrer"
             style={{

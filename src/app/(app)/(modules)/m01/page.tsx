@@ -241,7 +241,7 @@ export default function M01Page() {
       </div>
       
       <a 
-        href="https://notebook.google.com/notebook/88777706-546d-411d-86e9-19f0577dae14" 
+        href="https://notebook.google.com/notebook/3fdec64c-7c4e-4ca7-839e-41e69429efd8" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="btn" 
@@ -250,7 +250,7 @@ export default function M01Page() {
           color: 'var(--bg-primary)', fontWeight: 'bold', padding: '12px'
         }}
       >
-        Mở NotebookLM M01 ➔
+        Mở NotebookLM Trợ Lý Toàn Khóa ➔
       </a>
     </div>
   );
