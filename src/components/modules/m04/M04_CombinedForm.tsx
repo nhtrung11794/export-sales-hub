@@ -45,6 +45,13 @@ export interface M04FormData {
       local_charges: number;
       doc_inspection_fee?: number;
     };
+    tco_competitor?: {
+      fob_price: number;
+      freight: number;
+      import_tax: number;
+      local_charges: number;
+      doc_inspection_fee?: number;
+    };
     pricing_options: PricingOption[];
   };
   // B11
@@ -81,10 +88,17 @@ const initialData: M04FormData = {
       local_charges: 0,
       doc_inspection_fee: 0,
     },
+    tco_competitor: {
+      fob_price: 0,
+      freight: 0,
+      import_tax: 0,
+      local_charges: 0,
+      doc_inspection_fee: 0,
+    },
     pricing_options: [
       { id: 'opt_1', name: 'Tiêu chuẩn (Standard)', price: 0, features: '', is_active: true },
-      { id: 'opt_2', name: 'Nâng cao (Premium)', price: 0, features: '', is_active: true },
-      { id: 'opt_3', name: 'Tối ưu giá (Economy)', price: 0, features: '', is_active: false },
+      { id: 'opt_2', name: 'Nâng cao (Premium / Value-Add)', price: 0, features: '', is_active: true },
+      { id: 'opt_3', name: 'Tối ưu giá (Economy / Decoy)', price: 0, features: '', is_active: false },
     ],
   },
   b11_negotiation: {
