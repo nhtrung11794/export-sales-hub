@@ -106,9 +106,9 @@ const initialData: M04FormData = {
     },
     custom_costs: [],
     pricing_options: [
-      { id: 'opt_1', name: 'Tiêu chuẩn (Standard)', price: 0, features: '', is_active: true },
-      { id: 'opt_2', name: 'Nâng cao (Premium / Value-Add)', price: 0, features: '', is_active: true },
-      { id: 'opt_3', name: 'Tối ưu giá (Economy / Decoy)', price: 0, features: '', is_active: false },
+      { id: 'opt_1', name: 'Tối ưu giá (Economy / Decoy)', price: 0, features: '', is_active: false },
+      { id: 'opt_2', name: 'Tiêu chuẩn (Standard)', price: 0, features: '', is_active: true },
+      { id: 'opt_3', name: 'Nâng cao (Premium / Value-Add)', price: 0, features: '', is_active: true },
     ],
   },
   b11_negotiation: {

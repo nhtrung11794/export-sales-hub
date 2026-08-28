@@ -666,78 +666,93 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
           </div>
         )}
         
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
-          {b10.pricing_options.map(opt => (
-            <div key={opt.id} style={{
-              padding: '18px',
-              border: `1px solid ${opt.is_active ? 'var(--accent-primary)' : 'rgba(255,255,255,0.08)'}`,
-              borderRadius: '12px',
-              background: opt.is_active ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(15, 23, 42, 0.6))' : 'rgba(15, 23, 42, 0.3)',
-              opacity: opt.is_active ? 1 : 0.6,
-              transition: 'all 0.3s'
-            }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                <span style={{ fontWeight: 'bold', fontSize: '0.92rem', color: opt.is_active ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                  {opt.name}
-                </span>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: opt.is_active ? 'var(--accent-primary)' : 'var(--text-muted)', cursor: isDisabled ? 'not-allowed' : 'pointer' }}>
-                  <input
-                    type="checkbox"
-                    checked={opt.is_active}
-                    onChange={(e) => handleOptionChange(opt.id, 'is_active', e.target.checked)}
-                    disabled={isDisabled}
-                    style={{ accentColor: 'var(--accent-primary)', width: '16px', height: '16px' }}
-                  />
-                  <span>Kích hoạt</span>
-                </label>
-              </div>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Mức Giá Đề Xuất (USD)</label>
-                  <input
-                    type="number"
-                    value={opt.price || ''}
-                    onChange={(e) => handleOptionChange(opt.id, 'price', e.target.value)}
-                    onBlur={handleBlur}
-                    disabled={!opt.is_active || isDisabled}
-                    placeholder="VD: 4200"
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      background: 'rgba(0,0,0,0.25)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: '6px',
-                      color: 'var(--text-primary)',
-                      fontSize: '0.85rem'
-                    }}
-                  />
+        {/* Lưới 3 Gói Giá Cùng 1 Hàng: Economy -> Tiêu chuẩn -> Nâng cao */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
+          {[...b10.pricing_options]
+            .sort((a, b) => {
+              const getRank = (name: string) => {
+                const n = name.toLowerCase();
+                if (n.includes('economy') || n.includes('tối ưu')) return 1;
+                if (n.includes('standard') || n.includes('tiêu chuẩn')) return 2;
+                if (n.includes('premium') || n.includes('nâng cao')) return 3;
+                return 4;
+              };
+              return getRank(a.name) - getRank(b.name);
+            })
+            .map(opt => (
+              <div key={opt.id} style={{
+                padding: '16px',
+                border: `1px solid ${opt.is_active ? 'var(--accent-primary)' : 'rgba(255,255,255,0.08)'}`,
+                borderRadius: '12px',
+                background: opt.is_active ? 'linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(15, 23, 42, 0.6))' : 'rgba(15, 23, 42, 0.3)',
+                opacity: opt.is_active ? 1 : 0.6,
+                transition: 'all 0.3s',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <span style={{ fontWeight: 'bold', fontSize: '0.88rem', color: opt.is_active ? 'var(--text-primary)' : 'var(--text-muted)' }}>
+                    {opt.name}
+                  </span>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.76rem', color: opt.is_active ? 'var(--accent-primary)' : 'var(--text-muted)', cursor: isDisabled ? 'not-allowed' : 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={opt.is_active}
+                      onChange={(e) => handleOptionChange(opt.id, 'is_active', e.target.checked)}
+                      disabled={isDisabled}
+                      style={{ accentColor: 'var(--accent-primary)', width: '15px', height: '15px' }}
+                    />
+                    <span>Kích hoạt</span>
+                  </label>
                 </div>
-                <div>
-                  <label style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Giá trị & Điều khoản đi kèm (Features / SLA)</label>
-                  <textarea
-                    value={opt.features}
-                    onChange={(e) => handleOptionChange(opt.id, 'features', e.target.value)}
-                    onBlur={handleBlur}
-                    disabled={!opt.is_active || isDisabled}
-                    placeholder="VD: Đóng gói bao hút chân không, bảo hiểm hàng hóa trọn gói, thời gian giao hàng ưu tiên 14 ngày..."
-                    rows={4}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      background: 'rgba(0,0,0,0.25)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: '6px',
-                      color: 'var(--text-primary)',
-                      resize: 'vertical',
-                      fontSize: '0.82rem',
-                      lineHeight: '1.4'
-                    }}
-                  />
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', flex: 1 }}>
+                  <div>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Mức Giá Đề Xuất (USD)</label>
+                    <input
+                      type="number"
+                      value={opt.price || ''}
+                      onChange={(e) => handleOptionChange(opt.id, 'price', e.target.value)}
+                      onBlur={handleBlur}
+                      disabled={!opt.is_active || isDisabled}
+                      placeholder="VD: 4200"
+                      style={{
+                        width: '100%',
+                        padding: '7px 10px',
+                        background: 'rgba(0,0,0,0.25)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '6px',
+                        color: 'var(--text-primary)',
+                        fontSize: '0.84rem'
+                      }}
+                    />
+                  </div>
+                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <label style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '4px', fontWeight: 600 }}>Giá trị & Điều khoản đi kèm (Features / SLA)</label>
+                    <textarea
+                      value={opt.features}
+                      onChange={(e) => handleOptionChange(opt.id, 'features', e.target.value)}
+                      onBlur={handleBlur}
+                      disabled={!opt.is_active || isDisabled}
+                      placeholder="VD: Đóng gói bao hút chân không, bảo hiểm hàng hóa trọn gói, thời gian giao hàng ưu tiên 14 ngày..."
+                      rows={3}
+                      style={{
+                        width: '100%',
+                        padding: '7px 10px',
+                        background: 'rgba(0,0,0,0.25)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '6px',
+                        color: 'var(--text-primary)',
+                        resize: 'vertical',
+                        fontSize: '0.8rem',
+                        lineHeight: '1.35',
+                        flex: 1
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
 
         <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '14px' }}>
