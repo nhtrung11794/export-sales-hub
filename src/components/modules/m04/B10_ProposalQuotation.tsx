@@ -1231,17 +1231,17 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
               </div>
 
               {/* Report Header - Editable */}
-              <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ flex: 1, minWidth: '280px' }}>
+              <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px' }}>
+                <div style={{ flex: 1.2, minWidth: '280px' }}>
                   {/* Tên Doanh Nghiệp Bạn */}
                   <input
                     type="text"
                     key={`company_${tcoLanguage}`}
-                    defaultValue={tcoLanguage === 'en' ? 'VIETNAM GLOBAL EXPORT CORPORATION' : 'CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU B2B'}
+                    defaultValue={tcoLanguage === 'en' ? 'VIETNAM GLOBAL EXPORT MANUFACTURING CORP' : 'CÔNG TY CỔ PHẦN TẬP ĐOÀN XUẤT NHẬP KHẨU B2B'}
                     className="report-editable-input"
                     placeholder="Enter company name..."
                     style={{
-                      fontSize: '0.9rem',
+                      fontSize: '0.92rem',
                       fontWeight: 800,
                       color: '#94a3b8',
                       textTransform: 'uppercase',
@@ -1251,7 +1251,7 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                       borderRadius: '4px',
                       padding: '2px 4px',
                       width: '100%',
-                      marginBottom: '4px'
+                      marginBottom: '2px'
                     }}
                   />
                   {/* Tiêu đề Báo Cáo */}
@@ -1261,7 +1261,7 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                     defaultValue={tcoLanguage === 'en' ? 'TOTAL COST OF OWNERSHIP (TCO) BENCHMARK REPORT' : 'BẢNG SO SÁNH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK)'}
                     className="report-editable-input"
                     style={{
-                      fontSize: '1.2rem',
+                      fontSize: '1.25rem',
                       fontWeight: 900,
                       color: '#38bdf8',
                       textTransform: 'uppercase',
@@ -1277,7 +1277,7 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                   <input
                     type="text"
                     key={`buyer_${tcoLanguage}`}
-                    defaultValue={tcoLanguage === 'en' ? 'ATTN: Global Procurement & Sourcing Department' : 'Kính gửi: Bộ Phận Thu Mua / Global Sourcing Dept'}
+                    defaultValue={tcoLanguage === 'en' ? 'ATTN: Global Sourcing & Procurement Directorate' : 'Kính gửi: Hội Đồng Thu Mua & Quản Lý Chuỗi Cung Ứng Quốc Tế'}
                     className="report-editable-input"
                     style={{
                       fontSize: '0.8rem',
@@ -1291,22 +1291,34 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                     }}
                   />
                 </div>
-                <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8' }}>
-                  <div><strong>{tcoLanguage === 'en' ? 'Date Issued:' : 'Ngày lập:'}</strong> {tcoLanguage === 'en' ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('vi-VN')}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', marginTop: '2px' }}>
+                <div style={{ flex: 0.8, textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8', minWidth: '220px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
+                    <strong>{tcoLanguage === 'en' ? 'Ref No:' : 'Số hiệu:'}</strong>
+                    <input
+                      type="text"
+                      defaultValue={`TCO-EXP-${Date.now().toString().slice(-6)}`}
+                      className="report-editable-input"
+                      style={{ color: '#38bdf8', fontWeight: 'bold', background: 'transparent', border: '1px dashed transparent', width: '130px', textAlign: 'right' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                    <strong>{tcoLanguage === 'en' ? 'Date Issued:' : 'Ngày lập:'}</strong>
+                    <span>{tcoLanguage === 'en' ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('vi-VN')}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                     <strong>{tcoLanguage === 'en' ? 'Validity:' : 'Hiệu lực:'}</strong>
                     <input
                       type="text"
                       key={`validity_${tcoLanguage}`}
-                      defaultValue={tcoLanguage === 'en' ? '30 Days' : '30 ngày'}
+                      defaultValue={tcoLanguage === 'en' ? '30 Calendar Days' : '30 ngày'}
                       className="report-editable-input"
                       style={{
                         fontSize: '0.78rem',
-                        color: 'inherit',
+                        color: '#f59e0b',
                         fontWeight: 'bold',
                         background: 'transparent',
                         border: '1px dashed transparent',
-                        width: '80px',
+                        width: '120px',
                         textAlign: 'right'
                       }}
                     />
@@ -1316,45 +1328,45 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
 
               {/* 3 Metrics Box */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
-                <div style={{ padding: '10px 14px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
+                <div style={{ padding: '12px 14px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '0.72rem', color: '#fca5a5', textTransform: 'uppercase', fontWeight: 700 }}>
-                    {tcoLanguage === 'en' ? 'Incumbent / Competitor' : 'Đối thủ / NCC Cũ'}
+                    {tcoLanguage === 'en' ? 'Incumbent / Competitor Landed Cost' : 'Đối thủ / NCC Cũ (Landed Cost)'}
                   </div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#f87171', marginTop: '2px' }}>{formatNumber(competitorLandedCost)}</div>
+                  <div style={{ fontSize: '1.28rem', fontWeight: 900, color: '#f87171', marginTop: '3px' }}>{formatNumber(competitorLandedCost)}</div>
                 </div>
-                <div style={{ padding: '10px 14px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px' }}>
+                <div style={{ padding: '12px 14px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '0.72rem', color: '#6ee7b7', textTransform: 'uppercase', fontWeight: 700 }}>
-                    {tcoLanguage === 'en' ? 'Our Proposed Solution' : 'Đề Xuất Doanh Nghiệp Bạn'}
+                    {tcoLanguage === 'en' ? 'Our Proposed Solution Landed Cost' : 'Đề Xuất Doanh Nghiệp Bạn (Landed Cost)'}
                   </div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: '#10b981', marginTop: '2px' }}>{formatNumber(yourLandedCost)}</div>
+                  <div style={{ fontSize: '1.28rem', fontWeight: 900, color: '#10b981', marginTop: '3px' }}>{formatNumber(yourLandedCost)}</div>
                 </div>
-                <div style={{ padding: '10px 14px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px' }}>
+                <div style={{ padding: '12px 14px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px' }}>
                   <div style={{ fontSize: '0.72rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: 700 }}>
-                    {tcoLanguage === 'en' ? 'Net Savings for Buyer' : 'Tiết Kiệm Cho Khách Hàng'}
+                    {tcoLanguage === 'en' ? 'Net Savings for Global Buyer' : 'Tiết Kiệm Ròng Cho Khách Hàng'}
                   </div>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 900, color: isSaving ? '#38bdf8' : '#f59e0b', marginTop: '2px' }}>
+                  <div style={{ fontSize: '1.28rem', fontWeight: 900, color: isSaving ? '#38bdf8' : '#f59e0b', marginTop: '3px' }}>
                     {isSaving ? `+${formatNumber(netSavings)}` : formatNumber(netSavings)}
-                    {competitorLandedCost > 0 && <span style={{ fontSize: '0.75rem', marginLeft: '6px' }}>({savingsPercent}%)</span>}
+                    {competitorLandedCost > 0 && <span style={{ fontSize: '0.78rem', marginLeft: '6px', fontWeight: 700, color: '#38bdf8' }}>({savingsPercent}%)</span>}
                   </div>
                 </div>
               </div>
 
-              {/* Bảng Chi Tiết Chuẩn Hóa Hoàn Toàn (Không Input, Không Thùng Rác) */}
-              <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+              {/* Bảng Chi Tiết Chuẩn Hóa Hoàn Toàn (Fixed Table Layout, Auto-wrapping, Zero Truncation) */}
+              <div style={{ border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', overflow: 'hidden', marginBottom: '20px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem', tableLayout: 'fixed' }}>
                   <thead>
-                    <tr style={{ background: 'rgba(30, 41, 59, 0.8)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
-                      <th style={{ padding: '9px 12px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1' }}>
-                        {tcoLanguage === 'en' ? 'COST COMPONENTS' : 'CẤU PHẦN CHI PHÍ'}
+                    <tr style={{ background: 'rgba(30, 41, 59, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                      <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1', width: '38%' }}>
+                        {tcoLanguage === 'en' ? 'TCO COST COMPONENT BREAKDOWN' : 'CẤU PHẦN CHI PHÍ TỔNG ĐÍCH SỞ HỮU'}
                       </th>
-                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '22%' }}>
-                        {tcoLanguage === 'en' ? 'INCUMBENT / COMPETITOR' : 'ĐỐI THỦ / NCC CŨ'}
+                      <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '20%' }}>
+                        {tcoLanguage === 'en' ? 'INCUMBENT' : 'ĐỐI THỦ / NCC CŨ'}
                       </th>
-                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '22%' }}>
+                      <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '20%' }}>
                         {tcoLanguage === 'en' ? 'OUR PROPOSAL' : 'DOANH NGHIỆP BẠN'}
                       </th>
-                      <th style={{ padding: '9px 12px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '18%' }}>
-                        {tcoLanguage === 'en' ? 'VARIANCE' : 'CHÊNH LỆCH'}
+                      <th style={{ padding: '10px 12px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '22%' }}>
+                        {tcoLanguage === 'en' ? 'NET VARIANCE' : 'CHÊNH LỆCH'}
                       </th>
                     </tr>
                   </thead>
@@ -1365,17 +1377,45 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                       const diff = compVal - yourVal;
                       return (
                         <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: idx % 2 === 0 ? 'rgba(255, 255, 255, 0.015)' : 'transparent' }}>
-                          <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600 }}>
-                            {tcoLanguage === 'en' ? item.labelEn : item.label}
+                          <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600, fontSize: '0.78rem', wordBreak: 'break-word', whiteSpace: 'normal' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent' }}
+                            >
+                              {tcoLanguage === 'en' ? item.labelEn : item.label}
+                            </div>
                           </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
-                            {formatNumber(compVal)}
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600, fontSize: '0.8rem' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent', textAlign: 'right' }}
+                            >
+                              {formatNumber(compVal)}
+                            </div>
                           </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
-                            {formatNumber(yourVal)}
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600, fontSize: '0.8rem' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent', textAlign: 'right' }}
+                            >
+                              {formatNumber(yourVal)}
+                            </div>
                           </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
-                            {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                          <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', fontSize: '0.8rem', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent', textAlign: 'right' }}
+                            >
+                              {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                            </div>
                           </td>
                         </tr>
                       );
@@ -1388,34 +1428,62 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                       const diff = compVal - yourVal;
                       return (
                         <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(168, 85, 247, 0.03)' }}>
-                          <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600 }}>
-                            {item.label}
+                          <td style={{ padding: '8px 12px', color: '#f1f5f9', fontWeight: 600, fontSize: '0.78rem', wordBreak: 'break-word', whiteSpace: 'normal' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent' }}
+                            >
+                              {item.label}
+                            </div>
                           </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
-                            {formatNumber(compVal)}
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#fca5a5', fontWeight: 600, fontSize: '0.8rem' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent', textAlign: 'right' }}
+                            >
+                              {formatNumber(compVal)}
+                            </div>
                           </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
-                            {formatNumber(yourVal)}
+                          <td style={{ padding: '8px 12px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600, fontSize: '0.8rem' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent', textAlign: 'right' }}
+                            >
+                              {formatNumber(yourVal)}
+                            </div>
                           </td>
-                          <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
-                            {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                          <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold', fontSize: '0.8rem', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
+                            <div
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              className="report-editable-cell"
+                              style={{ outline: 'none', padding: '2px 4px', borderRadius: '4px', border: '1px dashed transparent', textAlign: 'right' }}
+                            >
+                              {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                            </div>
                           </td>
                         </tr>
                       );
                     })}
 
                     {/* Total Row */}
-                    <tr style={{ background: 'rgba(15, 23, 42, 0.9)', borderTop: '2px solid rgba(255, 255, 255, 0.15)' }}>
-                      <td style={{ padding: '11px 12px', fontWeight: 900, color: '#38bdf8' }}>
+                    <tr style={{ background: 'rgba(15, 23, 42, 0.95)', borderTop: '2px solid rgba(255, 255, 255, 0.15)' }}>
+                      <td style={{ padding: '11px 12px', fontWeight: 900, color: '#38bdf8', fontSize: '0.82rem' }}>
                         {tcoLanguage === 'en' ? 'TOTAL LANDED COST OF OWNERSHIP (TCO)' : 'TỔNG CHI PHÍ ĐÍCH SỞ HỮU (TCO)'}
                       </td>
-                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#f87171', fontSize: '0.92rem' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#f87171', fontSize: '0.94rem' }}>
                         {formatNumber(competitorLandedCost)}
                       </td>
-                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#10b981', fontSize: '0.92rem' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: '#10b981', fontSize: '0.94rem' }}>
                         {formatNumber(yourLandedCost)}
                       </td>
-                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: isSaving ? '#38bdf8' : '#94a3b8', fontSize: '0.92rem' }}>
+                      <td style={{ padding: '11px 12px', textAlign: 'right', fontWeight: 900, color: isSaving ? '#38bdf8' : '#94a3b8', fontSize: '0.94rem' }}>
                         {isSaving ? `-${formatNumber(netSavings)}` : formatNumber(netSavings)}
                       </td>
                     </tr>
@@ -1423,49 +1491,60 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                 </table>
               </div>
 
-              {/* Value Pitch - Editable */}
-              <div style={{ padding: '12px 16px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '18px', fontSize: '0.8rem', color: '#cbd5e1' }}>
-                <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '4px' }}>
-                  {tcoLanguage === 'en' ? '✓ Value-Added Service Level Agreement (SLA):' : '✓ Cam Kết Giá Trị Gia Tăng (Value-Added SLA):'}
+              {/* Value Pitch / SLA - Auto-wrapping ContentEditable (No Textarea Scrollbar) */}
+              <div style={{ padding: '14px 16px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '18px', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                <strong style={{ color: '#38bdf8', display: 'block', marginBottom: '6px', fontSize: '0.84rem' }}>
+                  {tcoLanguage === 'en' ? '✓ Value-Added Service Level Agreement (SLA & Compliance):' : '✓ Cam Kết Dịch Vụ Gia Tăng & Tối Ưu Hóa Chi Phí (Value-Added SLA):'}
                 </strong>
-                <textarea
-                  key={`sla_${tcoLanguage}`}
-                  defaultValue={tcoLanguage === 'en' 
-                    ? "We enforce strict factory quality control, full C/O documentation for preferential tariff reductions, optimized container loading, and a guaranteed 100% defect replacement policy."
-                    : "Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật."}
-                  rows={2}
-                  className="report-editable-input"
+                <div
+                  contentEditable={true}
+                  suppressContentEditableWarning={true}
+                  className="report-editable-cell"
                   style={{
                     width: '100%',
                     background: 'transparent',
                     border: '1px dashed transparent',
-                    color: 'inherit',
+                    color: '#e2e8f0',
                     fontSize: '0.8rem',
-                    lineHeight: '1.4',
-                    resize: 'vertical'
+                    lineHeight: '1.5',
+                    outline: 'none',
+                    padding: '2px 4px',
+                    borderRadius: '4px',
+                    wordBreak: 'break-word',
+                    whiteSpace: 'normal'
                   }}
-                />
+                >
+                  {tcoLanguage === 'en' 
+                    ? "We enforce strict factory quality control, full C/O documentation for preferential tariff reductions, optimized container loading, and a guaranteed 100% defect replacement policy within 7 calendar days."
+                    : "Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế 0%, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật trong vòng 7 ngày làm việc."}
+                </div>
               </div>
 
               {/* Footer Sign-off - Editable */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8', flexWrap: 'wrap', gap: '10px' }}>
-                <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.78rem', color: '#94a3b8', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ flex: 1, minWidth: '300px' }}>
                   <input
                     type="text"
                     key={`sign_${tcoLanguage}`}
-                    defaultValue={tcoLanguage === 'en' ? 'Authorized Sales Rep: International B2B Export Division' : 'Đại diện Bán hàng: Bộ phận Xuất Khẩu B2B'}
+                    defaultValue={tcoLanguage === 'en' ? 'Authorized Directorate: International B2B Export Sales' : 'Đại diện Ký Duyệt: Ban Giám Đốc Kinh Doanh Xuất Khẩu'}
                     className="report-editable-input"
-                    style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '320px' }}
+                    style={{ fontWeight: 700, color: '#f1f5f9', fontSize: '0.84rem', background: 'transparent', border: '1px dashed transparent', width: '360px' }}
                   />
                   <input
                     type="text"
-                    defaultValue="Email: sales@b2bexports.com | Tel: +84 (0) 90 123 4567"
+                    defaultValue="Email: export@vietnamglobal.com | Direct Phone: +84 (0) 90 123 4567"
                     className="report-editable-input"
-                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '320px', display: 'block', marginTop: '2px' }}
+                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '360px', display: 'block', marginTop: '2px' }}
                   />
                 </div>
-                <div style={{ textAlign: 'right', fontStyle: 'italic', color: '#64748b' }}>
-                  {tcoLanguage === 'en' ? 'Commercial quotation subject to formal confirmation' : 'Xác nhận đề xuất báo giá có giá trị thương mại'}
+                <div style={{ textAlign: 'right', flex: 1, minWidth: '260px' }}>
+                  <input
+                    type="text"
+                    key={`legal_${tcoLanguage}`}
+                    defaultValue={tcoLanguage === 'en' ? 'Official TCO Benchmark Assessment — Subject to Formal Confirmation' : 'Bản Đánh Giá So Sánh TCO Chính Thức — Có giá trị pháp lý thương mại'}
+                    className="report-editable-input"
+                    style={{ fontStyle: 'italic', color: '#64748b', background: 'transparent', border: '1px dashed transparent', textAlign: 'right', width: '100%' }}
+                  />
                 </div>
               </div>
             </div>
