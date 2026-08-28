@@ -30,9 +30,9 @@
   --font-heading: 'Be Vietnam Pro', sans-serif;
   
   /* Layout */
-  --col-1-width: 30%;
-  --col-2-width: 45%;
-  --col-3-width: 25%;
+  --col-1-width: 20%;
+  --col-2-width: 60%;
+  --col-3-width: 20%;
 }
 
 * {
@@ -163,9 +163,18 @@ a:hover {
   border-radius: 20px;
 }
 
-.col-1 { width: var(--col-1-width); }
-.col-2 { width: var(--col-2-width); }
-.col-3 { width: var(--col-3-width); }
+.col-1 { 
+  width: var(--col-1-width); 
+  padding: 16px 12px;
+}
+.col-2 { 
+  width: var(--col-2-width); 
+  padding: 20px 24px;
+}
+.col-3 { 
+  width: var(--col-3-width); 
+  padding: 16px 12px;
+}
 
 /* Responsive fallback */
 @media (max-width: 1024px) {

@@ -107,18 +107,18 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
   };
 
   const learningContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {CAPSTONE_LESSONS.map(lesson => (
-        <div key={lesson.id} className="glass-panel" style={{ padding: 18 }}>
-          <div style={{ color: 'var(--accent-primary)', fontSize: '.73rem', fontWeight: 900, letterSpacing: '.08em', marginBottom: 5 }}>KHOANG CAPSTONE</div>
-          <h3 style={{ fontSize: '1rem', marginBottom: 7 }}>{lesson.title}</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '.8rem', lineHeight: 1.5, marginBottom: 14 }}>{lesson.description}</p>
-          <div style={{ display: 'flex', gap: 9 }}>
-            <button className="btn btn-secondary" disabled={loadingFile === lesson.pdf} onClick={() => handleOpenDocument(lesson.pdf)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
-              <BookOpen size={14} /> {loadingFile === lesson.pdf ? 'Đang tải...' : 'Slide PDF'}
+        <div key={lesson.id} className="glass-panel" style={{ padding: '14px' }}>
+          <div style={{ color: 'var(--accent-primary)', fontSize: '0.7rem', fontWeight: 900, letterSpacing: '.08em', marginBottom: 4 }}>KHOANG CAPSTONE</div>
+          <h3 style={{ fontSize: '0.92rem', fontWeight: 700, lineHeight: '1.35', marginBottom: 6 }}>{lesson.title}</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.78rem', lineHeight: 1.4, marginBottom: 12 }}>{lesson.description}</p>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button className="btn btn-secondary" disabled={loadingFile === lesson.pdf} onClick={() => handleOpenDocument(lesson.pdf)} style={{ flex: 1, gap: 4, fontSize: '0.74rem', padding: '6px 4px' }}>
+              <BookOpen size={13} /> {loadingFile === lesson.pdf ? 'Đang tải...' : 'Slide'}
             </button>
-            <button className="btn btn-primary" disabled={loadingVideo === lesson.video} onClick={() => handleOpenVideo(lesson.video)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
-              <Play size={14} /> {loadingVideo === lesson.video ? 'Đang tải...' : 'Video'}
+            <button className="btn btn-primary" disabled={loadingVideo === lesson.video} onClick={() => handleOpenVideo(lesson.video)} style={{ flex: 1, gap: 4, fontSize: '0.74rem', padding: '6px 4px' }}>
+              <Play size={13} /> {loadingVideo === lesson.video ? 'Đang tải...' : 'Video'}
             </button>
           </div>
         </div>

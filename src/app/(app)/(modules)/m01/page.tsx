@@ -138,67 +138,67 @@ export default function M01Page() {
   };
 
   const learningContent = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
       {/* Banner Thư mục Slide */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
-        <span style={{ fontSize: '0.8rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '6px' }}>
-          📁 <strong>Kho Slide Bài Giảng:</strong> Chuẩn hóa M01_B01 đến M05_B15
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 10px', background: 'rgba(59,130,246,0.1)', borderRadius: '8px', border: '1px solid rgba(59,130,246,0.25)' }}>
+        <span style={{ fontSize: '0.74rem', color: '#93c5fd', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          📁 <strong>Kho Slide:</strong> M01–M05
         </span>
-        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.75rem', padding: '4px 10px' }}>
-          Mở Thư Mục Google Drive ➔
+        <a href={GOOGLE_DRIVE_SLIDES_ROOT} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ fontSize: '0.7rem', padding: '3px 8px' }}>
+          Drive ➔
         </a>
       </div>
       
       {/* BÀI 01 */}
-      <div className="glass-panel" style={{ padding: '20px' }}>
-        <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
+      <div className="glass-panel" style={{ padding: '14px' }}>
+        <h3 style={{ color: 'var(--accent-primary)', marginBottom: '6px', fontSize: '0.92rem', fontWeight: 700, lineHeight: '1.35' }}>
           {COURSE_MATERIALS.B01.title}
         </h3>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: '1.4' }}>
           {COURSE_MATERIALS.B01.description}
         </p>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
           <button 
             onClick={() => handleOpenDocument('B01')}
             className="btn btn-secondary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.74rem', padding: '6px 4px' }}
           >
-            <BookOpen size={16}/> 📖 Slide Bài Giảng
+            <BookOpen size={13}/> Slide
           </button>
           <button 
             onClick={() => handleOpenVideo(COURSE_MATERIALS.B01.videoFileName || 'M01_Video01.mp4', 'B01')}
             disabled={loadingVideo === COURSE_MATERIALS.B01.videoFileName}
             className="btn btn-primary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.74rem', padding: '6px 4px' }}
           >
-            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B01.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={13}/> {loadingVideo === COURSE_MATERIALS.B01.videoFileName ? 'Đang tải...' : 'Video'}
           </button>
         </div>
       </div>
       
       {/* BÀI 02 */}
-      <div className="glass-panel" style={{ padding: '20px' }}>
-        <h3 style={{ color: 'var(--accent-primary)', marginBottom: '12px', fontSize: '1.1rem' }}>
+      <div className="glass-panel" style={{ padding: '14px' }}>
+        <h3 style={{ color: 'var(--accent-primary)', marginBottom: '6px', fontSize: '0.92rem', fontWeight: 700, lineHeight: '1.35' }}>
           {COURSE_MATERIALS.B02.title}
         </h3>
-        <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '20px', lineHeight: '1.5' }}>
+        <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: '1.4' }}>
           {COURSE_MATERIALS.B02.description}
         </p>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '6px' }}>
           <button 
             onClick={() => handleOpenDocument('B02')}
             className="btn btn-secondary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.74rem', padding: '6px 4px' }}
           >
-            <BookOpen size={16}/> 📖 Slide Bài Giảng
+            <BookOpen size={13}/> Slide
           </button>
           <button 
             onClick={() => handleOpenVideo(COURSE_MATERIALS.B02.videoFileName || 'M01_Video02.mp4', 'B02')}
             disabled={loadingVideo === COURSE_MATERIALS.B02.videoFileName}
             className="btn btn-primary" 
-            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
+            style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontSize: '0.74rem', padding: '6px 4px' }}
           >
-            <Play size={16}/> {loadingVideo === COURSE_MATERIALS.B02.videoFileName ? 'Đang tải...' : 'Video Tổng kết'}
+            <Play size={13}/> {loadingVideo === COURSE_MATERIALS.B02.videoFileName ? 'Đang tải...' : 'Video'}
           </button>
         </div>
       </div>
