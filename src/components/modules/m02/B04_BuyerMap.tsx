@@ -155,33 +155,35 @@ function DroppableZone({ zone, assignedRoles, onRemove, disabled }: {
       style={{
         background: isOver ? hexToRgba(zone.color, 0.2) : hexToRgba(zone.color, 0.05),
         border: `1px solid ${hasTooManyDecisionMakers ? 'var(--accent-danger)' : isOver ? zone.color : hexToRgba(zone.color, 0.3)}`,
-        borderRadius: '12px',
-        padding: '14px',
-        minHeight: '120px',
+        borderRadius: '10px',
+        padding: '8px 10px',
+        minHeight: '75px',
         transition: 'all 0.2s',
         display: 'flex',
         flexDirection: 'column'
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', borderBottom: `1px solid ${hexToRgba(zone.color, 0.2)}`, paddingBottom: '6px' }}>
-        <h4 style={{ fontSize: '0.85rem', color: zone.color, fontWeight: 'bold', margin: 0 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', borderBottom: `1px solid ${hexToRgba(zone.color, 0.2)}`, paddingBottom: '4px' }}>
+        <h4 style={{ fontSize: '0.78rem', color: zone.color, fontWeight: 'bold', margin: 0 }}>
           {zone.label}
         </h4>
-        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>({assignedRoles.length})</span>
+        <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>({assignedRoles.length})</span>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
         {assignedRoles.map(r => (
           <div key={r.id} style={{ 
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             background: zone.color, color: '#0f172a', fontWeight: '600',
-            padding: '5px 10px', borderRadius: '6px', fontSize: '0.78rem' 
+            padding: '3px 7px', borderRadius: '4px', fontSize: '0.72rem',
+            lineHeight: '1.2'
           }}>
-            <span>{r.role}</span>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.role}</span>
             {!disabled && (
               <button 
                 onClick={() => onRemove(r.id)} 
-                style={{ background: 'none', border: 'none', color: '#0f172a', cursor: 'pointer', fontSize: '1.1rem', lineHeight: '1', padding: 0 }}
+                style={{ background: 'none', border: 'none', color: '#0f172a', cursor: 'pointer', fontSize: '1rem', lineHeight: '1', padding: '0 0 0 4px', display: 'flex', alignItems: 'center' }}
+                title="Gỡ vai trò"
               >
                 &times;
               </button>
@@ -189,15 +191,15 @@ function DroppableZone({ zone, assignedRoles, onRemove, disabled }: {
           </div>
         ))}
         {assignedRoles.length === 0 && (
-          <div style={{ color: hexToRgba(zone.color, 0.7), fontSize: '0.76rem', fontStyle: 'italic', textAlign: 'center', marginTop: '12px' }}>
-            Kéo thả vai trò vào đây
+          <div style={{ color: hexToRgba(zone.color, 0.7), fontSize: '0.7rem', fontStyle: 'italic', textAlign: 'center', marginTop: '6px' }}>
+            Kéo thả vào đây
           </div>
         )}
       </div>
 
       {hasTooManyDecisionMakers && (
-        <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#fca5a5', lineHeight: '1.3' }}>
-          ⚠️ B2B thường chỉ có 1-2 Decision Makers cốt lõi.
+        <div style={{ marginTop: '4px', fontSize: '0.68rem', color: '#fca5a5', lineHeight: '1.2' }}>
+          ⚠️ B2B thường có 1-2 Decision Makers.
         </div>
       )}
     </div>
@@ -488,8 +490,8 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
                 )}
               </div>
 
-              {/* Lưới Buying Roles */}
-              <div style={{ flex: '2 1 300px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '12px' }}>
+              {/* Lưới Buying Roles (2 Hàng) */}
+              <div style={{ flex: '2.5 1 360px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
                 {BUYING_ROLES.map(zone => (
                   <DroppableZone 
                     key={zone.id} 
