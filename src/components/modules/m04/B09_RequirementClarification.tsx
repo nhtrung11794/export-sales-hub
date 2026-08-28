@@ -200,18 +200,18 @@ export default function B09_RequirementClarification({ data, setData, handleBlur
           return (
             <div key={sec.key} className={`pbtpc-row ${val.is_clear ? 'is-clear' : ''}`}>
               <div style={{ padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                  <div>
-                    <div style={{ fontWeight: 'bold', fontSize: '0.92rem', color: val.is_clear ? '#10b981' : 'var(--text-primary)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px' }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem', color: val.is_clear ? '#10b981' : 'var(--text-primary)', marginBottom: '2px' }}>
                       {sec.label}
                     </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+                    <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: '1.35' }}>
                       {sec.desc}
                     </div>
                   </div>
                   
                   {/* TOGGLE SEGMENT (2 NÚT) */}
-                  <div className="toggle-btn-group">
+                  <div className="toggle-btn-group" style={{ flexShrink: 0, marginLeft: 'auto' }}>
                     <button
                       type="button"
                       onClick={() => setStatus(sec.key, true)}
