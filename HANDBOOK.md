@@ -1,6 +1,6 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v7.1 (Tích hợp Google Drive API, Nhúng Slide 15 Bài Học Trực Tiếp & Skill `@sync-drive-materials`)  
+**Phiên bản:** v7.2 (Tích hợp Google Drive API Slide & Video Hybrid PiP Player, Strict Folder Scoping & Skill `@sync-drive-materials`)  
 **Ngày cập nhật:** 28/08/2026
 
 Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư duy, Kết quả, Kỹ thuật, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc bảo trì dự án ngay lập tức mà không bao giờ bị đứt gãy mạch logic.
@@ -64,6 +64,13 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
 
 ---
 
+### 1.5. Trình Phát Video Nổi Hybrid PiP Video Player (Đồng Bộ 15 Video Google Drive 100%)
+- **Quét chính xác theo phân cấp**: Lọc chính xác 15 file MP4 từ thư mục `Website / Module [01..05] / Bài [01..15]`, tránh tuyệt đối quét nhầm các lớp học cũ.
+- **Hybrid Player**: Khung phát PiP kéo thả tự động nhúng `<iframe>` Google Drive Preview (`16:9`, hỗ trợ tua tốc độ $1.25\times, 1.5\times, 2.0\times$) hoặc fallback `<video>` HTML5 native.
+- **Tiết kiệm chi phí**: Tiết kiệm 100% dung lượng và băng thông Supabase Storage.
+
+---
+
 ## 2. ⏳ NHỮNG ĐIỂM CẦN LƯU Ý & CẢI TIẾN TIẾP THEO (PENDING / NEXT STEPS)
 
 1. **Khóa Supabase Enum Constraint**:
@@ -79,6 +86,8 @@ Tài liệu này là "Điểm nhớ" (Save Point) tổng hợp toàn bộ **Tư 
    - Cho phép giáo viên / admin nạp bộ dữ liệu mẫu (Seed Data) để học viên mới có thể bấm xem thử trọn vẹn 1 Deal hoàn chỉnh từ M01 đến M05.
 4. **Cú pháp Lệnh Shell trên Windows**:
    - Dùng dấu `;` thay vì `&&` khi chuỗi lệnh trong PowerShell (ví dụ: `git add . ; git commit -m "..." ; git push`).
+5. **Quy Tắc Lọc Đường Dẫn Drive (Strict Folder Scoping)**:
+   - Khi viết script đồng bộ tài liệu/video, luôn bắt buộc kiểm tra `folderPath.includes('Website')` để tránh quét nhầm các lớp học khác (`Lớp C35S`...).
 
 ---
 
