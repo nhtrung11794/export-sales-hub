@@ -268,36 +268,66 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
     if (lang === 'en') {
       return `
 === COMMERCIAL SALES PROPOSAL & TIERED PRICING ARCHITECTURE ===
-Date Issued: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-Incoterms: FOB / CIF 2020 | Payment: 30% T/T Advance, 70% against B/L copy | Validity: 30 Days
+Quotation Ref: EXP-QT-${Date.now().toString().slice(-6)} | Date Issued: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+Validity: 30 Calendar Days | ATTN: Global Procurement Directorate
 
-TIERED PACKAGES OFFERED:
+1. TIERED PRICING & VALUE COMPARISON MATRIX:
 ${activeOptions.map((opt, i) => `
-PACKAGE ${i + 1}: ${opt.name}
-- Proposed Price: ${formatNumber(Number(opt.price) || 0)}
-- Scope & SLA: ${opt.features || 'Standard export packaging, QA inspection, direct customer support.'}
+[${i === 0 ? 'OPTION A (ECONOMY DECOY)' : i === 1 ? 'OPTION B (RECOMMENDED STANDARD ⭐)' : 'OPTION C (PREMIUM VALUE-ADD)'}] - ${opt.name}
+• Proposed Unit Price: ${formatNumber(Number(opt.price) || 0)} / unit
+• MOQ: ${i === 0 ? '1x40ft FCL (~20,000 units)' : i === 1 ? '1x20ft FCL (~10,000 units)' : 'Flexible (~5,000 units)'}
+• Packing Standard: ${i === 0 ? 'Standard 5-ply export carton' : i === 1 ? 'Fumigated Pallets + Shrink Wrap' : 'Custom OEM Branding + Heavy Duty Pallet'}
+• Production Lead Time: ${i === 0 ? '25-30 business days' : i === 1 ? '14-18 business days (Priority Line)' : '10-14 business days (Fast-Track)'}
+• QA & Inspection: ${i === 0 ? 'In-house Factory QA Inspection' : i === 1 ? 'Pre-shipment Inspection + Full COA' : 'Third-Party SGS / Intertek Inspection'}
+• Defect Replacement SLA: ${i === 0 ? 'Deduction on subsequent order' : i === 1 ? '100% Free Replacement in 7 Days' : 'Immediate 100% Compensation + Insurance'}
+• FTA C/O Support: ${i === 0 ? 'Standard non-preferential C/O' : i === 1 ? 'Preferential Form FTA C/O (0% Duty)' : 'Full FTA C/O + Customs Broker Support'}
+• Specific Scope: ${opt.features || 'Standard export packaging, QA pre-shipment audit, prompt technical customer support.'}
 `).join('\n')}
 
-COMMERCIAL COMMITMENT:
-All offerings comply with international export standards, accompanied by full commercial invoices, packing lists, Certificate of Origin (C/O), and phytosanitary/quality test certificates.
+2. INTERNATIONAL COMMERCIAL TERMS & EXPORT CONDITIONS:
+• Trade Terms: FOB Cat Lai / Hai Phong Port (or CIF Destination Port - Incoterms 2020)
+• Port of Loading & Discharge: POL: Hochiminh City Port | POD: As nominated by Buyer
+• Payment & Deposit Terms: 30% T/T Advance Deposit, 70% against B/L copy (or Irrevocable L/C)
+• Production Lead Time: 14 - 21 business days upon receipt of advance deposit & sample approval
+• Export Shipping Documents: Commercial Invoice, Packing List, Ocean B/L, Form FTA C/O, Phytosanitary, COA
+• Samples & Validity: Free pre-production counter-samples available. Quotation valid for 30 calendar days.
+
+3. AUTHORIZED SIGNATORY & LEGAL DISCLAIMER:
+Issued by: International B2B Export Sales Directorate | Email: export@vietnamglobal.com
+Official Commercial Proposal — Acceptance confirmed via Purchase Order (P.O)
 ===============================================================
       `.trim();
     }
 
     return `
 === BẢN ĐỀ XUẤT BÁO GIÁ THƯƠNG MẠI & ĐA TẦNG GIÁ TRỊ ===
-Ngày lập: ${new Date().toLocaleDateString('vi-VN')}
-Điều kiện: FOB / CIF 2020 | Thanh toán: 30% T/T Tạm ứng, 70% khi có Bill | Hiệu lực: 30 ngày
+Số hiệu: EXP-QT-${Date.now().toString().slice(-6)} | Ngày lập: ${new Date().toLocaleDateString('vi-VN')}
+Hiệu lực: 30 ngày | Kính gửi: Hội Đồng Thu Mua & Quản Lý Ngành Hàng
 
-CÁC GÓI BÁO GIÁ ĐỀ XUẤT:
+1. MA TRẬN ĐỐI CHIẾU 3 PHƯƠNG ÁN BÁO GIÁ:
 ${activeOptions.map((opt, i) => `
-GÓI ${i + 1}: ${opt.name}
-- Mức giá: ${formatNumber(Number(opt.price) || 0)}
-- Phạm vi & SLA: ${opt.features || 'Đóng gói tiêu chuẩn xuất khẩu, kiểm định chất lượng xuất xưởng.'}
+[${i === 0 ? 'GÓI A (TỐI ƯU / DECOY)' : i === 1 ? 'GÓI B (TIÊU CHUẨN ĐỀ XUẤT ⭐)' : 'GÓI C (NÂNG CAO SLA)'}] - ${opt.name}
+• Đơn giá đề xuất: ${formatNumber(Number(opt.price) || 0)} / đơn vị
+• MOQ: ${i === 0 ? '1x40ft FCL (~20,000 đơn vị)' : i === 1 ? '1x20ft FCL (~10,000 đơn vị)' : 'Linh hoạt (~5,000 đơn vị)'}
+• Quy cách đóng gói: ${i === 0 ? 'Thùng carton 5 lớp tiêu chuẩn' : i === 1 ? 'Pallet gỗ hun trùng + Màng co' : 'Thương hiệu OEM + Pallet chịu lực'}
+• Tiến độ sản xuất: ${i === 0 ? '25-30 ngày làm việc' : i === 1 ? '14-18 ngày làm việc (Ưu tiên)' : '10-14 ngày làm việc (Thần tốc)'}
+• Kiểm định chất lượng: ${i === 0 ? 'Kiểm tra QA nội bộ xuất xưởng' : i === 1 ? 'Pre-shipment Audit + Phiếu COA' : 'Kiểm định độc lập SGS / Intertek'}
+• Chính sách bù lỗi: ${i === 0 ? 'Giảm trừ vào đơn hàng sau' : i === 1 ? 'Bù hàng 100% miễn phí trong 7 ngày' : 'Bù 100% ngay + Đền bù phát sinh'}
+• Hỗ trợ C/O ưu đãi thuế: ${i === 0 ? 'C/O tiêu chuẩn thông thường' : i === 1 ? 'Hỗ trợ C/O Form ưu đãi thuế 0%' : 'C/O ưu đãi + Đại lý hải quan trọn gói'}
+• Tính năng chi tiết: ${opt.features || 'Đóng gói chuẩn xuất khẩu, kiểm định chất lượng xuất xưởng và hỗ trợ kỹ thuật tận tâm.'}
 `).join('\n')}
 
-CAM KẾT THƯƠNG MẠI:
-Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, C/O ưu đãi thuế quan, kiểm định chất lượng) và bảo hành chất lượng hàng hóa.
+2. ĐIỀU KHOẢN THƯƠNG MẠI & QUY CHUẨN XUẤT KHẨU:
+• Điều kiện giao hàng: FOB Cảng Cát Lái / Hải Phòng (hoặc CIF Cảng Đến - Incoterms 2020)
+• Cảng bốc & Cảng dỡ: Cảng đi (POL): TP. Hồ Chí Minh | Cảng đến: Chỉ định bởi Buyer
+• Phương thức thanh toán: 30% T/T Tạm ứng, 70% khi có Bill of Lading (hoặc L/C không hủy ngang)
+• Tiến độ sản xuất: 14 - 21 ngày làm việc sau khi nhận đặt cọc & duyệt mẫu sản xuất
+• Bộ chứng từ xuất khẩu: Invoice, Packing List, Vận đơn B/L, C/O ưu đãi thuế, Kiểm dịch Phyto, COA
+• Quy định mẫu & Hiệu lực: Cung cấp mẫu đối chứng miễn phí. Báo giá có hiệu lực trong 30 ngày.
+
+3. ĐẠI DIỆN KÝ DUYỆT & PHÁP LÝ BÁO GIÁ:
+Đại diện Ký Duyệt: Ban Giám Đốc Kinh Doanh Xuất Khẩu | Email: export@vietnamglobal.com
+Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua Đơn đặt hàng (P.O)
 ======================================================
     `.trim();
   };
@@ -1594,7 +1624,7 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
               flex: 1,
               background: '#0b1120',
               color: '#f8fafc',
-              fontSize: '0.86rem',
+              fontSize: '0.84rem',
               lineHeight: '1.5'
             }}>
               {/* Banner Tùy Biến Thương Hiệu Trên Canva - ẨN KHI IN */}
@@ -1662,19 +1692,19 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                   gap: '6px'
                 }}
               >
-                <Sparkles size={14} /> {proposalLanguage === 'en' ? 'Click on any text below (Package names, prices, SLA features, terms & signature) to edit before printing/saving to PDF.' : 'Bạn có thể nhấp trực tiếp vào bất kỳ dòng văn bản nào bên dưới (Tên gói, giá, tính năng, điều khoản thương mại, chữ ký...) để chỉnh sửa trước khi bấm In / Lưu PDF!'}
+                <Sparkles size={14} /> {proposalLanguage === 'en' ? 'Live Inline-Editing Enabled: Click on any cell, price, MOQ, SLA feature or commercial term to edit before printing.' : 'Chế độ chỉnh sửa trực tiếp: Bạn có thể nhấp vào bất kỳ ô nào trên bảng ma trận, giá, MOQ, điều khoản thanh toán để sửa trước khi In / Lưu PDF!'}
               </div>
 
-              {/* Proposal Header */}
-              <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ flex: 1, minWidth: '280px' }}>
+              {/* KHU VỰC 1: HEADER BÁO GIÁ NGOẠI THƯƠNG TRANG TRỌNG */}
+              <div style={{ borderBottom: '2px solid #38bdf8', paddingBottom: '14px', marginBottom: '18px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '14px' }}>
+                <div style={{ flex: 1.2, minWidth: '280px' }}>
                   <input
                     type="text"
                     key={`prop_comp_${proposalLanguage}`}
-                    defaultValue={proposalLanguage === 'en' ? 'VIETNAM GLOBAL EXPORT CORPORATION' : 'CÔNG TY CỔ PHẦN XUẤT NHẬP KHẨU B2B'}
+                    defaultValue={proposalLanguage === 'en' ? 'VIETNAM GLOBAL EXPORT MANUFACTURING CORP' : 'CÔNG TY CỔ PHẦN TẬP ĐOÀN XUẤT NHẬP KHẨU B2B'}
                     className="report-editable-input"
                     style={{
-                      fontSize: '0.9rem',
+                      fontSize: '0.92rem',
                       fontWeight: 800,
                       color: '#94a3b8',
                       textTransform: 'uppercase',
@@ -1684,7 +1714,7 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                       borderRadius: '4px',
                       padding: '2px 4px',
                       width: '100%',
-                      marginBottom: '4px'
+                      marginBottom: '2px'
                     }}
                   />
                   <input
@@ -1693,7 +1723,7 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                     defaultValue={proposalLanguage === 'en' ? 'COMMERCIAL SALES PROPOSAL & TIERED PRICING' : 'BẢN ĐỀ XUẤT BÁO GIÁ THƯƠNG MẠI & ĐA TẦNG GIÁ TRỊ'}
                     className="report-editable-input"
                     style={{
-                      fontSize: '1.2rem',
+                      fontSize: '1.25rem',
                       fontWeight: 900,
                       color: '#38bdf8',
                       textTransform: 'uppercase',
@@ -1707,12 +1737,12 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                   />
                   <input
                     type="text"
-                    key={`prop_buyer_${proposalLanguage}`}
-                    defaultValue={proposalLanguage === 'en' ? 'TO: Global Sourcing Committee / Category Buyer' : 'Kính gửi: Hội Đồng Thu Mua & Quản Lý Ngành Hàng'}
+                    key={`prop_addr_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'Factory & Office: Lot CN-08, Tan Tao Industrial Zone, Hochiminh City, Vietnam' : 'Nhà máy & VP: Lô CN-08, KCN Tân Tạo, TP. Hồ Chí Minh, Việt Nam'}
                     className="report-editable-input"
                     style={{
-                      fontSize: '0.8rem',
-                      color: '#cbd5e1',
+                      fontSize: '0.76rem',
+                      color: '#94a3b8',
                       background: 'transparent',
                       border: '1px dashed transparent',
                       borderRadius: '4px',
@@ -1722,210 +1752,501 @@ Cung cấp đầy đủ bộ chứng từ xuất khẩu (Invoice, Packing List, 
                     }}
                   />
                 </div>
-                <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8' }}>
-                  <div><strong>{proposalLanguage === 'en' ? 'Date Issued:' : 'Ngày lập:'}</strong> {proposalLanguage === 'en' ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('vi-VN')}</div>
-                  <div><strong>{proposalLanguage === 'en' ? 'Ref No:' : 'Số hiệu:'}</strong> EXP-{Date.now().toString().slice(-6)}</div>
-                </div>
-              </div>
 
-              {/* 3 Tiered Options Grid - Live Editable */}
-              <div style={{ marginBottom: '22px' }}>
-                <input
-                  type="text"
-                  key={`prop_sec1_${proposalLanguage}`}
-                  defaultValue={proposalLanguage === 'en' ? '1. TIERED COMMERCIAL PRICING OPTIONS (SELECT ONE)' : '1. CÁC PHƯƠNG ÁN BÁO GIÁ ĐA TẦNG (LỰA CHỌN PHÙ HỢP)'}
-                  className="report-editable-input"
-                  style={{
-                    fontSize: '0.86rem',
-                    fontWeight: 'bold',
-                    color: '#e2e8f0',
-                    marginBottom: '10px',
-                    background: 'transparent',
-                    border: '1px dashed transparent',
-                    borderRadius: '4px',
-                    padding: '2px 4px',
-                    width: '100%'
-                  }}
-                />
-                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${activeOptions.length || 1}, 1fr)`, gap: '14px' }}>
-                  {activeOptions.map((opt, idx) => (
-                    <div 
-                      key={opt.id}
+                <div style={{ flex: 0.8, textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8', minWidth: '220px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
+                    <strong>{proposalLanguage === 'en' ? 'Ref No:' : 'Số hiệu:'}</strong>
+                    <input
+                      type="text"
+                      defaultValue={`EXP-QT-${Date.now().toString().slice(-6)}`}
+                      className="report-editable-input"
+                      style={{ color: '#38bdf8', fontWeight: 'bold', background: 'transparent', border: '1px dashed transparent', width: '130px', textAlign: 'right' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                    <strong>{proposalLanguage === 'en' ? 'Date Issued:' : 'Ngày lập:'}</strong>
+                    <span>{proposalLanguage === 'en' ? new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : new Date().toLocaleDateString('vi-VN')}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                    <strong>{proposalLanguage === 'en' ? 'Validity:' : 'Hiệu lực:'}</strong>
+                    <input
+                      type="text"
+                      key={`prop_validity_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? '30 Calendar Days' : '30 ngày kể từ ngày báo'}
+                      className="report-editable-input"
+                      style={{ color: '#f59e0b', fontWeight: 'bold', background: 'transparent', border: '1px dashed transparent', width: '140px', textAlign: 'right' }}
+                    />
+                  </div>
+                  <div style={{ marginTop: '4px', borderTop: '1px dashed rgba(255,255,255,0.08)', paddingTop: '4px' }}>
+                    <input
+                      type="text"
+                      key={`prop_buyer_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? 'ATTN: Global Procurement Directorate' : 'Kính gửi: Hội Đồng Thu Mua & Quản Lý Ngành Hàng'}
+                      className="report-editable-input"
                       style={{
-                        padding: '16px',
-                        border: idx === 1 ? '2px solid #3b82f6' : '1px solid rgba(255,255,255,0.12)',
-                        borderRadius: '10px',
-                        background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'rgba(255, 255, 255, 0.02)',
-                        display: 'flex',
-                        flexDirection: 'column'
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        color: '#cbd5e1',
+                        background: 'transparent',
+                        border: '1px dashed transparent',
+                        width: '100%',
+                        textAlign: 'right'
                       }}
-                    >
-                      {/* Tier Tag */}
-                      <input
-                        type="text"
-                        key={`tier_tag_${opt.id}_${proposalLanguage}`}
-                        defaultValue={idx === 0 ? (proposalLanguage === 'en' ? 'OPTION A (ECONOMY / DECOY)' : 'GÓI A (TỐI ƯU / DECOY)') : idx === 1 ? (proposalLanguage === 'en' ? 'OPTION B (RECOMMENDED STANDARD)' : 'GÓI B (TIÊU CHUẨN ĐỀ XUẤT)') : (proposalLanguage === 'en' ? 'OPTION C (PREMIUM VALUE-ADD)' : 'GÓI C (NÂNG CAO SLA)')}
-                        className="report-editable-input"
-                        style={{
-                          fontSize: '0.78rem',
-                          fontWeight: 800,
-                          color: idx === 1 ? '#38bdf8' : '#94a3b8',
-                          textTransform: 'uppercase',
-                          background: 'transparent',
-                          border: '1px dashed transparent',
-                          borderRadius: '4px',
-                          padding: '2px 4px',
-                          width: '100%'
-                        }}
-                      />
-
-                      {/* Package Name */}
-                      <input
-                        type="text"
-                        key={`opt_name_${opt.id}`}
-                        defaultValue={opt.name}
-                        className="report-editable-input"
-                        style={{
-                          fontSize: '0.95rem',
-                          fontWeight: 'bold',
-                          color: '#f8fafc',
-                          margin: '4px 0 6px 0',
-                          background: 'transparent',
-                          border: '1px dashed transparent',
-                          borderRadius: '4px',
-                          padding: '2px 4px',
-                          width: '100%'
-                        }}
-                      />
-
-                      {/* Price Display / Editable */}
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
-                        <input
-                          type="text"
-                          key={`opt_price_${opt.id}`}
-                          defaultValue={formatNumber(Number(opt.price) || 0)}
-                          className="report-editable-input"
-                          style={{
-                            fontSize: '1.35rem',
-                            fontWeight: 900,
-                            color: '#10b981',
-                            background: 'transparent',
-                            border: '1px dashed transparent',
-                            borderRadius: '4px',
-                            padding: '2px 4px',
-                            width: '130px'
-                          }}
-                        />
-                        <span style={{ fontSize: '0.72rem', color: '#94a3b8', fontWeight: 'normal' }}>/ unit</span>
-                      </div>
-
-                      {/* Scope & Features / SLA Textarea */}
-                      <div style={{ flex: 1, borderTop: '1px dashed rgba(255,255,255,0.1)', paddingTop: '8px' }}>
-                        <textarea
-                          key={`opt_feat_${opt.id}_${proposalLanguage}`}
-                          defaultValue={opt.features || (proposalLanguage === 'en' ? 'Standard export packaging, QA pre-shipment audit, prompt technical customer support.' : 'Đóng gói chuẩn xuất khẩu, kiểm định chất lượng xuất xưởng và hỗ trợ kỹ thuật tận tâm.')}
-                          rows={4}
-                          className="report-editable-input"
-                          style={{
-                            width: '100%',
-                            fontSize: '0.78rem',
-                            color: '#cbd5e1',
-                            lineHeight: '1.45',
-                            background: 'transparent',
-                            border: '1px dashed transparent',
-                            borderRadius: '4px',
-                            padding: '2px 4px',
-                            resize: 'vertical'
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Commercial Terms & Conditions - Live Editable */}
-              <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '14px 18px', background: 'rgba(255, 255, 255, 0.02)', marginBottom: '18px', fontSize: '0.8rem' }}>
-                <input
-                  type="text"
-                  key={`prop_sec2_${proposalLanguage}`}
-                  defaultValue={proposalLanguage === 'en' ? '2. STANDARD COMMERCIAL TERMS & SPECIFICATIONS' : '2. ĐIỀU KHOẢN THƯƠNG MẠI & QUY CHUẨN XUẤT KHẨU'}
-                  className="report-editable-input"
-                  style={{
-                    fontWeight: 'bold',
-                    color: '#38bdf8',
-                    marginBottom: '8px',
-                    background: 'transparent',
-                    border: '1px dashed transparent',
-                    borderRadius: '4px',
-                    padding: '2px 4px',
-                    width: '100%'
-                  }}
-                />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', color: '#cbd5e1' }}>
-                  <div>
+              {/* KHU VỰC 2: BẢNG MA TRẬN ĐỐI CHIẾU TÍNH NĂNG 3 GÓI GIÁ (FEATURE-BY-FEATURE DECOY MATRIX) */}
+              <div style={{ marginBottom: '22px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <input
+                    type="text"
+                    key={`prop_sec1_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? '1. TIERED COMMERCIAL PRICING & VALUE COMPARISON MATRIX' : '1. BẢNG MA TRẬN ĐỐI CHIẾU 3 PHƯƠNG ÁN BÁO GIÁ ĐA TẦNG'}
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '0.88rem',
+                      fontWeight: 'bold',
+                      color: '#e2e8f0',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '80%'
+                    }}
+                  />
+                  <span style={{ fontSize: '0.72rem', color: '#38bdf8', fontWeight: 600 }}>
+                    {proposalLanguage === 'en' ? 'Anchoring & Decoy Architecture' : 'Kiến trúc Định giá Chim mồi'}
+                  </span>
+                </div>
+
+                <div style={{ border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', overflow: 'hidden' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+                    <thead>
+                      <tr style={{ background: 'rgba(30, 41, 59, 0.95)', borderBottom: '1px solid rgba(255, 255, 255, 0.12)' }}>
+                        <th style={{ padding: '10px 12px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1', width: '28%' }}>
+                          {proposalLanguage === 'en' ? 'CRITERIA & SLA COMMITMENTS' : 'TIÊU CHÍ & CAM KẾT SLA'}
+                        </th>
+                        {activeOptions.map((opt, idx) => (
+                          <th 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '10px 12px', 
+                              textAlign: 'center', 
+                              fontWeight: 'bold',
+                              width: `${72 / (activeOptions.length || 1)}%`,
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.15)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <div style={{ fontSize: '0.72rem', color: idx === 1 ? '#38bdf8' : '#94a3b8', textTransform: 'uppercase', fontWeight: 800 }}>
+                              {idx === 0 
+                                ? (proposalLanguage === 'en' ? 'OPTION A (ECONOMY)' : 'GÓI A (TỐI ƯU)') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? 'OPTION B (STANDARD ⭐)' : 'GÓI B (TIÊU CHUẨN ⭐)') 
+                                  : (proposalLanguage === 'en' ? 'OPTION C (PREMIUM)' : 'GÓI C (NÂNG CAO)')}
+                            </div>
+                            <input
+                              type="text"
+                              key={`th_name_${opt.id}`}
+                              defaultValue={opt.name}
+                              className="report-editable-input"
+                              style={{
+                                fontSize: '0.86rem',
+                                fontWeight: 900,
+                                color: idx === 1 ? '#60a5fa' : '#f8fafc',
+                                textAlign: 'center',
+                                background: 'transparent',
+                                border: '1px dashed transparent',
+                                width: '100%',
+                                marginTop: '2px'
+                              }}
+                            />
+                            {idx === 1 && (
+                              <span style={{ display: 'inline-block', fontSize: '0.66rem', background: '#3b82f6', color: '#fff', padding: '1px 8px', borderRadius: '10px', marginTop: '2px', fontWeight: 'bold' }}>
+                                {proposalLanguage === 'en' ? 'MOST POPULAR CHOICE' : 'LỰA CHỌN KHUYÊN DÙNG'}
+                              </span>
+                            )}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Row 1: Proposed Unit Price */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', background: 'rgba(255, 255, 255, 0.02)' }}>
+                        <td style={{ padding: '9px 12px', fontWeight: 'bold', color: '#38bdf8' }}>
+                          {proposalLanguage === 'en' ? '1. Proposed FOB Unit Price' : '1. Đơn Giá Báo Xuất Xưởng / FOB'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '9px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_price_${opt.id}`}
+                              defaultValue={`${formatNumber(Number(opt.price) || 0)} / unit`}
+                              className="report-editable-input"
+                              style={{
+                                fontSize: '1.15rem',
+                                fontWeight: 900,
+                                color: '#10b981',
+                                textAlign: 'center',
+                                background: 'transparent',
+                                border: '1px dashed transparent',
+                                width: '100%'
+                              }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 2: Minimum Order Quantity (MOQ) */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 600, color: '#f1f5f9' }}>
+                          {proposalLanguage === 'en' ? '2. Minimum Order Quantity (MOQ)' : '2. Sản Lượng Tối Thiểu (MOQ)'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_moq_${opt.id}_${proposalLanguage}`}
+                              defaultValue={idx === 0 
+                                ? (proposalLanguage === 'en' ? '1x40ft FCL (~20,000 units)' : '1x40ft FCL (~20,000 đơn vị)') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? '1x20ft FCL (~10,000 units)' : '1x20ft FCL (~10,000 đơn vị)') 
+                                  : (proposalLanguage === 'en' ? 'Flexible MOQ (~5,000 units)' : 'Linh hoạt (~5,000 đơn vị)')}
+                              className="report-editable-input"
+                              style={{ color: '#cbd5e1', textAlign: 'center', background: 'transparent', border: '1px dashed transparent', width: '100%' }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 3: Export Packaging Standard */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.015)' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 600, color: '#f1f5f9' }}>
+                          {proposalLanguage === 'en' ? '3. Export Packaging Standard' : '3. Quy Cách Đóng Gói Xuất Khẩu'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_pack_${opt.id}_${proposalLanguage}`}
+                              defaultValue={idx === 0 
+                                ? (proposalLanguage === 'en' ? 'Standard 5-ply export carton' : 'Thùng carton 5 lớp tiêu chuẩn') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? 'Fumigated Pallets + Shrink Wrap' : 'Pallet gỗ hun trùng + Màng co') 
+                                  : (proposalLanguage === 'en' ? 'Custom OEM Branding + Heavy Duty Pallet' : 'Thương hiệu OEM + Pallet chịu lực')}
+                              className="report-editable-input"
+                              style={{ color: '#cbd5e1', textAlign: 'center', background: 'transparent', border: '1px dashed transparent', width: '100%' }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 4: Production Lead Time */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 600, color: '#f1f5f9' }}>
+                          {proposalLanguage === 'en' ? '4. Production Lead Time' : '4. Thời Gian Sản Xuất & Giao Hàng'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_lead_${opt.id}_${proposalLanguage}`}
+                              defaultValue={idx === 0 
+                                ? (proposalLanguage === 'en' ? '25 - 30 business days' : '25 - 30 ngày làm việc') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? '14 - 18 business days (Priority Line)' : '14 - 18 ngày làm việc (Ưu tiên)') 
+                                  : (proposalLanguage === 'en' ? '10 - 14 business days (Fast-Track)' : '10 - 14 ngày làm việc (Thần tốc)')}
+                              className="report-editable-input"
+                              style={{ color: idx === 1 ? '#60a5fa' : '#cbd5e1', fontWeight: idx === 1 ? 'bold' : 'normal', textAlign: 'center', background: 'transparent', border: '1px dashed transparent', width: '100%' }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 5: Quality Inspection & QA SLA */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.015)' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 600, color: '#f1f5f9' }}>
+                          {proposalLanguage === 'en' ? '5. Quality Audit & Inspection SLA' : '5. Kiểm Định Chất Lượng & Chứng Nhận'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_qa_${opt.id}_${proposalLanguage}`}
+                              defaultValue={idx === 0 
+                                ? (proposalLanguage === 'en' ? 'In-house Factory QA Inspection' : 'Kiểm tra QA nội bộ xuất xưởng') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? 'Pre-shipment Inspection + Full COA' : 'Pre-shipment Audit + Phiếu COA') 
+                                  : (proposalLanguage === 'en' ? 'Third-Party SGS / Intertek Inspection' : 'Kiểm định độc lập SGS / Intertek')}
+                              className="report-editable-input"
+                              style={{ color: '#cbd5e1', textAlign: 'center', background: 'transparent', border: '1px dashed transparent', width: '100%' }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 6: Defect Replacement Guarantee */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 600, color: '#f1f5f9' }}>
+                          {proposalLanguage === 'en' ? '6. Defect Replacement Guarantee' : '6. Chính Sách Cam Kết Bù Lỗi Hàng'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_rep_${opt.id}_${proposalLanguage}`}
+                              defaultValue={idx === 0 
+                                ? (proposalLanguage === 'en' ? 'Deduction on subsequent order' : 'Giảm trừ vào đơn hàng tiếp theo') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? '100% Free Replacement in 7 Days' : 'Bù hàng 100% miễn phí trong 7 ngày') 
+                                  : (proposalLanguage === 'en' ? 'Immediate 100% Compensation + Insurance' : 'Bù 100% ngay + Đền bù phát sinh')}
+                              className="report-editable-input"
+                              style={{ color: idx === 1 ? '#10b981' : '#cbd5e1', fontWeight: idx === 1 ? 'bold' : 'normal', textAlign: 'center', background: 'transparent', border: '1px dashed transparent', width: '100%' }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 7: FTA Tariff Optimization */}
+                      <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(255, 255, 255, 0.015)' }}>
+                        <td style={{ padding: '8px 12px', fontWeight: 600, color: '#f1f5f9' }}>
+                          {proposalLanguage === 'en' ? '7. FTA C/O Tariff Facilitation' : '7. Hỗ Trợ Chứng Từ Thuế Quan C/O FTA'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px', 
+                              textAlign: 'center',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.08)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <input
+                              type="text"
+                              key={`r_fta_${opt.id}_${proposalLanguage}`}
+                              defaultValue={idx === 0 
+                                ? (proposalLanguage === 'en' ? 'Standard non-preferential C/O' : 'C/O tiêu chuẩn thông thường') 
+                                : idx === 1 
+                                  ? (proposalLanguage === 'en' ? 'Preferential Form FTA C/O (0% Duty)' : 'Hỗ trợ C/O Form ưu đãi thuế 0%') 
+                                  : (proposalLanguage === 'en' ? 'Full FTA C/O + Customs Broker Support' : 'C/O ưu đãi + Đại lý hải quan trọn gói')}
+                              className="report-editable-input"
+                              style={{ color: '#cbd5e1', textAlign: 'center', background: 'transparent', border: '1px dashed transparent', width: '100%' }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+
+                      {/* Row 8: Custom Scope & Value Add */}
+                      <tr style={{ background: 'rgba(15, 23, 42, 0.6)' }}>
+                        <td style={{ padding: '9px 12px', fontWeight: 'bold', color: '#cbd5e1' }}>
+                          {proposalLanguage === 'en' ? '8. Scope & Specialized Features' : '8. Chi Tiết Tính Năng & Giá Trị Kèm Theo'}
+                        </td>
+                        {activeOptions.map((opt, idx) => (
+                          <td 
+                            key={opt.id} 
+                            style={{ 
+                              padding: '8px 12px',
+                              background: idx === 1 ? 'rgba(59, 130, 246, 0.12)' : 'transparent',
+                              borderLeft: '1px solid rgba(255, 255, 255, 0.08)'
+                            }}
+                          >
+                            <textarea
+                              key={`r_feat_${opt.id}_${proposalLanguage}`}
+                              defaultValue={opt.features || (proposalLanguage === 'en' ? 'Standard export packaging, QA pre-shipment audit, prompt technical customer support.' : 'Đóng gói chuẩn xuất khẩu, kiểm định chất lượng xuất xưởng và hỗ trợ kỹ thuật tận tâm.')}
+                              rows={3}
+                              className="report-editable-input"
+                              style={{
+                                width: '100%',
+                                fontSize: '0.76rem',
+                                color: '#cbd5e1',
+                                lineHeight: '1.4',
+                                background: 'transparent',
+                                border: '1px dashed transparent',
+                                borderRadius: '4px',
+                                padding: '2px 4px',
+                                resize: 'vertical'
+                              }}
+                            />
+                          </td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* KHU VỰC 3: KHUNG 6 TRỤ CỘT ĐIỀU KHOẢN THƯƠNG MẠI NGOẠI THƯƠNG (COMMERCIAL TERMS & CONDITIONS) */}
+              <div style={{ border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', padding: '16px 20px', background: 'rgba(255, 255, 255, 0.02)', marginBottom: '20px', fontSize: '0.8rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <input
+                    type="text"
+                    key={`prop_sec2_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? '2. INTERNATIONAL COMMERCIAL TERMS & EXPORT CONDITIONS' : '2. ĐIỀU KHOẢN THƯƠNG MẠI & QUY CHUẨN XUẤT KHẨU QUỐC TẾ'}
+                    className="report-editable-input"
+                    style={{
+                      fontWeight: 'bold',
+                      color: '#38bdf8',
+                      fontSize: '0.88rem',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      width: '80%'
+                    }}
+                  />
+                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Incoterms 2020 Standard</span>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', color: '#cbd5e1' }}>
+                  {/* Pillar 1: Incoterms */}
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px 10px', borderRadius: '6px' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>1. {proposalLanguage === 'en' ? 'Trade Terms (Incoterms):' : 'Điều kiện giao hàng:'} </span>
                     <input
                       type="text"
                       key={`term_inco_${proposalLanguage}`}
-                      defaultValue={proposalLanguage === 'en' ? '• Incoterms: FOB Hochiminh Port / CIF Destination (Incoterms 2020)' : '• Điều kiện giao hàng: FOB Cảng TP.HCM / CIF Cảng Đến (Incoterms 2020)'}
+                      defaultValue={proposalLanguage === 'en' ? 'FOB Cat Lai / Hai Phong Port (or CIF Destination Port)' : 'FOB Cảng Cát Lái / Hải Phòng (hoặc CIF Cảng Đến)'}
                       className="report-editable-input"
-                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: '#f1f5f9', fontSize: '0.79rem', marginTop: '2px' }}
                     />
                   </div>
-                  <div>
+
+                  {/* Pillar 2: Ports */}
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px 10px', borderRadius: '6px' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>2. {proposalLanguage === 'en' ? 'Port of Loading & Discharge:' : 'Cảng bốc & Cảng dỡ hàng:'} </span>
+                    <input
+                      type="text"
+                      key={`term_port_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? 'POL: Hochiminh City Port | POD: As nominated by Buyer' : 'Cảng đi (POL): TP. Hồ Chí Minh | Cảng đến: Chỉ định bởi Buyer'}
+                      className="report-editable-input"
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: '#f1f5f9', fontSize: '0.79rem', marginTop: '2px' }}
+                    />
+                  </div>
+
+                  {/* Pillar 3: Payment Terms */}
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px 10px', borderRadius: '6px' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>3. {proposalLanguage === 'en' ? 'Payment & Deposit Terms:' : 'Phương thức thanh toán:'} </span>
                     <input
                       type="text"
                       key={`term_pay_${proposalLanguage}`}
-                      defaultValue={proposalLanguage === 'en' ? '• Payment Terms: 30% T/T Advance, 70% against B/L copy (or Irrevocable L/C)' : '• Thanh toán: 30% T/T Tạm ứng, 70% khi có Bill (hoặc L/C không hủy ngang)'}
+                      defaultValue={proposalLanguage === 'en' ? '30% T/T Advance Deposit, 70% against B/L copy (or Irrevocable L/C)' : '30% T/T Tạm ứng, 70% khi có Bill of Lading (hoặc L/C không hủy ngang)'}
                       className="report-editable-input"
-                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: '#f1f5f9', fontSize: '0.79rem', marginTop: '2px' }}
                     />
                   </div>
-                  <div>
+
+                  {/* Pillar 4: Lead Time */}
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px 10px', borderRadius: '6px' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>4. {proposalLanguage === 'en' ? 'Production Lead Time:' : 'Tiến độ sản xuất:'} </span>
                     <input
                       type="text"
                       key={`term_lead_${proposalLanguage}`}
-                      defaultValue={proposalLanguage === 'en' ? '• Production Lead Time: 14 - 21 business days upon deposit & sample approval' : '• Thời gian sản xuất: 14 - 21 ngày làm việc sau khi đặt cọc & duyệt mẫu'}
+                      defaultValue={proposalLanguage === 'en' ? '14 - 21 business days upon receipt of advance deposit & sample approval' : '14 - 21 ngày làm việc sau khi nhận đặt cọc & duyệt mẫu sản xuất'}
                       className="report-editable-input"
-                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: '#f1f5f9', fontSize: '0.79rem', marginTop: '2px' }}
                     />
                   </div>
-                  <div>
+
+                  {/* Pillar 5: Shipping Documents */}
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px 10px', borderRadius: '6px' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>5. {proposalLanguage === 'en' ? 'Export Shipping Documents:' : 'Bộ chứng từ xuất khẩu:'} </span>
                     <input
                       type="text"
-                      key={`term_cert_${proposalLanguage}`}
-                      defaultValue={proposalLanguage === 'en' ? '• Certifications: ISO, HACCP, FDA, Form FTA C/O, Phytosanitary Certificate' : '• Chứng từ chất lượng: ISO, HACCP, FDA, C/O ưu đãi thuế, Kiểm định Phyto'}
+                      key={`term_docs_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? 'Commercial Invoice, Packing List, Ocean B/L, Form FTA C/O, Phytosanitary, COA' : 'Invoice, Packing List, Vận đơn B/L, C/O ưu đãi thuế, Kiểm dịch Phyto, COA'}
                       className="report-editable-input"
-                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: 'inherit', fontSize: '0.79rem', padding: '2px 4px' }}
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: '#f1f5f9', fontSize: '0.79rem', marginTop: '2px' }}
+                    />
+                  </div>
+
+                  {/* Pillar 6: Samples & Validity */}
+                  <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px 10px', borderRadius: '6px' }}>
+                    <span style={{ color: '#38bdf8', fontWeight: 'bold' }}>6. {proposalLanguage === 'en' ? 'Samples & Validity Guarantee:' : 'Quy định mẫu & Hiệu lực:'} </span>
+                    <input
+                      type="text"
+                      key={`term_samp_${proposalLanguage}`}
+                      defaultValue={proposalLanguage === 'en' ? 'Free pre-production counter-samples available. Quotation valid for 30 calendar days.' : 'Cung cấp mẫu đối chứng miễn phí. Báo giá có hiệu lực trong 30 ngày.'}
+                      className="report-editable-input"
+                      style={{ width: '100%', background: 'transparent', border: '1px dashed transparent', color: '#f1f5f9', fontSize: '0.79rem', marginTop: '2px' }}
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Footer Sign-off - Proposal */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8', flexWrap: 'wrap', gap: '10px' }}>
-                <div>
+              {/* KHU VỰC 4: CHỮ KÝ THẨM QUYỀN & PHÁP LÝ BÁO GIÁ */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '14px', borderTop: '1px solid rgba(255, 255, 255, 0.12)', fontSize: '0.78rem', color: '#94a3b8', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ flex: 1, minWidth: '300px' }}>
                   <input
                     type="text"
                     key={`prop_sign_${proposalLanguage}`}
                     defaultValue={proposalLanguage === 'en' ? 'Authorized Directorate: International B2B Export Sales' : 'Đại diện Ký Duyệt: Ban Giám Đốc Kinh Doanh Xuất Khẩu'}
                     className="report-editable-input"
-                    style={{ fontWeight: 600, color: '#f1f5f9', background: 'transparent', border: '1px dashed transparent', width: '340px' }}
+                    style={{ fontWeight: 700, color: '#f1f5f9', fontSize: '0.84rem', background: 'transparent', border: '1px dashed transparent', width: '360px' }}
                   />
                   <input
                     type="text"
-                    defaultValue="Email: export@vietnamglobal.com | Direct: +84 (0) 90 123 4567"
+                    defaultValue="Email: export@vietnamglobal.com | Direct Phone: +84 (0) 90 123 4567"
                     className="report-editable-input"
-                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '340px', display: 'block', marginTop: '2px' }}
+                    style={{ color: '#94a3b8', background: 'transparent', border: '1px dashed transparent', width: '360px', display: 'block', marginTop: '2px' }}
                   />
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', flex: 1, minWidth: '260px' }}>
                   <input
                     type="text"
                     key={`prop_legal_${proposalLanguage}`}
-                    defaultValue={proposalLanguage === 'en' ? 'Official Commercial Proposal — Valid for 30 Days' : 'Bản Báo Giá Thương Mại Chính Thức — Hiệu lực 30 ngày'}
+                    defaultValue={proposalLanguage === 'en' ? 'Official Commercial Proposal — Acceptance confirmed via Purchase Order (P.O)' : 'Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua Đơn đặt hàng (P.O)'}
                     className="report-editable-input"
-                    style={{ fontStyle: 'italic', color: '#64748b', background: 'transparent', border: '1px dashed transparent', textAlign: 'right', width: '280px' }}
+                    style={{ fontStyle: 'italic', color: '#64748b', background: 'transparent', border: '1px dashed transparent', textAlign: 'right', width: '100%' }}
                   />
                 </div>
               </div>
