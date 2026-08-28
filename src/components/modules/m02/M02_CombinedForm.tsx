@@ -52,6 +52,7 @@ const initialData: M02FormData = {
     lens2: { ai_output: '', action_usp: '' },
     lens3: { ai_output: '', action_usp: '' },
     lens4: { ai_output: '', action_usp: '' },
+    lens5: { ai_output: '', action_usp: '' },
   },
   b03_pestel_notes: {
     P: { ai_output: '', impact_action: '' },

@@ -73,10 +73,11 @@ const SCAN_LAYERS = [
 ];
 
 const LENS_LAYERS = [
-  { id: 'lens1', label: '1. Áp lực & Tâm lý', desc: 'Nỗi đau biên lợi nhuận, áp lực doanh số và cạnh tranh nội địa của Buyer.' },
-  { id: 'lens2', label: '2. Tiêu chí ưu tiên', desc: 'Tiêu chí chọn NCC mới: Giá TCO, Lead time, Chứng chỉ, MOQ và Tính ổn định.' },
-  { id: 'lens3', label: '3. Rủi ro & Nỗi đau', desc: 'Điểm yếu, rủi ro đứt gãy hoặc sự bất mãn của Buyer từ nhà cung cấp cũ.' },
-  { id: 'lens4', label: '4. Thông điệp USP', desc: 'Đề xuất giá trị độc nhất, cam kết giảm thiểu rủi ro và kịch bản thuyết phục Buyer.' },
+  { id: 'lens1', label: '1. Cung (Góc nhìn Buyer)', desc: 'Nỗi đau nguồn cung từ NCC cũ: Trễ lead time, chất lượng không đều, rủi ro phụ thuộc đơn nguồn.' },
+  { id: 'lens2', label: '2. Cầu (Góc nhìn Buyer)', desc: 'Áp lực thị hiếu & nhu cầu người tiêu dùng nội địa mà Buyer phải phục vụ để giữ thị phần.' },
+  { id: 'lens3', label: '3. Giá & Chi phí (Góc nhìn Buyer)', desc: 'Áp lực tối ưu TCO (Tổng chi phí sở hữu), bảo vệ biên lợi nhuận và hạn mức ngân sách.' },
+  { id: 'lens4', label: '4. Đối thủ (Góc nhìn Buyer)', desc: 'Áp lực cạnh tranh của Buyer với các đối thủ bản địa cùng phân khúc trên kệ hàng.' },
+  { id: 'lens5', label: '5. Pháp lý & Rào cản (Góc nhìn Buyer)', desc: 'Rủi ro pháp lý, trách nhiệm kiểm định hải quan, chứng chỉ an toàn và chuẩn xanh ESG.' },
 ];
 
 const PESTEL_LAYERS = [
@@ -160,6 +161,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
     lens2: { ai_output: '', action_usp: '' },
     lens3: { ai_output: '', action_usp: '' },
     lens4: { ai_output: '', action_usp: '' },
+    lens5: { ai_output: '', action_usp: '' },
   };
 
   const pestelNotes = data.b03_pestel_notes || {
@@ -408,21 +410,22 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   {isLensGuideOpen && (
                     <div style={{ padding: '12px', borderTop: '1px solid rgba(245,158,11,0.15)', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
                       <ul style={{ paddingLeft: '16px', margin: 0 }}>
-                        <li><strong>Tâm lý cốt lõi:</strong> Họ đang gặp áp lực gì lớn nhất tại thị trường nội địa (Doanh thu, cạnh tranh, chi phí)?</li>
-                        <li><strong>Ưu tiên lựa chọn:</strong> Tiêu chí hàng đầu khi chọn nhà cung cấp mới là gì (Chất lượng, giá, tốc độ, tính ổn định)?</li>
-                        <li><strong>Rủi ro đứt gãy:</strong> Nguồn cung hiện tại của họ đang vướng mắc điểm yếu chí mạng nào mà bạn có thể lấp đầy?</li>
-                        <li><strong>Chuyển đổi USP:</strong> Chuyển hóa đặc tính thành giá trị thương mại giúp Buyer giảm rủi ro.</li>
+                        <li><strong>1. Cung (Supply):</strong> NCC hiện tại có hay trễ hạn, chất lượng không đều, hoặc khiến Buyer bị phụ thuộc không?</li>
+                        <li><strong>2. Cầu (Demand):</strong> Khách hàng cuối của Buyer đang thay đổi thị hiếu gì mà nguồn hàng cũ chưa đáp ứng kịp?</li>
+                        <li><strong>3. Giá & Chi phí (Price & Margin):</strong> Buyer đang chịu áp lực cắt giảm TCO và bảo vệ biên lợi nhuận ra sao?</li>
+                        <li><strong>4. Đối thủ (Competitors):</strong> Đối thủ của Buyer đang tung ra sản phẩm gì vượt trội khiến họ phải tìm kiếm NCC mới?</li>
+                        <li><strong>5. Pháp lý & Rào cản (Compliance):</strong> Quy định an toàn, chứng chỉ xanh/ESG nào khiến Buyer lo sợ rủi ro hải quan/phạt?</li>
                       </ul>
                       <PromptPanel title="Prompt Mẫu: Phân tích Buyer Lens" promptText={PROMPT_LENS} />
                     </div>
                   )}
                 </div>
 
-                {/* MA TRẬN 4 HÀNG TOÀN CẢNH (ALL-LAYERS MATRIX) */}
+                {/* MA TRẬN 5 HÀNG TOÀN CẢNH (ALL-LAYERS MATRIX) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {/* Header Cột */}
                   <div style={{ display: 'grid', gridTemplateColumns: '170px 1.6fr 1.3fr', gap: '12px', padding: '0 8px', color: 'var(--text-secondary)', fontSize: '0.78rem', fontWeight: 'bold' }}>
-                    <div>Góc Nhìn Buyer (4 Dimensions)</div>
+                    <div>Góc Nhìn Buyer (5 Lớp Tương Ứng)</div>
                     <div>Đúc Kết Tâm Lý & Nỗi Đau (AI / Thực Tế)</div>
                     <div>Đề Xuất Giá Trị Tiếp Cận (Actionable Pitch)</div>
                   </div>
