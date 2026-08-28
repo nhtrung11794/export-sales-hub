@@ -1878,7 +1878,7 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
 
               {/* KHU VỰC 2: BẢNG MA TRẬN ĐỐI CHIẾU TÍNH NĂNG 3 GÓI GIÁ (FEATURE-BY-FEATURE DECOY MATRIX) */}
               <div style={{ marginBottom: '22px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
                   <input
                     type="text"
                     key={`prop_sec1_${proposalLanguage}`}
@@ -1892,12 +1892,26 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                       border: '1px dashed transparent',
                       borderRadius: '4px',
                       padding: '2px 4px',
-                      width: '80%'
+                      width: '65%'
                     }}
                   />
-                  <span style={{ fontSize: '0.72rem', color: '#38bdf8', fontWeight: 600 }}>
-                    {proposalLanguage === 'en' ? 'Anchoring & Decoy Architecture' : 'Kiến trúc Định giá Chim mồi'}
-                  </span>
+                  <input
+                    type="text"
+                    key={`prop_arch_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'Anchoring & Decoy Architecture' : 'Kiến trúc Định giá Chim mồi'}
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '0.74rem',
+                      color: '#38bdf8',
+                      fontWeight: 600,
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      textAlign: 'right',
+                      width: '30%'
+                    }}
+                  />
                 </div>
 
                 <div style={{ border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', overflow: 'hidden' }}>
@@ -2299,7 +2313,7 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
 
               {/* KHU VỰC 3: KHUNG 6 TRỤ CỘT ĐIỀU KHOẢN THƯƠNG MẠI NGOẠI THƯƠNG (COMMERCIAL TERMS & CONDITIONS) */}
               <div style={{ border: '1px solid rgba(255, 255, 255, 0.12)', borderRadius: '8px', padding: '16px 20px', background: 'rgba(255, 255, 255, 0.02)', marginBottom: '20px', fontSize: '0.8rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
                   <input
                     type="text"
                     key={`prop_sec2_${proposalLanguage}`}
@@ -2313,10 +2327,25 @@ Bản Báo Giá Thương Mại Chính Thức — Xác nhận chấp thuận qua 
                       border: '1px dashed transparent',
                       borderRadius: '4px',
                       padding: '2px 4px',
-                      width: '80%'
+                      width: '70%'
                     }}
                   />
-                  <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Incoterms 2020 Standard</span>
+                  <input
+                    type="text"
+                    key={`prop_inco_std_${proposalLanguage}`}
+                    defaultValue={proposalLanguage === 'en' ? 'Incoterms 2020 Standard' : 'Chuẩn Incoterms 2020'}
+                    className="report-editable-input"
+                    style={{
+                      fontSize: '0.72rem',
+                      color: '#94a3b8',
+                      background: 'transparent',
+                      border: '1px dashed transparent',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      textAlign: 'right',
+                      width: '25%'
+                    }}
+                  />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 16px', color: '#cbd5e1' }}>
