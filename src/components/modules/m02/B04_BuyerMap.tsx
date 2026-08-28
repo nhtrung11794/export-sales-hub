@@ -42,10 +42,10 @@ const INDUSTRY_OPTIONS = [
 ];
 
 const SIZE_OPTIONS = [
-  'Dưới $10M USD / năm (Nhà nhập khẩu nhỏ / vừa)',
-  '$10M - $50M USD / năm (Nhà phân phối cấp vùng)',
-  '$50M - $200M USD / năm (Tập đoàn phân phối quốc gia)',
-  'Trên $200M USD / năm (Chuỗi bán lẻ / Đại siêu thị toàn cầu)',
+  'Dưới $10M USD / năm',
+  '$10M - $50M USD / năm',
+  '$50M - $200M USD / năm',
+  'Trên $200M USD / năm',
   'OTHER'
 ];
 
