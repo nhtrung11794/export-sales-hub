@@ -24,7 +24,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1rkccIBjNzJvfoC_w-n7xZOCYg9Z8EV8q/preview',
     videoFileName: 'M01_Video01.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/15vHkKrcd9gLhppJvJyD_xwpQ_Unh8JJe/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/101JrMrhczdSHlBgIHMewqGDSKdmphkxV/preview',
   },
   B02: {
     lessonId: 'B02',
@@ -35,7 +35,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1gyFkgOlLtUsUe5wsfHu2Fglpfa2UZjIt/preview',
     videoFileName: 'M01_Video02.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1FGMsI0wP369HlPu9sSvofL6JiudV-8i_/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1s1-aIg6LdBr4EE2llxeLZNQdrvqIbQVP/preview',
   },
 
   // MODULE 02: Market & Customer Understanding
@@ -48,7 +48,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/189KSET8dZjGgH2ne5giryVjEMORXXrLe/preview',
     videoFileName: 'M02_Video01.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1e5CwUgAm7hN2TOA8bZoDwz1EyjEfCigI/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/18nt6_79avbSNhDhnwqCklIJA71-P4N-c/preview',
   },
   B04: {
     lessonId: 'B04',
@@ -59,7 +59,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1_AsD5kxYPI1qxgFFeMMBpv3uPgihdCSY/preview',
     videoFileName: 'M02_Video02.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1IASAE9vs2Coa4dpLm0oGXrygt1UjDyAT/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1JQ3rJB9XDOWnQ_h_Wushso14pCAMO36f/preview',
   },
   B05: {
     lessonId: 'B05',
@@ -70,7 +70,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1hoJyK6jTCqluY-Y4uy14amqMMrLhdHkV/preview',
     videoFileName: 'M02_Video03.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1Vi3omaJDSPru97r1bTg0HF9WoVDjCqvW/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1qXxaFixSbJItSIgvl2hGCgyX86WTKgUQ/preview',
   },
   B06: {
     lessonId: 'B06',
@@ -81,7 +81,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1CfZ9k5dZUm176DQ0Zax2lqOEYyET3cEq/preview',
     videoFileName: 'M02_Video04.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1vT8R_bzIP4Q83Imj5o6Zf4sfM06q5Fvh/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1bX3EiHdsXpH6RsQRDP4AzHU0W95kNzvy/preview',
   },
 
   // MODULE 03: Prospecting & Opportunity Management
@@ -94,7 +94,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1TI4J9-7UqcLH25shNtqNodLKQSMsdCOg/preview',
     videoFileName: 'M03_Video01.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/168rJ2zrWAoccpTvnLgBHROJcQ0vqfXnY/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1I9YvInnG4TPm9lNgSsOaS-YUzaWh-98c/preview',
   },
   B08: {
     lessonId: 'B08',
@@ -105,7 +105,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1G5dMtEzx9Tf60xW-Kg-g_Dxsa0WsPhGP/preview',
     videoFileName: 'M03_Video02.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1SRLAB_tBtagBRQHOnIhWjuxxGfLSvtkI/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1gXkDv20NHPu7vcwwFay9L0p846R56kIk/preview',
   },
 
   // MODULE 04: Proposal, Negotiation & Safe Closing
@@ -118,7 +118,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1raoWlwz3ECU6EBFvHtYdslFJi4_Kvxvp/preview',
     videoFileName: 'M04_Video01.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/10pE54fNd_Ewp7yHJE7mmeVt-ZcHGU3WR/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/13l26oieOkGTyUefoiE1FzbPLbr2FX206/preview',
   },
   B10: {
     lessonId: 'B10',
@@ -129,7 +129,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1-ZYDoECdZyYXUdo6OQWWDg7uXwrWPyWC/preview',
     videoFileName: 'M04_Video02.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/10pE54fNd_Ewp7yHJE7mmeVt-ZcHGU3WR/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1MCkkKQMN1rdNadJlOtD_uBTi5YymRypJ/preview',
   },
   B11: {
     lessonId: 'B11',
@@ -140,7 +140,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1DctwSitUI4Ox2yxsT4VrrGvvxjw7svUf/preview',
     videoFileName: 'M04_Video03.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1Mv7YjJilyZYP7kkrS5TJcj2bnM6io4Lk/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1x_3bCrd1lXyzGhZPDAwjW6JPrHOwz3V6/preview',
   },
   B12: {
     lessonId: 'B12',
@@ -151,7 +151,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1FUi5mgeKuw4P4581ERcKF_iIGC3yolTM/preview',
     videoFileName: 'M04_Video04.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1FcnnEBMi7jw57qNdLDeqoF_1l4SrKr3u/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1ji69Ft76CE7Mx9AHk72GdgMf51GeFshJ/preview',
   },
 
   // MODULE 05: Execution, Recovery & Account Growth
@@ -164,7 +164,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1JqN-p3ALh82n2l_ti6hkC8UWTXyvKyGt/preview',
     videoFileName: 'M05_Video01.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1gezq6XHlD74ASGV6x8kNfb-q0w8VF1Uh/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1gIllhCMGjxflr_PKah_xC93gWr5adEek/preview',
   },
   B14: {
     lessonId: 'B14',
@@ -175,7 +175,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1CP9I8BbH0nJ8N3Q-vwnu0JNt6_xQDtha/preview',
     videoFileName: 'M05_Video02.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/1gezq6XHlD74ASGV6x8kNfb-q0w8VF1Uh/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1GwsyHsTpBrlwO-1Lhlql9IucG_9jW_Bu/preview',
   },
   B15: {
     lessonId: 'B15',
@@ -186,7 +186,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
     embedUrl: 'https://drive.google.com/file/d/1jtv6Wq93wtpZsVYa8W0dB1_zgTxlUSXm/preview',
     videoFileName: 'M05_Video03.mp4',
-    videoEmbedUrl: 'https://drive.google.com/file/d/138U_vUNsdXOPuloBwMnI6ad4stZ1ib24/preview',
+    videoEmbedUrl: 'https://drive.google.com/file/d/1uFw3ryNNuRfRnQzLk7ZwLJNG7szpDVpN/preview',
   },
 };
 
