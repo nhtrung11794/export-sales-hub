@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { M04FormData, PricingOption, CustomCostItem } from './M04_CombinedForm';
-import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2 } from 'lucide-react';
+import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2, Printer, Copy, Check, X, Download } from 'lucide-react';
 
 interface Props {
   data: M04FormData;
@@ -22,6 +22,8 @@ const COST_ITEMS = [
 export default function B10_ProposalQuotation({ data, setData, handleBlur, isDisabled }: Props) {
   const b10 = data.b10_quotation;
   const [newCostName, setNewCostName] = useState('');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   
   // TCO data của doanh nghiệp bạn
   const yourTco = b10.tco_calculator || {
@@ -162,6 +164,39 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
     }));
   };
 
+  const handleCopyTcoReport = () => {
+    const reportText = `
+=== BẢNG PHÂN TÍCH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK REPORT) ===
+Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}
+
+1. TỔNG QUAN TÀI CHÍNH:
+- Báo giá Đối thủ / NCC Hiện tại: ${formatNumber(competitorLandedCost)}
+- Đề xuất Doanh nghiệp Chúng tôi: ${formatNumber(yourLandedCost)}
+- Tiết kiệm Ròng cho Quý Khách: ${isSaving ? formatNumber(netSavings) + ' (Tiết kiệm ' + savingsPercent + '%)' : '$0'}
+
+2. CHI TIẾT CẤU PHẦN CHI PHÍ:
+${COST_ITEMS.map(c => `- ${c.label}: Đối thủ: ${formatNumber(Number(competitorTco[c.id as keyof typeof competitorTco]) || 0)} | Chúng tôi: ${formatNumber(Number(yourTco[c.id as keyof typeof yourTco]) || 0)}`).join('\n')}
+${customCosts.map(c => `- ${c.label}: Đối thủ: ${formatNumber(Number(c.competitor_val) || 0)} | Chúng tôi: ${formatNumber(Number(c.your_val) || 0)}`).join('\n')}
+
+=> TỔNG TCO LANDED COST:
+- Đối thủ: ${formatNumber(competitorLandedCost)}
+- Chúng tôi: ${formatNumber(yourLandedCost)}
+- Chênh lệch tiết kiệm: ${isSaving ? '-' + formatNumber(netSavings) : formatNumber(netSavings)}
+
+3. CAM KẾT GIÁ TRỊ:
+Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nhờ giải pháp tối ưu logistics đóng gói, hỗ trợ thuế quan trọn gói và cam kết chất lượng 0% rủi ro, tổng chi phí sở hữu (Landed TCO) của Quý vị được tối ưu vượt trội.
+================================================================
+    `.trim();
+
+    navigator.clipboard.writeText(reportText);
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2500);
+  };
+
+  const handlePrintReport = () => {
+    window.print();
+  };
+
   const handleExportProposal = () => {
     if (!isDecoyValid) return;
     alert('✓ Đã khởi tạo Bản Đề xuất Báo giá (Draft Proposal) với cấu trúc giá đa tầng thành công!');
@@ -182,9 +217,31 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
 
       {/* KHU VỰC 1: DASHBOARD TCO BENCHMARK */}
       <div style={{ marginBottom: '36px' }}>
-        <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-          <Calculator size={18} color="var(--accent-primary)" /> Khu vực 1: Dashboard So Sánh Đối Đầu TCO (Side-by-Side Landed Cost Benchmark)
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '10px' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <Calculator size={18} color="var(--accent-primary)" /> Khu vực 1: Dashboard So Sánh Đối Đầu TCO (Side-by-Side Landed Cost Benchmark)
+          </h3>
+          <button
+            type="button"
+            onClick={() => setIsExportModalOpen(true)}
+            className="btn btn-secondary"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.82rem',
+              padding: '6px 14px',
+              borderRadius: '6px',
+              border: '1px solid var(--accent-primary)',
+              color: 'var(--accent-primary)',
+              background: 'rgba(59, 130, 246, 0.08)',
+              fontWeight: 600,
+              cursor: 'pointer'
+            }}
+          >
+            <Printer size={15} /> 📄 Xuất Báo Cáo TCO (Gửi Khách)
+          </button>
+        </div>
 
         {/* 1. SCORECARDS TỔNG QUAN TCO */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '14px', marginBottom: '18px' }}>
@@ -381,10 +438,10 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
                     placeholder="Tên chi phí tùy biến..."
                     style={{
                       flex: 1,
-                      padding: '5px 8px',
-                      background: 'rgba(0,0,0,0.25)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: '5px',
+                      padding: '4px 6px',
+                      background: 'transparent',
+                      border: '1px dashed rgba(255,255,255,0.15)',
+                      borderRadius: '4px',
                       color: 'var(--text-primary)',
                       fontSize: '0.82rem',
                       fontWeight: 600
@@ -399,7 +456,7 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
                         border: '1px solid rgba(239, 68, 68, 0.2)',
                         color: '#fca5a5',
                         cursor: 'pointer',
-                        padding: '4px 6px',
+                        padding: '3px 5px',
                         borderRadius: '4px',
                         display: 'flex',
                         alignItems: 'center',
@@ -407,7 +464,7 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
                       }}
                       title="Xóa biến chi phí này"
                     >
-                      <Trash2 size={13} />
+                      <Trash2 size={12} />
                     </button>
                   )}
                 </div>
@@ -469,6 +526,8 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
               </div>
             );
           })}
+
+
 
           {/* Form thêm biến chi phí tùy biến */}
           {!isDisabled && (
@@ -779,6 +838,220 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
           </button>
         </div>
       </div>
+
+      {/* MODAL XUẤT BÁO CÁO TCO CHUYÊN NGHIỆP GỬI KHÁCH */}
+      {isExportModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: '#0f172a',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '850px',
+            maxHeight: '90vh',
+            display: 'flex',
+            flexDirection: 'column',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+            overflow: 'hidden'
+          }}>
+            {/* Header Modal (Actions bar) */}
+            <div style={{
+              padding: '16px 24px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              background: 'rgba(0, 0, 0, 0.25)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FileText size={20} color="var(--accent-primary)" />
+                <span style={{ fontWeight: 'bold', fontSize: '1rem', color: 'var(--text-primary)' }}>
+                  Bản Xem Trước Báo Cáo TCO Xuất Khách (Client-Ready Report)
+                </span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  type="button"
+                  onClick={handleCopyTcoReport}
+                  className="btn btn-secondary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', padding: '6px 12px' }}
+                >
+                  {isCopied ? <Check size={14} color="#10b981" /> : <Copy size={14} />}
+                  {isCopied ? 'Đã sao chép!' : 'Sao chép văn bản'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handlePrintReport}
+                  className="btn btn-primary"
+                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', padding: '6px 14px' }}
+                >
+                  <Printer size={14} /> In / Xuất PDF
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsExportModalOpen(false)}
+                  style={{ background: 'transparent', border: 0, color: 'var(--text-muted)', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center' }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Nội Dung Báo Cáo In / Xuất (Printable Container) */}
+            <div id="tco-printable-report" style={{
+              padding: '28px',
+              overflowY: 'auto',
+              flex: 1,
+              background: '#0b1120',
+              color: '#f8fafc',
+              fontSize: '0.86rem',
+              lineHeight: '1.5'
+            }}>
+              {/* Report Header */}
+              <div style={{ borderBottom: '2px solid rgba(59, 130, 246, 0.4)', paddingBottom: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h1 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#38bdf8', margin: 0, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    BẢNG SO SÁNH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK)
+                  </h1>
+                  <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '4px' }}>
+                    Phân tích chi phí đích (Buyer Landed Cost) & Tối ưu hóa ngân sách nhập khẩu
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', fontSize: '0.78rem', color: '#94a3b8' }}>
+                  <div><strong>Ngày lập:</strong> {new Date().toLocaleDateString('vi-VN')}</div>
+                  <div><strong>Hiệu lực:</strong> 30 ngày</div>
+                </div>
+              </div>
+
+              {/* 3 Metrics Box */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '22px' }}>
+                <div style={{ padding: '12px 14px', background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#fca5a5', textTransform: 'uppercase', fontWeight: 700 }}>Đối thủ / NCC Cũ</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#f87171', marginTop: '2px' }}>{formatNumber(competitorLandedCost)}</div>
+                </div>
+                <div style={{ padding: '12px 14px', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#6ee7b7', textTransform: 'uppercase', fontWeight: 700 }}>Đề Xuất Doanh Nghiệp Bạn</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: '#10b981', marginTop: '2px' }}>{formatNumber(yourLandedCost)}</div>
+                </div>
+                <div style={{ padding: '12px 14px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.3)', borderRadius: '8px' }}>
+                  <div style={{ fontSize: '0.72rem', color: '#93c5fd', textTransform: 'uppercase', fontWeight: 700 }}>Tiết Kiệm Cho Khách Hàng</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 900, color: isSaving ? '#38bdf8' : '#f59e0b', marginTop: '2px' }}>
+                    {isSaving ? `+${formatNumber(netSavings)}` : formatNumber(netSavings)}
+                    {competitorLandedCost > 0 && <span style={{ fontSize: '0.75rem', marginLeft: '6px' }}>({savingsPercent}%)</span>}
+                  </div>
+                </div>
+              </div>
+
+              {/* Bảng Chi Tiết Chuẩn Hóa Hoàn Toàn (Không Input, Không Thùng Rác) */}
+              <div style={{ border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', overflow: 'hidden', marginBottom: '22px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                  <thead>
+                    <tr style={{ background: 'rgba(30, 41, 59, 0.8)', borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                      <th style={{ padding: '10px 14px', textAlign: 'left', fontWeight: 'bold', color: '#cbd5e1' }}>CẤU PHẦN CHI PHÍ</th>
+                      <th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 'bold', color: '#fca5a5', width: '22%' }}>ĐỐI THỦ / NCC CŨ</th>
+                      <th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 'bold', color: '#6ee7b7', width: '22%' }}>DOANH NGHIỆP BẠN</th>
+                      <th style={{ padding: '10px 14px', textAlign: 'right', fontWeight: 'bold', color: '#93c5fd', width: '18%' }}>CHÊNH LỆCH</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {COST_ITEMS.map((item, idx) => {
+                      const compVal = Number(competitorTco[item.id as keyof typeof competitorTco]) || 0;
+                      const yourVal = Number(yourTco[item.id as keyof typeof yourTco]) || 0;
+                      const diff = compVal - yourVal;
+                      return (
+                        <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: idx % 2 === 0 ? 'rgba(255, 255, 255, 0.015)' : 'transparent' }}>
+                          <td style={{ padding: '9px 14px', color: '#f1f5f9', fontWeight: 600 }}>
+                            {item.label}
+                          </td>
+                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
+                            {formatNumber(compVal)}
+                          </td>
+                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
+                            {formatNumber(yourVal)}
+                          </td>
+                          <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
+                            {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {/* Custom items */}
+                    {customCosts.map((item) => {
+                      const compVal = Number(item.competitor_val) || 0;
+                      const yourVal = Number(item.your_val) || 0;
+                      const diff = compVal - yourVal;
+                      return (
+                        <tr key={item.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', background: 'rgba(168, 85, 247, 0.03)' }}>
+                          <td style={{ padding: '9px 14px', color: '#f1f5f9', fontWeight: 600 }}>
+                            {item.label}
+                          </td>
+                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#fca5a5', fontWeight: 600 }}>
+                            {formatNumber(compVal)}
+                          </td>
+                          <td style={{ padding: '9px 14px', textAlign: 'right', color: '#6ee7b7', fontWeight: 600 }}>
+                            {formatNumber(yourVal)}
+                          </td>
+                          <td style={{ padding: '9px 14px', textAlign: 'right', fontWeight: 'bold', color: diff > 0 ? '#10b981' : diff < 0 ? '#f87171' : '#94a3b8' }}>
+                            {diff > 0 ? `-${formatNumber(diff)}` : diff < 0 ? `+${formatNumber(Math.abs(diff))}` : '$0'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+
+                    {/* Total Row */}
+                    <tr style={{ background: 'rgba(15, 23, 42, 0.9)', borderTop: '2px solid rgba(255, 255, 255, 0.15)' }}>
+                      <td style={{ padding: '12px 14px', fontWeight: 900, color: '#38bdf8' }}>
+                        TỔNG CHI PHÍ ĐÍCH SỞ HỮU (TCO)
+                      </td>
+                      <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 900, color: '#f87171', fontSize: '0.95rem' }}>
+                        {formatNumber(competitorLandedCost)}
+                      </td>
+                      <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 900, color: '#10b981', fontSize: '0.95rem' }}>
+                        {formatNumber(yourLandedCost)}
+                      </td>
+                      <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 900, color: isSaving ? '#38bdf8' : '#94a3b8', fontSize: '0.95rem' }}>
+                        {isSaving ? `-${formatNumber(netSavings)}` : formatNumber(netSavings)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Value Pitch */}
+              <div style={{ padding: '14px 18px', background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.25)', borderRadius: '8px', marginBottom: '20px', fontSize: '0.8rem', color: '#cbd5e1' }}>
+                <strong style={{ color: '#38bdf8' }}>✓ Cam Kết Giá Trị Gia Tăng (Value-Added SLA): </strong>
+                Chúng tôi áp dụng quy trình kiểm soát chất lượng nghiêm ngặt, hỗ trợ trọn gói chứng từ C/O ưu đãi thuế, tối ưu cước vận chuyển và cam kết bù hàng 100% nếu phát sinh lỗi kỹ thuật.
+              </div>
+
+              {/* Footer Sign-off */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.08)', fontSize: '0.78rem', color: '#94a3b8' }}>
+                <div>
+                  <div><strong>Đại diện Bán hàng:</strong> Bộ phận Xuất Khẩu B2B</div>
+                  <div><strong>Email:</strong> sales@b2bexports.com</div>
+                </div>
+                <div style={{ textAlign: 'right', fontStyle: 'italic' }}>
+                  Xác nhận đề xuất báo giá có giá trị thương mại
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
     </section>
   );
 }
