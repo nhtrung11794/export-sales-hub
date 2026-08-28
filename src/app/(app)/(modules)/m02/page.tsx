@@ -10,7 +10,7 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
-import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName } from '@/lib/courseMaterials';
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName, getLessonVideoEmbedUrl } from '@/lib/courseMaterials';
 
 export default function M02Page() {
   const supabase = createClient();
@@ -88,7 +88,20 @@ export default function M02Page() {
     setPreviewUrl(embedUrl);
   };
 
-  const handleOpenVideo = async (fileName: string) => {
+  const handleOpenVideo = async (fileName: string, lessonId?: string) => {
+    if (lessonId) {
+      const embedUrl = getLessonVideoEmbedUrl(lessonId);
+      if (embedUrl) {
+        setPipVideoUrl(embedUrl);
+        return;
+      }
+    }
+
+    if (fileName && (fileName.startsWith('http://') || fileName.startsWith('https://'))) {
+      setPipVideoUrl(fileName);
+      return;
+    }
+
     try {
       setLoadingVideo(fileName);
       const { data, error } = await supabase
@@ -100,7 +113,7 @@ export default function M02Page() {
       if (data?.signedUrl) setPipVideoUrl(data.signedUrl);
     } catch (err) {
       console.error(err);
-      alert('Không thể mở video. Vui lòng kiểm tra lại file đã được tải lên Supabase chưa.');
+      alert('Không thể mở video. Vui lòng kiểm tra lại file video.');
     } finally {
       setLoadingVideo(null);
     }
@@ -135,7 +148,7 @@ export default function M02Page() {
             <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B03.videoFileName || 'M02_Video03.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B03.videoFileName || 'M02_Video03.mp4', 'B03')}
             disabled={loadingVideo === COURSE_MATERIALS.B03.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
@@ -162,7 +175,7 @@ export default function M02Page() {
             <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B04.videoFileName || 'M02_Video04.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B04.videoFileName || 'M02_Video04.mp4', 'B04')}
             disabled={loadingVideo === COURSE_MATERIALS.B04.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
@@ -189,7 +202,7 @@ export default function M02Page() {
             <BookOpen size={16}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B05.videoFileName || 'M02_Video05.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B05.videoFileName || 'M02_Video05.mp4', 'B05')}
             disabled={loadingVideo === COURSE_MATERIALS.B05.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.85rem' }}
@@ -311,15 +324,26 @@ export default function M02Page() {
                 <X size={16} />
               </button>
             </div>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <video 
-                src={pipVideoUrl} 
-                controls
-                autoPlay
-                style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'black', outline: 'none' }}
-              >
-                Trình duyệt của bạn không hỗ trợ thẻ video.
-              </video>
+            {/* PiP Body (Hybrid: Google Drive/YouTube Iframe or HTML5 Video) */}
+            <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+              {pipVideoUrl.includes('drive.google.com') || pipVideoUrl.includes('youtube.com') || pipVideoUrl.includes('/preview') ? (
+                <iframe
+                  src={pipVideoUrl}
+                  title="Video Bài Giảng M02"
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                  allowFullScreen
+                  style={{ width: '100%', height: '100%', border: 0, background: '#000' }}
+                />
+              ) : (
+                <video 
+                  src={pipVideoUrl} 
+                  controls
+                  autoPlay
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'black', outline: 'none' }}
+                >
+                  Trình duyệt của bạn không hỗ trợ thẻ video.
+                </video>
+              )}
             </div>
           </div>
         </Rnd>

@@ -8,7 +8,7 @@ import M05_CombinedForm, { isB13Complete, isB14Complete, isB15Complete, M05FormD
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
 
-import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName } from '@/lib/courseMaterials';
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName, getLessonVideoEmbedUrl } from '@/lib/courseMaterials';
 
 const LESSONS = [
   { lessonKey: 'B13', id: 13, title: COURSE_MATERIALS.B13.title, description: COURSE_MATERIALS.B13.description, pdf: COURSE_MATERIALS.B13.standardFileName, video: COURSE_MATERIALS.B13.videoFileName || 'M05_Video13.mp4' },
@@ -41,7 +41,20 @@ export default function M05Page() {
     setPreviewUrl(embedUrl);
   };
 
-  const handleOpenVideo = async (fileName: string) => {
+  const handleOpenVideo = async (fileName: string, lessonKey?: string) => {
+    if (lessonKey) {
+      const embedUrl = getLessonVideoEmbedUrl(lessonKey);
+      if (embedUrl) {
+        setPipVideoUrl(embedUrl);
+        return;
+      }
+    }
+
+    if (fileName && (fileName.startsWith('http://') || fileName.startsWith('https://'))) {
+      setPipVideoUrl(fileName);
+      return;
+    }
+
     try {
       setLoadingVideo(fileName);
       const { data, error } = await supabase.storage.from('course_materials').createSignedUrl(fileName, 3600);
@@ -130,7 +143,7 @@ export default function M05Page() {
             <button className="btn btn-secondary" onClick={() => handleOpenDocument(lesson.lessonKey)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
               <BookOpen size={14} /> 📖 Slide Bài Giảng
             </button>
-            <button className="btn btn-primary" disabled={loadingVideo === lesson.video} onClick={() => handleOpenVideo(lesson.video)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
+            <button className="btn btn-primary" disabled={loadingVideo === lesson.video} onClick={() => handleOpenVideo(lesson.video, lesson.lessonKey)} style={{ flex: 1, gap: 6, fontSize: '.76rem', padding: '8px 9px' }}>
               <Play size={14} /> {loadingVideo === lesson.video ? 'Đang tải...' : 'Video'}
             </button>
           </div>
@@ -183,7 +196,20 @@ export default function M05Page() {
               <span style={{ fontSize: '.76rem', color: 'var(--text-secondary)' }}>▶ Video Bài giảng M05</span>
               <button onClick={() => setPipVideoUrl(null)} onMouseDown={event => event.stopPropagation()} aria-label="Đóng video" style={{ border: 0, background: 'transparent', color: 'white', cursor: 'pointer' }}><X size={16} /></button>
             </div>
-            <video src={pipVideoUrl} controls autoPlay style={{ width: '100%', flex: 1, minHeight: 0, objectFit: 'contain' }} />
+            {/* PiP Body (Hybrid: Google Drive/YouTube Iframe or HTML5 Video) */}
+            <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+              {pipVideoUrl.includes('drive.google.com') || pipVideoUrl.includes('youtube.com') || pipVideoUrl.includes('/preview') ? (
+                <iframe
+                  src={pipVideoUrl}
+                  title="Video Bài Giảng M05"
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                  allowFullScreen
+                  style={{ width: '100%', height: '100%', border: 0, background: '#000' }}
+                />
+              ) : (
+                <video src={pipVideoUrl} controls autoPlay style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'black', outline: 'none' }} />
+              )}
+            </div>
           </div>
         </Rnd>
       )}

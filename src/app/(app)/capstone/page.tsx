@@ -178,7 +178,20 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
                 <span style={{ fontSize: '.76rem', color: 'var(--text-secondary)' }}>Video Hướng dẫn Capstone</span>
                 <button onClick={() => setPipVideoUrl(null)} aria-label="Đóng video" style={{ border: 0, background: 'transparent', color: 'var(--text-primary)', cursor: 'pointer' }}><X size={16} /></button>
               </div>
-              <video src={pipVideoUrl} controls autoPlay style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+              {/* PiP Body (Hybrid: Google Drive/YouTube Iframe or HTML5 Video) */}
+              <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+                {pipVideoUrl.includes('drive.google.com') || pipVideoUrl.includes('youtube.com') || pipVideoUrl.includes('/preview') ? (
+                  <iframe
+                    src={pipVideoUrl}
+                    title="Video Hướng dẫn Capstone"
+                    allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                    allowFullScreen
+                    style={{ width: '100%', height: '100%', border: 0, background: '#000' }}
+                  />
+                ) : (
+                  <video src={pipVideoUrl} controls autoPlay style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000' }} />
+                )}
+              </div>
             </div>
           </Rnd>
         )}

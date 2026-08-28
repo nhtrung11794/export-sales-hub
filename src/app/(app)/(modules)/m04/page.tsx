@@ -8,7 +8,7 @@ import { useModuleStore } from '@/store/useModuleStore';
 import { Play, BookOpen, X, Sparkles, Copy, Check } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
-import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName } from '@/lib/courseMaterials';
+import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName, getLessonVideoEmbedUrl } from '@/lib/courseMaterials';
 
 export default function M04Page() {
   const supabase = createClient();
@@ -80,7 +80,20 @@ export default function M04Page() {
     setPreviewUrl(embedUrl);
   };
 
-  const handleOpenVideo = async (fileName: string) => {
+  const handleOpenVideo = async (fileName: string, lessonId?: string) => {
+    if (lessonId) {
+      const embedUrl = getLessonVideoEmbedUrl(lessonId);
+      if (embedUrl) {
+        setPipVideoUrl(embedUrl);
+        return;
+      }
+    }
+
+    if (fileName && (fileName.startsWith('http://') || fileName.startsWith('https://'))) {
+      setPipVideoUrl(fileName);
+      return;
+    }
+
     try {
       setLoadingVideo(fileName);
       const { data, error } = await supabase
@@ -159,7 +172,7 @@ export default function M04Page() {
             <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B09.videoFileName || 'M04_Video09.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B09.videoFileName || 'M04_Video09.mp4', 'B09')}
             disabled={loadingVideo === COURSE_MATERIALS.B09.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
@@ -186,7 +199,7 @@ export default function M04Page() {
             <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B10.videoFileName || 'M04_Video10.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B10.videoFileName || 'M04_Video10.mp4', 'B10')}
             disabled={loadingVideo === COURSE_MATERIALS.B10.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
@@ -213,7 +226,7 @@ export default function M04Page() {
             <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B11.videoFileName || 'M04_Video11.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B11.videoFileName || 'M04_Video11.mp4', 'B11')}
             disabled={loadingVideo === COURSE_MATERIALS.B11.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
@@ -240,7 +253,7 @@ export default function M04Page() {
             <BookOpen size={14}/> 📖 Slide Bài Giảng
           </button>
           <button 
-            onClick={() => handleOpenVideo(COURSE_MATERIALS.B12.videoFileName || 'M04_Video12.mp4')}
+            onClick={() => handleOpenVideo(COURSE_MATERIALS.B12.videoFileName || 'M04_Video12.mp4', 'B12')}
             disabled={loadingVideo === COURSE_MATERIALS.B12.videoFileName}
             className="btn btn-primary" 
             style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', fontSize: '0.8rem', padding: '8px 12px' }}
@@ -342,8 +355,24 @@ export default function M04Page() {
                 <X size={16} />
               </button>
             </div>
-            <div style={{ flex: 1, position: 'relative' }}>
-              <video src={pipVideoUrl} controls autoPlay style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'black', outline: 'none' }} />
+            {/* PiP Body (Hybrid: Google Drive/YouTube Iframe or HTML5 Video) */}
+            <div style={{ flex: 1, position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+              {pipVideoUrl.includes('drive.google.com') || pipVideoUrl.includes('youtube.com') || pipVideoUrl.includes('/preview') ? (
+                <iframe
+                  src={pipVideoUrl}
+                  title="Video Bài Giảng M04"
+                  allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+                  allowFullScreen
+                  style={{ width: '100%', height: '100%', border: 0, background: '#000' }}
+                />
+              ) : (
+                <video 
+                  src={pipVideoUrl} 
+                  controls 
+                  autoPlay 
+                  style={{ width: '100%', height: '100%', objectFit: 'contain', background: 'black', outline: 'none' }} 
+                />
+              )}
             </div>
           </div>
         </Rnd>
