@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { M04FormData, PricingOption, CustomCostItem } from './M04_CombinedForm';
-import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2, Printer, Copy, Check, X, Download } from 'lucide-react';
+import { Calculator, LayoutList, AlertTriangle, FileText, CheckCircle2, TrendingDown, ArrowRight, ShieldCheck, DollarSign, Sparkles, Plus, Trash2, Printer, Copy, Check, X, Download, Palette, ExternalLink } from 'lucide-react';
 
 interface Props {
   data: M04FormData;
@@ -19,11 +19,14 @@ const COST_ITEMS = [
   { id: 'doc_inspection_fee', label: '5. Phí Ẩn, Kiểm định & Phế phẩm (USD)', desc: 'Chứng từ SGS/Phyto, tỷ lệ hư hại bù hàng', color: '#ec4899' },
 ];
 
+const CANVA_TEMPLATE_URL = 'https://www.canva.com/templates/?query=b2b+quotation+proposal+presentation';
+
 export default function B10_ProposalQuotation({ data, setData, handleBlur, isDisabled }: Props) {
   const b10 = data.b10_quotation;
   const [newCostName, setNewCostName] = useState('');
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [canvaToast, setCanvaToast] = useState(false);
   
   // TCO data của doanh nghiệp bạn
   const yourTco = b10.tco_calculator || {
@@ -164,8 +167,8 @@ export default function B10_ProposalQuotation({ data, setData, handleBlur, isDis
     }));
   };
 
-  const handleCopyTcoReport = () => {
-    const reportText = `
+  const generateReportText = () => {
+    return `
 === BẢNG PHÂN TÍCH TỔNG CHI PHÍ SỞ HỮU (TCO BENCHMARK REPORT) ===
 Ngày xuất: ${new Date().toLocaleDateString('vi-VN')}
 
@@ -187,10 +190,21 @@ ${customCosts.map(c => `- ${c.label}: Đối thủ: ${formatNumber(Number(c.comp
 Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nhờ giải pháp tối ưu logistics đóng gói, hỗ trợ thuế quan trọn gói và cam kết chất lượng 0% rủi ro, tổng chi phí sở hữu (Landed TCO) của Quý vị được tối ưu vượt trội.
 ================================================================
     `.trim();
+  };
 
+  const handleCopyTcoReport = () => {
+    const reportText = generateReportText();
     navigator.clipboard.writeText(reportText);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2500);
+  };
+
+  const handleOpenCanvaTemplate = () => {
+    const reportText = generateReportText();
+    navigator.clipboard.writeText(reportText);
+    setCanvaToast(true);
+    setTimeout(() => setCanvaToast(false), 4000);
+    window.open(CANVA_TEMPLATE_URL, '_blank', 'noopener,noreferrer');
   };
 
   const handlePrintReport = () => {
@@ -882,7 +896,27 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
                   Bản Xem Trước Báo Cáo TCO Xuất Khách (Client-Ready Report)
                 </span>
               </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handleOpenCanvaTemplate}
+                  className="btn btn-secondary"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '0.8rem',
+                    padding: '6px 14px',
+                    background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(99, 102, 241, 0.2))',
+                    border: '1px solid #a855f7',
+                    color: '#e9d5ff',
+                    fontWeight: 'bold',
+                    cursor: 'pointer'
+                  }}
+                  title="Mở Mẫu Thiết Kế trên Canva & Tự Động Sao Chép Số Liệu"
+                >
+                  <Palette size={14} color="#c084fc" /> 🎨 Mở Mẫu Canva (Canva Template)
+                </button>
                 <button
                   type="button"
                   onClick={handleCopyTcoReport}
@@ -910,6 +944,24 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               </div>
             </div>
 
+            {/* Thông Báo Toast khi bấm Mở Canva */}
+            {canvaToast && (
+              <div style={{
+                padding: '10px 18px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: '#fff',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)'
+              }}>
+                <CheckCircle2 size={16} /> ✓ Đã tự động sao chép bảng số liệu TCO! Đang chuyển sang Canva để bạn dán và gắn Logo thương hiệu...
+              </div>
+            )}
+
             {/* Nội Dung Báo Cáo In / Xuất (Printable Container) */}
             <div id="tco-printable-report" style={{
               padding: '28px',
@@ -920,6 +972,50 @@ Mặc dù giá FOB ban đầu có thể có sự khác biệt nhỏ, nhưng nh�
               fontSize: '0.86rem',
               lineHeight: '1.5'
             }}>
+              {/* Banner Tùy Biến Thương Hiệu Trên Canva (3 Bước Siêu Tốc) */}
+              <div style={{ 
+                padding: '14px 18px', 
+                background: 'linear-gradient(135deg, rgba(147, 51, 234, 0.12), rgba(59, 130, 246, 0.12))', 
+                border: '1px solid rgba(168, 85, 247, 0.35)', 
+                borderRadius: '10px', 
+                marginBottom: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '12px'
+              }}>
+                <div style={{ flex: 1, minWidth: '280px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold', color: '#c084fc', fontSize: '0.88rem' }}>
+                    <Palette size={16} /> Tùy Biến Nhận Diện Thương Hiệu Doanh Nghiệp (Canva Pro Link)
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: '#cbd5e1', marginTop: '4px', lineHeight: '1.4' }}>
+                    💡 <strong>3 Bước Tùy Biến:</strong> [1] Bấm <i>Mở Mẫu Canva</i> ➔ [2] Đổi Logo, màu chủ đạo & chèn ảnh sản phẩm/nhà xưởng ➔ [3] Dán (Ctrl+V) bảng số liệu TCO đã copy sẵn và tải PDF gửi Buyer!
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleOpenCanvaTemplate}
+                  style={{
+                    background: 'linear-gradient(135deg, #a855f7, #6366f1)',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '8px 16px',
+                    fontSize: '0.82rem',
+                    fontWeight: 'bold',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(168, 85, 247, 0.35)',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  <ExternalLink size={14} /> Mở Mẫu Canva Thiết Kế
+                </button>
+              </div>
+
               {/* Report Header */}
               <div style={{ borderBottom: '2px solid rgba(59, 130, 246, 0.4)', paddingBottom: '16px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div>
