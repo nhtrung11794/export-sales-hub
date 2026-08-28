@@ -16,6 +16,8 @@ export interface M02FormData {
   strategic_reason: string;
   b03_fact_check_url?: string;
   b03_scan_notes?: Record<string, { ai_output: string; fact_check_url: string }>;
+  b03_lens_notes?: Record<string, { ai_output: string; action_usp: string }>;
+  b03_pestel_notes?: Record<string, { ai_output: string; impact_action: string }>;
   
   // B04
   icp_size: string;
@@ -44,6 +46,20 @@ const initialData: M02FormData = {
     layer3: { ai_output: '', fact_check_url: '' },
     layer4: { ai_output: '', fact_check_url: '' },
     layer5: { ai_output: '', fact_check_url: '' },
+  },
+  b03_lens_notes: {
+    lens1: { ai_output: '', action_usp: '' },
+    lens2: { ai_output: '', action_usp: '' },
+    lens3: { ai_output: '', action_usp: '' },
+    lens4: { ai_output: '', action_usp: '' },
+  },
+  b03_pestel_notes: {
+    P: { ai_output: '', impact_action: '' },
+    E: { ai_output: '', impact_action: '' },
+    S: { ai_output: '', impact_action: '' },
+    T: { ai_output: '', impact_action: '' },
+    ENV: { ai_output: '', impact_action: '' },
+    L: { ai_output: '', impact_action: '' },
   },
   
   icp_size: '',
