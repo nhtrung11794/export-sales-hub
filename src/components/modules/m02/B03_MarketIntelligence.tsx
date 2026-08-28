@@ -230,18 +230,23 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
         Nghiên cứu thị trường 5 lớp với AI, lăng kính Buyer và PESTEL. Bắt buộc hoàn thành <strong>Quyết định chiến lược</strong> và có <strong>Link kiểm chứng</strong> để mở khóa bài tiếp theo.
       </p>
 
-      <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
-        {/* CỘT TRÁI: TABBED DASHBOARD (62%) */}
-        <div style={{ flex: '0 0 62%', display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          
+        {/* BƯỚC 1: TABBED DASHBOARD NGHIÊN CỨU (100% CHIỀU RỘNG) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text-secondary)' }}>
+              BƯỚC 1: THU THẬP DỮ LIỆU & LẬP LẬN ĐA TẦNG
+            </span>
+          </div>
+
           {/* Tabs Navigation */}
           <div style={{ display: 'flex', gap: '8px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '8px' }}>
             <button 
               type="button"
               onClick={() => setActiveTab('scan')}
               className={activeTab === 'scan' ? 'btn btn-primary' : 'btn btn-secondary'}
-              style={{ fontSize: '0.82rem', padding: '6px 12px', display: 'flex', gap: '6px', alignItems: 'center' }}
+              style={{ fontSize: '0.82rem', padding: '6px 14px', display: 'flex', gap: '6px', alignItems: 'center' }}
             >
               <Search size={15} /> Scan 5 Lớp & Fact-Check
             </button>
@@ -249,7 +254,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
               type="button"
               onClick={() => setActiveTab('lens')}
               className={activeTab === 'lens' ? 'btn btn-primary' : 'btn btn-secondary'}
-              style={{ fontSize: '0.82rem', padding: '6px 12px', display: 'flex', gap: '6px', alignItems: 'center' }}
+              style={{ fontSize: '0.82rem', padding: '6px 14px', display: 'flex', gap: '6px', alignItems: 'center' }}
             >
               <Target size={15} /> Buyer Lens
             </button>
@@ -257,7 +262,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
               type="button"
               onClick={() => setActiveTab('pestel')}
               className={activeTab === 'pestel' ? 'btn btn-primary' : 'btn btn-secondary'}
-              style={{ fontSize: '0.82rem', padding: '6px 12px', display: 'flex', gap: '6px', alignItems: 'center' }}
+              style={{ fontSize: '0.82rem', padding: '6px 14px', display: 'flex', gap: '6px', alignItems: 'center' }}
             >
               <BarChart3 size={15} /> Phân tích PESTEL
             </button>
@@ -267,9 +272,9 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
           <div style={{ 
             background: 'rgba(15, 23, 42, 0.4)', 
             border: '1px solid rgba(255,255,255,0.05)', 
-            padding: '16px', 
+            padding: '18px', 
             borderRadius: '12px',
-            minHeight: '300px'
+            minHeight: '260px'
           }}>
             {/* TAB 1: SCAN 5 LỚP */}
             {activeTab === 'scan' && (
@@ -314,12 +319,12 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                         type="button"
                         onClick={() => setActiveScanLayer(layer.id)}
                         style={{
-                          padding: '5px 10px',
+                          padding: '5px 12px',
                           borderRadius: '6px',
                           border: isSelected ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.08)',
                           background: isSelected ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.02)',
                           color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                          fontSize: '0.76rem',
+                          fontSize: '0.78rem',
                           fontWeight: isSelected ? 700 : 500,
                           cursor: 'pointer',
                           whiteSpace: 'nowrap',
@@ -353,7 +358,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                         </label>
                         <textarea
                           className="form-input"
-                          rows={5}
+                          rows={4}
                           placeholder={`Dán tóm tắt dữ liệu cho ${currentConfig.label} tại đây (Ví dụ: Số liệu kim ngạch nhập khẩu, tên các đối thủ lớn, mức thuế MFN/FTA...)...`}
                           value={currentNote.ai_output || ''}
                           onChange={(e) => handleScanNoteChange(activeScanLayer, 'ai_output', e.target.value)}
@@ -427,7 +432,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                         type="button"
                         onClick={() => setActiveLensLayer(layer.id)}
                         style={{
-                          padding: '5px 10px',
+                          padding: '5px 12px',
                           borderRadius: '6px',
                           border: isSelected ? '1px solid var(--accent-warning)' : '1px solid rgba(255,255,255,0.08)',
                           background: isSelected ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.02)',
@@ -466,7 +471,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                         </label>
                         <textarea
                           className="form-input"
-                          rows={5}
+                          rows={4}
                           placeholder={`Dán phân tích tâm lý, nỗi đau hoặc tiêu chí của Buyer cho phần ${currentConfig.label}...`}
                           value={currentNote.ai_output || ''}
                           onChange={(e) => handleLensNoteChange(activeLensLayer, 'ai_output', e.target.value)}
@@ -542,7 +547,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                         type="button"
                         onClick={() => setActivePestelLayer(layer.id)}
                         style={{
-                          padding: '5px 10px',
+                          padding: '5px 12px',
                           borderRadius: '6px',
                           border: isSelected ? '1px solid var(--accent-success)' : '1px solid rgba(255,255,255,0.08)',
                           background: isSelected ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)',
@@ -581,7 +586,7 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                         </label>
                         <textarea
                           className="form-input"
-                          rows={5}
+                          rows={4}
                           placeholder={`Dán số liệu, sự kiện chính sách hoặc xu hướng tác động cho ${currentConfig.label}...`}
                           value={currentNote.ai_output || ''}
                           onChange={(e) => handlePestelNoteChange(activePestelLayer, 'ai_output', e.target.value)}
@@ -615,133 +620,149 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
           </div>
         </div>
 
-        {/* CỘT PHẢI: FORM QUYẾT ĐỊNH CHIẾN LƯỢC (STICKY) (38%) */}
+        {/* BƯỚC 2: KHUNG QUYẾT ĐỊNH CHIẾN LƯỢC DƯỚI DẠNG GRID 2 CỘT NỔI BẬT */}
         <div style={{ 
-          flex: '1', 
-          position: 'sticky', 
-          top: '24px',
-          background: 'rgba(30, 41, 59, 0.7)',
-          border: isFormComplete ? '1px solid var(--accent-success)' : '1px solid var(--border-color)',
-          borderRadius: '16px',
-          padding: '24px',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.2)'
+          background: 'rgba(30, 41, 59, 0.75)',
+          border: isFormComplete ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid var(--border-color)',
+          borderRadius: '14px',
+          padding: '20px 22px',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '16px'
         }}>
-          <h3 style={{ fontSize: '1.1rem', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Globe size={20} color={isFormComplete ? "var(--accent-success)" : "var(--accent-primary)"} /> 
-            Quyết định Chiến lược
-          </h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '10px' }}>
+            <h3 style={{ fontSize: '1rem', color: 'var(--text-primary)', margin: 0, display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700 }}>
+              <Globe size={18} color={isFormComplete ? "var(--accent-success)" : "var(--accent-primary)"} /> 
+              BƯỚC 2: QUYẾT ĐỊNH CHIẾN LƯỢC XUẤT KHẨU (BẮT BUỘC ĐỂ MỞ KHÓA BÀI 04)
+            </h3>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Được tự động đồng bộ vào bài tập tiếp theo
+            </span>
+          </div>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                1. Chọn thị trường mục tiêu <span style={{color: 'var(--accent-danger)'}}>*</span>
-              </label>
-              <select 
-                className="form-input"
-                value={isOtherMarket ? 'OTHER' : (data.target_market || '')}
-                onChange={(e) => {
-                  if (e.target.value === 'OTHER') {
-                    setIsOtherMarket(true);
-                    handleFieldChange('target_market', '');
-                  } else {
-                    setIsOtherMarket(false);
-                    handleFieldChange('target_market', e.target.value);
-                  }
-                }}
-                onBlur={handleBlur}
-                disabled={isDisabled}
-                style={{ width: '100%', padding: '9px', marginBottom: isOtherMarket ? '6px' : '0' }}
-              >
-                <option value="" disabled>-- Lựa chọn thị trường --</option>
-                <option value="US">Mỹ (US)</option>
-                <option value="EU">Châu Âu (EU)</option>
-                <option value="JP">Nhật Bản (JP)</option>
-                <option value="KR">Hàn Quốc (KR)</option>
-                <option value="CN">Trung Quốc (CN)</option>
-                <option value="ASEAN">Đông Nam Á (ASEAN)</option>
-                <option value="OTHER">Khác (Tự định nghĩa)</option>
-              </select>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '20px' }}>
+            
+            {/* CỘT TRÁI (THỊ TRƯỜNG & KÊNH) */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                  1. Chọn thị trường mục tiêu <span style={{color: 'var(--accent-danger)'}}>*</span>
+                </label>
+                <select 
+                  className="form-input"
+                  value={isOtherMarket ? 'OTHER' : (data.target_market || '')}
+                  onChange={(e) => {
+                    if (e.target.value === 'OTHER') {
+                      setIsOtherMarket(true);
+                      handleFieldChange('target_market', '');
+                    } else {
+                      setIsOtherMarket(false);
+                      handleFieldChange('target_market', e.target.value);
+                    }
+                  }}
+                  onBlur={handleBlur}
+                  disabled={isDisabled}
+                  style={{ width: '100%', padding: '8px 10px', marginBottom: isOtherMarket ? '6px' : '0' }}
+                >
+                  <option value="" disabled>-- Lựa chọn thị trường --</option>
+                  <option value="US">Mỹ (US)</option>
+                  <option value="EU">Châu Âu (EU)</option>
+                  <option value="JP">Nhật Bản (JP)</option>
+                  <option value="KR">Hàn Quốc (KR)</option>
+                  <option value="CN">Trung Quốc (CN)</option>
+                  <option value="ASEAN">Đông Nam Á (ASEAN)</option>
+                  <option value="OTHER">Khác (Tự định nghĩa)</option>
+                </select>
 
-              {isOtherMarket && (
+                {isOtherMarket && (
+                  <input 
+                    type="text"
+                    className="form-input"
+                    placeholder="Nhập tên thị trường mục tiêu..."
+                    value={data.target_market || ''}
+                    onChange={(e) => handleFieldChange('target_market', e.target.value)}
+                    onBlur={handleBlur}
+                    disabled={isDisabled}
+                    style={{ width: '100%', padding: '8px 10px' }}
+                  />
+                )}
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+                  2. Kênh Route-to-market <span style={{color: 'var(--accent-danger)'}}>*</span>
+                </label>
                 <input 
                   type="text"
                   className="form-input"
-                  placeholder="Nhập tên thị trường mục tiêu..."
-                  value={data.target_market || ''}
-                  onChange={(e) => handleFieldChange('target_market', e.target.value)}
+                  placeholder="VD: Importer / B2B Distributor / Food Service..."
+                  value={data.route_to_market || ''}
+                  onChange={(e) => handleFieldChange('route_to_market', e.target.value)}
                   onBlur={handleBlur}
                   disabled={isDisabled}
-                  style={{ width: '100%', padding: '9px' }}
+                  style={{ width: '100%', padding: '8px 10px' }}
                 />
-              )}
+              </div>
             </div>
 
+            {/* CỘT PHẢI (LÝ DO CỐT LÕI) */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                2. Kênh Route-to-market <span style={{color: 'var(--accent-danger)'}}>*</span>
-              </label>
-              <input 
-                type="text"
-                className="form-input"
-                placeholder="VD: Importer / B2B Distributor / Food Service..."
-                value={data.route_to_market || ''}
-                onChange={(e) => handleFieldChange('route_to_market', e.target.value)}
-                onBlur={handleBlur}
-                disabled={isDisabled}
-                style={{ width: '100%', padding: '9px' }}
-              />
-            </div>
-
-            <div>
-              <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
+              <label style={{ display: 'block', fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
                 3. Lý do lựa chọn cốt lõi <span style={{color: 'var(--accent-danger)'}}>*</span>
               </label>
               <textarea 
                 className="form-input"
-                placeholder="Phân tích lợi thế, độ khó, khoảng trống thị trường..."
+                placeholder="Phân tích lợi thế, độ khó, khoảng trống thị trường và lý do chọn kênh..."
                 value={data.strategic_reason || ''}
                 onChange={(e) => handleFieldChange('strategic_reason', e.target.value)}
                 onBlur={handleBlur}
                 disabled={isDisabled}
                 rows={4}
-                style={{ width: '100%', padding: '9px', resize: 'vertical', fontSize: '0.85rem' }}
+                style={{ width: '100%', padding: '8px 10px', resize: 'vertical', fontSize: '0.82rem', lineHeight: '1.45' }}
               />
             </div>
+          </div>
 
-            {/* FACT-CHECK VERIFICATION STATUS */}
+          {/* DÒNG TRẠNG THÁI CUỐI (VERIFICATION STATUS) */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', paddingTop: '6px' }}>
             <div style={{
-              padding: '10px 12px',
+              padding: '8px 12px',
               borderRadius: '8px',
               background: hasFactCheck ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
               border: `1px solid ${hasFactCheck ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`,
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '6px',
+              flex: '1'
             }}>
               {hasFactCheck ? (
                 <>
-                  <ShieldCheck size={16} color="#10b981" />
-                  <span style={{ color: '#10b981', fontWeight: 600 }}>Đã có Link kiểm chứng (Fact-Check OK)</span>
+                  <ShieldCheck size={15} color="#10b981" />
+                  <span style={{ color: '#10b981', fontWeight: 600 }}>Đã có Link kiểm chứng (Fact-Check URL OK)</span>
                 </>
               ) : (
                 <>
-                  <AlertTriangle size={16} color="var(--accent-danger)" />
+                  <AlertTriangle size={15} color="var(--accent-danger)" />
                   <span style={{ color: '#fca5a5' }}>Thiếu Fact-Check URL ở tab Scan 5 Lớp</span>
                 </>
               )}
             </div>
 
-            {isFormComplete ? (
-              <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-success)', padding: '10px', borderRadius: '8px', fontSize: '0.85rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--accent-success)' }}>
-                ✓ Đã hoàn thành (Bài 04 được mở khóa)
-              </div>
-            ) : (
-              <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--accent-danger)', padding: '10px', borderRadius: '8px', fontSize: '0.82rem', textAlign: 'center', lineHeight: '1.4' }}>
-                ⚠️ Vui lòng điền đủ 3 trường chiến lược và ít nhất 1 Fact-Check URL để mở khóa Bài 04.
-              </div>
-            )}
+            <div style={{ flex: '1' }}>
+              {isFormComplete ? (
+                <div style={{ background: 'rgba(16, 185, 129, 0.15)', color: 'var(--accent-success)', padding: '8px 12px', borderRadius: '8px', fontSize: '0.8rem', textAlign: 'center', fontWeight: 'bold', border: '1px solid var(--accent-success)' }}>
+                  ✓ Đã hoàn thành (Bài 04 được mở khóa)
+                </div>
+              ) : (
+                <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--accent-danger)', padding: '8px 12px', borderRadius: '8px', fontSize: '0.78rem', textAlign: 'center', lineHeight: '1.35', border: '1px solid rgba(239,68,68,0.25)' }}>
+                  ⚠️ Điền đủ 3 trường và ít nhất 1 Fact-Check URL để mở Bài 04.
+                </div>
+              )}
+            </div>
           </div>
+
         </div>
 
       </div>
