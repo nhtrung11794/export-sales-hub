@@ -8,22 +8,21 @@ Thị trường mục tiêu: [ĐIỀN DỮ LIỆU TẠI ĐÂY]
 Năng lực lõi của doanh nghiệp: [ĐIỀN DỮ LIỆU TẠI ĐÂY]
 
 CHỈ THỊ HỆ THỐNG:
-Đóng vai chuyên gia Market Intelligence B2B. Thực hiện quét 5 lớp thị trường xuất khẩu để hỗ trợ ra quyết định thương mại. Tuân thủ tuyệt đối cấu trúc suy luận: [Sự kiện/Dữ liệu thực tế] -> [Phân tích Tác động] -> [Hành động cụ thể].
+Đóng vai chuyên gia Market Intelligence B2B. Thực hiện quét 5 lớp thị trường xuất khẩu theo đúng phương pháp luận chuẩn để hỗ trợ ra quyết định thương mại. Tuân thủ tuyệt đối cấu trúc suy luận: [Sự kiện/Dữ liệu thực tế] -> [Phân tích Tác động thương mại] -> [Đề xuất hành động Sales].
 
 RÀNG BUỘC KIỂM SOÁT:
-Lược bỏ hoàn toàn định nghĩa học thuật. Trình bày trực tiếp vào vấn đề.
-Giới hạn cấu trúc: Tối đa 3 gạch đầu dòng cho mỗi ô dữ liệu.
+Lược bỏ hoàn toàn định nghĩa lý thuyết. Trình bày trực tiếp, sắc bén (tối đa 3 gạch đầu dòng mỗi ô).
 Bắt buộc tự động gắn cờ [Cần kiểm chứng] đối với bất kỳ số liệu/dữ kiện nào mô hình tự nội suy mà không có độ xác thực 100%.
-Cột "Đề xuất hành động" phải là chỉ dẫn thực thi (Actionable) dành cho đội Sales.
+Cột "Đề xuất hành động" phải là chỉ dẫn thực thi (Actionable) cụ thể dành cho đội Sales xuất khẩu.
 
 ĐỊNH DẠNG ĐẦU RA:
-Tạo bảng gồm 4 cột: Lớp thị trường | Sự kiện/Dữ liệu thực tế | Phân tích Tác động | Đề xuất hành động.
+Tạo bảng gồm 4 cột: Lớp thị trường | Sự kiện/Dữ liệu thực tế | Phân tích Tác động thương mại | Đề xuất hành động Sales.
 Triển khai phân tích bắt buộc qua 5 lớp:
-- Cầu (Demand): Tiêu chí ưu tiên mua và sự dịch chuyển nhu cầu.
-- Cung & Đối thủ: Điểm mạnh của đối thủ và khoảng trống thị trường chưa được phục vụ tốt.
-- Rào cản (Barriers): Tiêu chuẩn/compliance bắt buộc và rủi ro giao dịch.
-- Route-to-market: Kênh phân phối/loại buyer phù hợp nhất.
-- Độ Fit (Company Fit): Đánh giá mức độ khớp.`;
+- 1. Nhu cầu thị trường (Demand): Dung lượng, xu hướng tăng trưởng, tiêu chí ưu tiên mua và dòng sản phẩm thị trường đang mua.
+- 2. Nguồn cung & Đối thủ (Supply & Competition): Các nước xuất khẩu chính, thế mạnh đối thủ cạnh tranh bản địa/quốc tế và khoảng trống thị trường.
+- 3. Yêu cầu & Rào cản (Requirements & Barriers): Tiêu chuẩn/compliance bắt buộc (FDA/BRC/ISO), thuế quan FTA, kiểm dịch, rào cản kỹ thuật, logistics & payment.
+- 4. Route-to-market (Kênh phân phối): Sản phẩm đi vào thị trường qua kênh nào (importer, distributor, repacker, brand...) và cách tiếp cận phù hợp.
+- 5. Mức độ Fit với Doanh nghiệp (Company Fit): Đánh giá mức độ khớp năng lực nhà máy, cửa thắng và lợi thế cạnh tranh cốt lõi (USP).`;
 
 const PROMPT_LENS = `BỐI CẢNH:
 Sản phẩm: [ĐIỀN DỮ LIỆU TẠI ĐÂY]
@@ -32,17 +31,22 @@ Buyer Channel (Loại khách hàng): [ĐIỀN DỮ LIỆU TẠI ĐÂY]
 Đặc tính Sản phẩm/Nhà máy (Features): [ĐIỀN DỮ LIỆU TẠI ĐÂY]
 
 CHỈ THỊ HỆ THỐNG:
-Đóng vai chuyên gia Market Intelligence B2B. Đặt lăng kính nhà nhập khẩu (Buyer Lens) xuyên suốt 5 lớp thị trường. Chuyển hóa Đặc tính (Features) thành Giá trị thương mại (Buyer-value) tập trung vào việc: giảm rủi ro, hỗ trợ ra quyết định và giải quyết nỗi đau từ nhà cung cấp cũ.
+Đóng vai chuyên gia Market Intelligence B2B. Đặt lăng kính nhà nhập khẩu (Buyer Lens) xuyên suốt 5 lớp thị trường. Chuyển hóa Dữ liệu thị trường & Đặc tính nhà máy (Features) thành Giá trị thương mại (Buyer-value) tập trung vào: giảm rủi ro, hỗ trợ ra quyết định và giải quyết nỗi đau từ nhà cung cấp cũ.
 
 RÀNG BUỘC KIỂM SOÁT:
-Phân tích hoàn toàn từ góc nhìn người mua, không viết theo logic "công ty tôi có gì".
-Không liệt kê tính năng độc lập; bắt buộc chuyển hóa thành Lợi ích giúp buyer giảm rủi ro.
+Phân tích 100% từ góc nhìn người mua (Buyer Persona), không viết theo logic "công ty tôi có gì".
+Không liệt kê tính năng độc lập; bắt buộc chuyển hóa thành Lợi ích giúp buyer giảm rủi ro hoặc tăng biên lợi nhuận.
 Tối đa 2 gạch đầu dòng trọng tâm cho mỗi ô dữ liệu.
-Cột "Đề xuất thông điệp/USP" bắt buộc là kịch bản tiếp cận cụ thể.
+Cột "Đề xuất thông điệp/USP" bắt buộc là kịch bản tiếp cận và câu chào hàng thực chiến.
 
 ĐỊNH DẠNG ĐẦU RA:
-Tạo bảng 4 cột: Lớp thị trường | Góc nhìn Buyer (Dữ liệu/Nỗi đau) | Tác động quyết định mua | Đề xuất thông điệp/USP.
-Triển khai qua 5 lớp: Nhu cầu, Cung & Đối thủ, Rào cản, Route-to-market, Độ Fit (Chuyển đổi USP).`;
+Tạo bảng 4 cột: Lớp thị trường (Buyer Lens) | Góc nhìn Buyer (Dữ liệu/Nỗi đau) | Tác động quyết định mua | Đề xuất thông điệp/USP tiếp cận.
+Triển khai qua 5 lớp:
+- 1. Nhu cầu (Buyer Lens): Áp lực thị hiếu & nhu cầu người tiêu dùng nội địa mà Buyer phải phục vụ để giữ thị phần.
+- 2. Cung & Đối thủ (Buyer Lens): Nỗi đau nguồn cung từ NCC cũ (trễ lead time, chất lượng không đều, phụ thuộc đơn nguồn) & áp lực cạnh tranh trên kệ hàng.
+- 3. Rào cản & Rủi ro (Buyer Lens): Nỗi sợ rủi ro pháp lý, trách nhiệm kiểm định hải quan, chứng chỉ an toàn, chuẩn xanh ESG và chi phí phạt nếu hàng tắc cảng.
+- 4. Route-to-market (Buyer Lens): Cấu trúc kênh phân phối của Buyer, yêu cầu quy cách đóng gói/MOQ và biên lợi nhuận của hệ thống bán buôn/bán lẻ.
+- 5. Mức độ Fit / USP Chuyển đổi (Buyer Lens): Lý do Buyer chọn bạn thay vì đối thủ cũ (giảm rủi ro, tối ưu TCO, cam kết SLA chất lượng, hỗ trợ hải quan trọn gói).`;
 
 const PROMPT_PESTEL = `BỐI CẢNH:
 Sản phẩm: [ĐIỀN DỮ LIỆU TẠI ĐÂY]
@@ -65,19 +69,19 @@ Cột 4: Đề xuất hành động ứng phó.
 Kết luận: 1 câu định hướng kèm 1 hành động trọng tâm.`;
 
 const SCAN_LAYERS = [
-  { id: 'layer1', label: '1. Cung (Supply)', desc: 'Nguồn cung, các nước xuất khẩu chính và đối thủ cạnh tranh lớn.' },
-  { id: 'layer2', label: '2. Cầu (Demand)', desc: 'Quy mô thị trường, xu hướng tăng trưởng và thói quen tiêu dùng.' },
-  { id: 'layer3', label: '3. Giá & Chi phí', desc: 'Mức giá tham chiếu CIF/FOB, biến động nguyên vật liệu và cước vận tải.' },
-  { id: 'layer4', label: '4. Đối thủ (Competitors)', desc: 'Thế mạnh của đối thủ bản địa & khoảng trống phân khúc chưa đáp ứng.' },
-  { id: 'layer5', label: '5. Pháp lý & Rào cản', desc: 'Thuế quan, chứng chỉ BRC/IFS/FDA, rào cản kỹ thuật và kiểm dịch.' },
+  { id: 'layer1', label: '1. Nhu cầu thị trường (Demand)', desc: 'Quy mô thị trường, xu hướng tăng trưởng, tiêu chí ưu tiên mua và dòng sản phẩm thị trường đang tìm kiếm.' },
+  { id: 'layer2', label: '2. Nguồn cung & Đối thủ (Supply & Competition)', desc: 'Các nước xuất khẩu chính, thế mạnh đối thủ cạnh tranh bản địa/quốc tế và khoảng trống thị trường chưa phục vụ tốt.' },
+  { id: 'layer3', label: '3. Yêu cầu & Rào cản (Requirements & Barriers)', desc: 'Tiêu chuẩn chất lượng bắt buộc (FDA/BRC/ISO), thuế quan FTA, kiểm dịch, rào cản kỹ thuật, logistics và payment.' },
+  { id: 'layer4', label: '4. Route-to-market (Kênh phân phối)', desc: 'Cấu trúc kênh phân phối, sản phẩm đi qua kênh nào (importer, distributor, repacker, brand...) và cách tiếp cận phù hợp.' },
+  { id: 'layer5', label: '5. Mức độ Fit với Doanh nghiệp (Company Fit)', desc: 'Đánh giá mức độ khớp năng lực nhà máy, cửa thắng và lợi thế cạnh tranh cốt lõi (USP) của doanh nghiệp bạn.' },
 ];
 
 const LENS_LAYERS = [
-  { id: 'lens1', label: '1. Cung (Góc nhìn Buyer)', desc: 'Nỗi đau nguồn cung từ NCC cũ: Trễ lead time, chất lượng không đều, rủi ro phụ thuộc đơn nguồn.' },
-  { id: 'lens2', label: '2. Cầu (Góc nhìn Buyer)', desc: 'Áp lực thị hiếu & nhu cầu người tiêu dùng nội địa mà Buyer phải phục vụ để giữ thị phần.' },
-  { id: 'lens3', label: '3. Giá & Chi phí (Góc nhìn Buyer)', desc: 'Áp lực tối ưu TCO (Tổng chi phí sở hữu), bảo vệ biên lợi nhuận và hạn mức ngân sách.' },
-  { id: 'lens4', label: '4. Đối thủ (Góc nhìn Buyer)', desc: 'Áp lực cạnh tranh của Buyer với các đối thủ bản địa cùng phân khúc trên kệ hàng.' },
-  { id: 'lens5', label: '5. Pháp lý & Rào cản (Góc nhìn Buyer)', desc: 'Rủi ro pháp lý, trách nhiệm kiểm định hải quan, chứng chỉ an toàn và chuẩn xanh ESG.' },
+  { id: 'lens1', label: '1. Nhu cầu (Góc nhìn Buyer)', desc: 'Áp lực thị hiếu & nhu cầu người tiêu dùng nội địa mà Buyer phải phục vụ để giữ thị phần và doanh thu.' },
+  { id: 'lens2', label: '2. Cung & Đối thủ (Góc nhìn Buyer)', desc: 'Nỗi đau từ nhà cung cấp cũ (trễ lead time, chất lượng phập phù, phụ thuộc đơn nguồn) & áp lực cạnh tranh trên kệ hàng.' },
+  { id: 'lens3', label: '3. Rào cản & Rủi ro (Góc nhìn Buyer)', desc: 'Nỗi sợ rủi ro pháp lý, trách nhiệm kiểm định hải quan, chứng chỉ an toàn, chuẩn xanh ESG và chi phí phạt nếu hàng tắc cảng.' },
+  { id: 'lens4', label: '4. Route-to-market (Góc nhìn Buyer)', desc: 'Cấu trúc kênh phân phối của Buyer, yêu cầu quy cách đóng gói/MOQ và biên lợi nhuận của hệ thống bán buôn/bán lẻ.' },
+  { id: 'lens5', label: '5. Mức độ Fit / USP Chuyển đổi (Góc nhìn Buyer)', desc: 'Lý do Buyer chọn bạn thay vì đối thủ cũ: giải pháp giảm rủi ro, tối ưu TCO, cam kết SLA chất lượng và hỗ trợ hải quan trọn gói.' },
 ];
 
 const PESTEL_LAYERS = [
@@ -297,11 +301,11 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   {isGuideOpen && (
                     <div style={{ padding: '12px', borderTop: '1px solid rgba(59,130,246,0.15)', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
                       <ul style={{ paddingLeft: '16px', margin: 0 }}>
-                        <li><strong>Lớp 1 (Cung):</strong> Tổng quan nguồn cung, đối thủ cạnh tranh từ các nước lớn.</li>
-                        <li><strong>Lớp 2 (Cầu):</strong> Nhu cầu tiêu thụ, dung lượng thị trường và tốc độ tăng trưởng.</li>
-                        <li><strong>Lớp 3 (Giá):</strong> Mức giá tham chiếu, biến động giá nguyên vật liệu và cước biển.</li>
-                        <li><strong>Lớp 4 (Đối thủ):</strong> Đối thủ cạnh tranh trực tiếp, khoảng trống thị trường.</li>
-                        <li><strong>Lớp 5 (Pháp lý):</strong> Thuế quan FTA, chứng chỉ (FDA/BRC/ISO), rào cản kỹ thuật.</li>
+                        <li><strong>1. Nhu cầu thị trường (Demand):</strong> Quy mô thị trường, tốc độ tăng trưởng, tiêu chí ưu tiên mua và dòng sản phẩm thị trường đang tìm kiếm.</li>
+                        <li><strong>2. Nguồn cung & Đối thủ (Supply & Competition):</strong> Các nước xuất khẩu chính, thế mạnh đối thủ bản địa/quốc tế và khoảng trống thị trường chưa phục vụ tốt.</li>
+                        <li><strong>3. Yêu cầu & Rào cản (Requirements & Barriers):</strong> Tiêu chuẩn chất lượng bắt buộc (FDA/BRC/ISO), thuế quan FTA, kiểm dịch, rào cản kỹ thuật, logistics & payment.</li>
+                        <li><strong>4. Route-to-market (Kênh phân phối):</strong> Cấu trúc kênh phân phối, sản phẩm đi qua loại buyer nào (importer, distributor, repacker, brand...) và cách tiếp cận phù hợp.</li>
+                        <li><strong>5. Mức độ Fit với Doanh nghiệp (Company Fit):</strong> Đánh giá mức độ khớp năng lực nhà máy, cửa thắng và lợi thế cạnh tranh cốt lõi (USP) của doanh nghiệp bạn.</li>
                       </ul>
                       <PromptPanel title="Prompt Mẫu: Quét 5 Lớp Thị Trường" promptText={PROMPT_SCAN} />
                     </div>
@@ -410,11 +414,11 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   {isLensGuideOpen && (
                     <div style={{ padding: '12px', borderTop: '1px solid rgba(245,158,11,0.15)', fontSize: '0.8rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
                       <ul style={{ paddingLeft: '16px', margin: 0 }}>
-                        <li><strong>1. Cung (Supply):</strong> NCC hiện tại có hay trễ hạn, chất lượng không đều, hoặc khiến Buyer bị phụ thuộc không?</li>
-                        <li><strong>2. Cầu (Demand):</strong> Khách hàng cuối của Buyer đang thay đổi thị hiếu gì mà nguồn hàng cũ chưa đáp ứng kịp?</li>
-                        <li><strong>3. Giá & Chi phí (Price & Margin):</strong> Buyer đang chịu áp lực cắt giảm TCO và bảo vệ biên lợi nhuận ra sao?</li>
-                        <li><strong>4. Đối thủ (Competitors):</strong> Đối thủ của Buyer đang tung ra sản phẩm gì vượt trội khiến họ phải tìm kiếm NCC mới?</li>
-                        <li><strong>5. Pháp lý & Rào cản (Compliance):</strong> Quy định an toàn, chứng chỉ xanh/ESG nào khiến Buyer lo sợ rủi ro hải quan/phạt?</li>
+                        <li><strong>1. Nhu cầu (Buyer Lens):</strong> Khách hàng cuối của Buyer đang thay đổi thị hiếu gì mà nguồn hàng cũ chưa đáp ứng kịp để giữ thị phần?</li>
+                        <li><strong>2. Cung & Đối thủ (Buyer Lens):</strong> NCC hiện tại có hay trễ hạn, chất lượng phập phù, hoặc đối thủ trên kệ hàng của Buyer đang tung ra sản phẩm gì vượt trội?</li>
+                        <li><strong>3. Rào cản & Rủi ro (Buyer Lens):</strong> Quy định an toàn thực phẩm, chứng chỉ xanh/ESG nào khiến Buyer lo sợ rủi ro hải quan, phạt chậm và đứt gãy chuỗi cung ứng?</li>
+                        <li><strong>4. Route-to-market (Buyer Lens):</strong> Cấu trúc kênh phân phối của Buyer, yêu cầu quy cách đóng gói/MOQ và biên lợi nhuận của hệ thống bán buôn/bán lẻ ra sao?</li>
+                        <li><strong>5. Mức độ Fit / USP Chuyển đổi (Buyer Lens):</strong> Vì sao Buyer nên chọn bạn thay vì đối thủ cũ (giảm rủi ro giao hàng, tối ưu TCO, cam kết bù hàng 100% khi có lỗi)?</li>
                       </ul>
                       <PromptPanel title="Prompt Mẫu: Phân tích Buyer Lens" promptText={PROMPT_LENS} />
                     </div>
