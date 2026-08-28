@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800&display=swap');
 
 :root {
+  /* Font size scale for high-density 75% zoom feel */
+  font-size: 13.5px;
+
   /* Color Palette - Dark Theme Forced (Màu xanh đen) */
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
@@ -45,14 +48,17 @@ body {
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 a {
@@ -72,20 +78,21 @@ a:hover {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-md);
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  font-weight: 500;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
   font-family: var(--font-sans);
+  font-size: 0.82rem;
 }
 
 .btn-primary {
@@ -108,16 +115,16 @@ a:hover {
   background-color: var(--border-color);
 }
 
-/* Utilities */
+/* Form Inputs */
 .form-input {
   width: 100%;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid var(--border-color);
   background-color: var(--bg-tertiary);
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   resize: vertical;
   outline: none;
   transition: all 0.2s ease;
@@ -129,15 +136,18 @@ a:hover {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-/* 3-Column Layout Container */
+/* 3-Column Layout Container - FIT TO SCREEN (No Outer Overflow) */
 .module-container {
   display: flex;
-  width: 100vw;
-  height: 100vh;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
-  gap: 16px;
-  padding: 16px;
-  background-color: var(--bg-primary);
+  gap: 10px;
+  padding: 0;
+  background-color: transparent;
+  box-sizing: border-box;
 }
 
 .module-col {
@@ -145,35 +155,44 @@ a:hover {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  border-radius: 16px;
+  border-radius: 12px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  padding: 24px;
+  box-sizing: border-box;
 }
 
-/* Hide scrollbar for clean look but allow scrolling */
-.module-col::-webkit-scrollbar {
-  width: 6px;
+/* Scrollbar mượt mà */
+.module-col::-webkit-scrollbar,
+div::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
 }
-.module-col::-webkit-scrollbar-track {
+.module-col::-webkit-scrollbar-track,
+div::-webkit-scrollbar-track {
   background: transparent;
 }
-.module-col::-webkit-scrollbar-thumb {
+.module-col::-webkit-scrollbar-thumb,
+div::-webkit-scrollbar-thumb {
   background-color: var(--border-color);
-  border-radius: 20px;
+  border-radius: 10px;
 }
 
 .col-1 { 
-  width: var(--col-1-width); 
-  padding: 16px 12px;
+  flex: 0 0 215px;
+  max-width: 235px;
+  min-width: 190px;
+  padding: 12px 10px;
 }
 .col-2 { 
-  width: var(--col-2-width); 
-  padding: 20px 24px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 14px 18px;
 }
 .col-3 { 
-  width: var(--col-3-width); 
-  padding: 16px 12px;
+  flex: 0 0 220px;
+  max-width: 240px;
+  min-width: 195px;
+  padding: 12px 10px;
 }
 
 /* Responsive fallback */

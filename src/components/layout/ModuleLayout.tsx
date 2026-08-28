@@ -46,27 +46,27 @@ export default function ModuleLayout({
       {/* CỘT 1: HỌC TẬP HOẶC ĐỌC TÀI LIỆU */}
       <div 
         className="module-col col-1" 
-        style={previewUrl ? { width: '65%', padding: 0, overflow: 'hidden', transition: 'width 0.3s' } : { transition: 'width 0.3s' }}
+        style={previewUrl ? { flex: '0 0 60%', maxWidth: '60%', padding: 0, overflow: 'hidden', transition: 'all 0.3s' } : { transition: 'all 0.3s' }}
       >
         {previewUrl ? (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--bg-secondary)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 16px', borderBottom: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontSize: '1rem' }}>📖</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: '1px solid var(--border-color)', background: 'rgba(0,0,0,0.2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ fontSize: '0.9rem' }}>📖</span>
                 <div>
-                  <h2 style={{ color: 'var(--accent-primary)', fontSize: '0.92rem', margin: 0 }}>
+                  <h2 style={{ color: 'var(--accent-primary)', fontSize: '0.85rem', margin: 0, fontWeight: 700 }}>
                     {previewTitle || 'Đọc Slide Bài Giảng'}
                   </h2>
-                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Xem trực tiếp từ Google Drive Embed</span>
+                  <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Xem trực tiếp từ Google Drive Embed</span>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <a
                   href={previewUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-secondary"
-                  style={{ padding: '5px 12px', fontSize: '0.76rem' }}
+                  style={{ padding: '4px 10px', fontSize: '0.72rem' }}
                   title="Mở tài liệu trên tab mới"
                 >
                   Mở tab mới ↗
@@ -74,7 +74,7 @@ export default function ModuleLayout({
                 <button 
                   onClick={onClosePreview}
                   className="btn"
-                  style={{ background: 'var(--accent-danger)', color: 'white', padding: '5px 14px', fontSize: '0.76rem' }}
+                  style={{ background: 'var(--accent-danger)', color: 'white', padding: '4px 10px', fontSize: '0.72rem' }}
                 >
                   Đóng lại (X)
                 </button>
@@ -91,10 +91,10 @@ export default function ModuleLayout({
           </div>
         ) : (
           <>
-            <h2 style={{ marginBottom: '16px', color: 'var(--text-secondary)', fontSize: '1rem' }}>
+            <h2 style={{ marginBottom: '10px', color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 700 }}>
               {moduleTitle} - Học tập
             </h2>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {learningContent}
             </div>
           </>
@@ -104,12 +104,12 @@ export default function ModuleLayout({
       {/* CỘT 2: THỰC THI & LÀM BÀI */}
       <div 
         className="module-col col-2 glass-panel" 
-        style={{ border: !isOnline ? '2px solid var(--accent-danger)' : '2px solid var(--accent-primary)', width: previewUrl ? '35%' : 'var(--col-2-width)', transition: 'width 0.3s' }}
+        style={{ border: !isOnline ? '2px solid var(--accent-danger)' : '2px solid var(--accent-primary)', transition: 'all 0.3s' }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <h2 style={{ color: !isOnline ? 'var(--accent-danger)' : 'var(--accent-primary)' }}>Thực thi & Làm bài</h2>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div id="status-bar" style={{ fontSize: '0.875rem', color: !isOnline ? 'var(--accent-danger)' : 'var(--text-muted)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexShrink: 0 }}>
+          <h2 style={{ color: !isOnline ? 'var(--accent-danger)' : 'var(--accent-primary)', fontSize: '1.05rem', margin: 0, fontWeight: 800 }}>Thực thi & Làm bài</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div id="status-bar" style={{ fontSize: '0.8rem', color: !isOnline ? 'var(--accent-danger)' : 'var(--text-muted)' }}>
               {!isOnline ? 'MẤT KẾT NỐI' : 'Trạng thái: Đang tải...'}
             </div>
             {headerActionNode}
@@ -128,9 +128,9 @@ export default function ModuleLayout({
               backdropFilter: 'blur(2px)',
               borderRadius: '8px'
             }}>
-              <div style={{ background: 'var(--bg-secondary)', padding: '24px', borderRadius: '12px', border: '1px solid var(--accent-danger)', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
-                <span style={{ color: 'var(--accent-danger)', fontWeight: 'bold', display: 'block', fontSize: '1.25rem', marginBottom: '8px' }}>⚠️ Rớt Mạng (Offline)</span>
-                <span style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>Đã tự động khóa Form để bảo toàn dữ liệu. Vui lòng kiểm tra lại Internet.</span>
+              <div style={{ background: 'var(--bg-secondary)', padding: '20px', borderRadius: '12px', border: '1px solid var(--accent-danger)', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.5)' }}>
+                <span style={{ color: 'var(--accent-danger)', fontWeight: 'bold', display: 'block', fontSize: '1.1rem', marginBottom: '6px' }}>⚠️ Rớt Mạng (Offline)</span>
+                <span style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Đã tự động khóa Form để bảo toàn dữ liệu. Vui lòng kiểm tra lại Internet.</span>
               </div>
             </div>
           )}
@@ -143,10 +143,10 @@ export default function ModuleLayout({
       {/* CỘT 3: AI TUTOR - ẨN KHI ĐANG ĐỌC TÀI LIỆU */}
       {!previewUrl && (
         <div className="module-col col-3" style={{ transition: 'all 0.3s' }}>
-          <h2 style={{ marginBottom: '16px', color: 'var(--accent-warning)', fontSize: '1rem' }}>
+          <h2 style={{ marginBottom: '10px', color: 'var(--accent-warning)', fontSize: '0.88rem', fontWeight: 700 }}>
             ✨ Trợ lý AI (NotebookLM)
           </h2>
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
             {aiTutorContent}
           </div>
         </div>

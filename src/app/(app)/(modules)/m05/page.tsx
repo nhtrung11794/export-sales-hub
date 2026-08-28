@@ -167,11 +167,11 @@ export default function M05Page() {
   );
 
   return (
-    <div style={{ padding: 24, minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      <header style={{ marginBottom: 28 }}>
-        <div style={{ color: '#10b981', fontSize: '.76rem', fontWeight: 900, letterSpacing: '.12em', marginBottom: 7 }}>FINAL OPERATING SYSTEM</div>
-        <h1 style={{ fontSize: '2rem', marginBottom: 8 }}>Module 05: Execution, Recovery & Account Growth</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Chốt đơn là điểm bắt đầu của trải nghiệm thực thi — nơi trust được bảo vệ và tăng trưởng tài khoản được thiết kế.</p>
+    <div style={{ padding: '10px 14px', height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden', background: 'var(--bg-primary)' }}>
+      <header style={{ marginBottom: '8px', flexShrink: 0 }}>
+        <div style={{ color: '#10b981', fontSize: '.68rem', fontWeight: 900, letterSpacing: '.1em', marginBottom: 2 }}>FINAL OPERATING SYSTEM</div>
+        <h1 style={{ fontSize: '1.25rem', margin: '0 0 2px 0', fontWeight: 800 }}>Module 05: Execution, Recovery & Account Growth</h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.76rem', margin: 0 }}>Chốt đơn là điểm bắt đầu của trải nghiệm thực thi — nơi trust được bảo vệ và tăng trưởng tài khoản được thiết kế.</p>
       </header>
 
       <ModuleLayout

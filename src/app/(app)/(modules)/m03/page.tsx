@@ -266,12 +266,12 @@ export default function M03Page() {
   );
 
   return (
-    <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>
+    <div style={{ padding: '10px 14px', height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden', background: 'var(--bg-primary)' }}>
+      <header style={{ marginBottom: '8px', flexShrink: 0 }}>
+        <h1 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', margin: '0 0 2px 0', fontWeight: 800 }}>
           Module 03: Prospecting & Opportunity Management
         </h1>
-        <p style={{ color: 'var(--text-secondary)' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.76rem', margin: 0 }}>
           Kỹ năng Prospecting, Sàng lọc Lead, Chấm điểm F-N-A-C-M và Quản trị Vòng đời Sales Pipeline
         </p>
       </header>

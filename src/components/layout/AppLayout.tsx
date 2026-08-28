@@ -383,7 +383,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* MAIN CONTENT AREA */}
-      <div style={{ flex: 1, width: 'calc(100% - 70px)' }}>
+      <div style={{ flex: 1, minWidth: 0, height: '100vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {children}
       </div>
     </div>

@@ -256,10 +256,10 @@ export default function M01Page() {
   );
 
   return (
-    <div style={{ padding: '24px', minHeight: '100vh', background: 'var(--bg-primary)' }}>
-      <header style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '2rem', color: 'var(--text-primary)', marginBottom: '8px' }}>Module 01: Mindset & Foundation</h1>
-        <p style={{ color: 'var(--text-secondary)' }}>Mindset nền tảng Sales Xuất khẩu & Hồ sơ năng lực</p>
+    <div style={{ padding: '10px 14px', height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden', background: 'var(--bg-primary)' }}>
+      <header style={{ marginBottom: '8px', flexShrink: 0 }}>
+        <h1 style={{ fontSize: '1.25rem', color: 'var(--text-primary)', margin: '0 0 2px 0', fontWeight: 800 }}>Module 01: Mindset & Foundation</h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.76rem', margin: 0 }}>Mindset nền tảng Sales Xuất khẩu & Hồ sơ năng lực</p>
       </header>
 
       <ModuleLayout 

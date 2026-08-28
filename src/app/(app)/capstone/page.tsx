@@ -146,11 +146,11 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
 
   return (
     <ErrorBoundary fallbackTitle="Không thể tải Khoang Final Capstone">
-      <div style={{ padding: 24, minHeight: '100vh', background: 'var(--bg-primary)' }}>
-        <header style={{ marginBottom: 28 }}>
-          <div style={{ color: 'var(--accent-primary)', fontSize: '.76rem', fontWeight: 900, letterSpacing: '.1em', marginBottom: 7 }}>ENTERPRISE ASSET ENGINE</div>
-          <h1 style={{ fontSize: '2rem', marginBottom: 8 }}>Final Capstone: Đóng Gói Bộ 03 Playbook Xuất Khẩu</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>Rà soát toàn diện 15 buổi học M01 đến M05, tự phản biện rủi ro và xuất bản 3 bộ tài sản vận hành chuẩn hóa cho doanh nghiệp.</p>
+      <div style={{ padding: '10px 14px', height: '100vh', maxHeight: '100vh', display: 'flex', flexDirection: 'column', boxSizing: 'border-box', overflow: 'hidden', background: 'var(--bg-primary)' }}>
+        <header style={{ marginBottom: '8px', flexShrink: 0 }}>
+          <div style={{ color: 'var(--accent-primary)', fontSize: '.68rem', fontWeight: 900, letterSpacing: '.1em', marginBottom: 2 }}>ENTERPRISE ASSET ENGINE</div>
+          <h1 style={{ fontSize: '1.25rem', margin: '0 0 2px 0', fontWeight: 800 }}>Final Capstone: Đóng Gói Bộ 03 Playbook Xuất Khẩu</h1>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.76rem', margin: 0 }}>Rà soát toàn diện 15 buổi học M01 đến M05, tự phản biện rủi ro và xuất bản 3 bộ tài sản vận hành chuẩn hóa cho doanh nghiệp.</p>
         </header>
 
         <ModuleLayout
