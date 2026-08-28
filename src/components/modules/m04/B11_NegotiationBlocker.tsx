@@ -71,7 +71,8 @@ export default function B11_NegotiationBlocker({ data, setData, handleBlur, isDi
     'Thử thách giá (Price Resistance)',
     'Cạn ngân sách (Budget Constraint)',
     'Ép điều khoản công nợ (Payment Terms Pressure)',
-    'Quyền lực giả (No Authority Blocker)'
+    'Quyền lực giả (No Authority Blocker)',
+    'Khác (Tự định nghĩa)'
   ];
 
   const giveTypes = [
@@ -80,7 +81,8 @@ export default function B11_NegotiationBlocker({ data, setData, handleBlur, isDi
     'Tăng hạn mức công nợ 15-30 ngày',
     'Hỗ trợ cước tàu / Bảo hiểm vận tải',
     'Tặng thêm sản phẩm mẫu & Marketing Kit',
-    'Rút ngắn thời gian sản xuất (Priority Lead time)'
+    'Rút ngắn thời gian sản xuất (Priority Lead time)',
+    'Khác (Tự định nghĩa)'
   ];
 
   const takeTypes = [
@@ -89,7 +91,8 @@ export default function B11_NegotiationBlocker({ data, setData, handleBlur, isDi
     'Tăng tỷ lệ đặt cọc (T/T Advance 40-50%)',
     'Chốt hợp đồng khung dài hạn 6-12 tháng',
     'Cắt giảm chi phí bao bì / Tiêu chuẩn đóng gói',
-    'Linh hoạt ngày bốc hàng (± 5 ngày ETA)'
+    'Linh hoạt ngày bốc hàng (± 5 ngày ETA)',
+    'Khác (Tự định nghĩa)'
   ];
 
   return (

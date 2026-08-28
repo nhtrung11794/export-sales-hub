@@ -299,19 +299,39 @@ export default function B07_OpportunityQualification({ data, setData, handleBlur
             </label>
             <select
               className="form-input"
-              value={b07.response_classification || 'Inquiry'}
-              onChange={(e) => handleFieldChange('response_classification', e.target.value)}
+              value={['Lead', 'Inquiry', 'Interest', 'Opportunity'].includes(b07.response_classification) ? b07.response_classification : 'OTHER'}
+              onChange={(e) => {
+                if (e.target.value === 'OTHER') {
+                  handleFieldChange('response_classification', 'Khác: ');
+                } else {
+                  handleFieldChange('response_classification', e.target.value);
+                }
+              }}
               onBlur={handleBlur}
               disabled={isDisabled}
-              style={{ fontSize: '0.9rem', fontWeight: 'bold', height: '42px' }}
+              style={{ fontSize: '0.88rem', fontWeight: 'bold', height: '40px', marginBottom: !['Lead', 'Inquiry', 'Interest', 'Opportunity'].includes(b07.response_classification) ? '8px' : '0' }}
             >
               <option value="Lead">1. Raw Lead (Chỉ có contact, chưa tương tác)</option>
               <option value="Inquiry">2. Inquiry (Hỏi giá / xin catalog chung chung)</option>
               <option value="Interest">3. Interest (Quan tâm thực tế, có trao đổi nghiệp vụ)</option>
               <option value="Opportunity">4. Opportunity (Có Volume, Specs, Budget và Timeline rõ)</option>
+              <option value="OTHER">5. Khác (Tự định nghĩa)</option>
             </select>
+
+            {!['Lead', 'Inquiry', 'Interest', 'Opportunity'].includes(b07.response_classification) && (
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Nhập tầng tín hiệu cụ thể (VD: RFQ chính thức từ Procurement Dept)..."
+                value={b07.response_classification || ''}
+                onChange={(e) => handleFieldChange('response_classification', e.target.value)}
+                onBlur={handleBlur}
+                disabled={isDisabled}
+                style={{ fontSize: '0.85rem', marginBottom: '6px' }}
+              />
+            )}
             
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '8px', lineHeight: '1.4' }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '6px', lineHeight: '1.4' }}>
               💡 <em>Lưu ý: Hỏi giá chưa chắc là Opportunity. Cần đối chiếu khung F-N-A-C-M bên dưới.</em>
             </p>
           </div>

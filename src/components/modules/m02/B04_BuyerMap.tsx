@@ -31,18 +31,18 @@ const BUYING_ROLES = [
 ];
 
 const INDUSTRY_OPTIONS = [
-  'Nông sản & Hạt (Cashew, Coffee, Rice, Spices)',
-  'Thủy hải sản (Tôm, Cá tra, Mực, Hải sản đông lạnh)',
-  'Gỗ & Nội thất (Gỗ công nghiệp, Thủ công mỹ nghệ)',
-  'Dệt may & Da giày (Apparel, Footwear)',
-  'Thực phẩm F&B chế biến (Snacks, Đóng hộp, Nước giải khát)',
-  'Bao bì & Nhựa công nghiệp',
-  'Cơ khí & Công nghiệp phụ trợ',
+  'Importer (Nhà nhập khẩu trực tiếp)',
+  'Distributor / Wholesaler (Nhà phân phối bán buôn)',
+  'Retail Chain / Supermarket (Chuỗi bán lẻ / Đại siêu thị)',
+  'Food Service / HORECA (Khách sạn, Nhà hàng, Chuỗi F&B)',
+  'Brand Owner / OEM-ODM Buyer (Chủ thương hiệu / Đặt gia công)',
+  'Manufacturer / Processor (Nhà máy sản xuất / Chế biến)',
+  'Trading House / Broker (Công ty thương mại / Môi giới quốc tế)',
   'OTHER'
 ];
 
 const SIZE_OPTIONS = [
-  'Dưới $10M USD / năm (Nhà nhập khẩu nhỏ/vừa)',
+  'Dưới $10M USD / năm (Nhà nhập khẩu nhỏ / vừa)',
   '$10M - $50M USD / năm (Nhà phân phối cấp vùng)',
   '$50M - $200M USD / năm (Tập đoàn phân phối quốc gia)',
   'Trên $200M USD / năm (Chuỗi bán lẻ / Đại siêu thị toàn cầu)',
@@ -247,7 +247,7 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
           {/* DROPDOWN NGÀNH NGHỀ */}
           <div>
             <label style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-              1. Ngành nghề trọng tâm (Industry / Segment) <span style={{ color: 'var(--accent-danger)' }}>*</span>
+              1. Loại hình doanh nghiệp của Buyer (Buyer Business Model / Segment) <span style={{ color: 'var(--accent-danger)' }}>*</span>
             </label>
             <select
               className="form-input"
@@ -265,7 +265,7 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
               disabled={isDisabled}
               style={{ width: '100%', padding: '9px', fontSize: '0.85rem', marginBottom: isOtherIndustry ? '6px' : '0' }}
             >
-              <option value="" disabled>-- Chọn ngành hàng xuất khẩu --</option>
+              <option value="" disabled>-- Chọn loại hình doanh nghiệp của Buyer --</option>
               {INDUSTRY_OPTIONS.map(opt => (
                 <option key={opt} value={opt}>{opt === 'OTHER' ? 'Khác (Tự định nghĩa)' : opt}</option>
               ))}
@@ -273,7 +273,7 @@ export default function B04_BuyerMap({ data, setData, handleBlur, isDisabled }: 
 
             {isOtherIndustry && (
               <input 
-                type="text" className="form-input" placeholder="Nhập ngành nghề cụ thể..."
+                type="text" className="form-input" placeholder="Nhập loại hình doanh nghiệp cụ thể (VD: Online D2C Brand, Wholesaler miền Nam...)..."
                 value={data.icp_industry || ''} onChange={(e) => handleFieldChange('icp_industry', e.target.value)}
                 onBlur={handleBlur} disabled={isDisabled} style={{ width: '100%', padding: '9px', fontSize: '0.85rem' }}
               />

@@ -193,15 +193,22 @@ export default function B08_PipelineManagement({ data, setData, handleBlur, isDi
           </label>
           <select
             className="form-input"
-            value={b08.crisis_motive || 'Recover'}
-            onChange={(e) => handleFieldChange('crisis_motive', e.target.value)}
+            value={['Recover', 'Maintain', 'Clarify', 'Develop', 'Advance'].includes(b08.crisis_motive) ? b08.crisis_motive : 'OTHER'}
+            onChange={(e) => {
+              if (e.target.value === 'OTHER') {
+                handleFieldChange('crisis_motive', 'Khác: ');
+              } else {
+                handleFieldChange('crisis_motive', e.target.value);
+              }
+            }}
             onBlur={handleBlur}
             disabled={isDisabled}
             style={{
-              fontSize: '0.9rem', fontWeight: 'bold', height: '44px',
+              fontSize: '0.88rem', fontWeight: 'bold', height: '42px',
               borderColor: isInvalidMotive ? 'var(--accent-danger)' : undefined,
               background: isInvalidMotive ? 'rgba(239, 68, 68, 0.1)' : undefined,
-              boxShadow: isInvalidMotive ? '0 0 12px rgba(239, 68, 68, 0.3)' : undefined
+              boxShadow: isInvalidMotive ? '0 0 12px rgba(239, 68, 68, 0.3)' : undefined,
+              marginBottom: !['Recover', 'Maintain', 'Clarify', 'Develop', 'Advance'].includes(b08.crisis_motive) ? '8px' : '0'
             }}
           >
             <option value="Recover">1. [Recover] Khôi phục nhịp độ: Gửi cập nhật biến động giá cước / xu hướng nguyên liệu</option>
@@ -209,7 +216,21 @@ export default function B08_PipelineManagement({ data, setData, handleBlur, isDi
             <option value="Clarify">3. [Clarify] Làm rõ thông tin: Hỏi xem thông số kỹ thuật có cần điều chỉnh không</option>
             <option value="Develop">4. [Develop] Mở rộng: Giới thiệu thêm mẫu mã sản phẩm phụ</option>
             <option value="Advance">5. [Advance] Thúc ép chốt đơn: "Anh chị đã duyệt báo giá chưa để ký hợp đồng?" ⚠️</option>
+            <option value="OTHER">6. Khác (Tự định nghĩa)</option>
           </select>
+
+          {!['Recover', 'Maintain', 'Clarify', 'Develop', 'Advance'].includes(b08.crisis_motive) && (
+            <input
+              type="text"
+              className="form-input"
+              placeholder="Nhập động cơ tiếp cận cụ thể..."
+              value={b08.crisis_motive || ''}
+              onChange={(e) => handleFieldChange('crisis_motive', e.target.value)}
+              onBlur={handleBlur}
+              disabled={isDisabled}
+              style={{ fontSize: '0.85rem', marginBottom: '8px' }}
+            />
+          )}
         </div>
 
         {/* CẢNH BÁO VIỀN ĐỎ NẾU CHỌN ADVANCE */}
@@ -256,17 +277,37 @@ export default function B08_PipelineManagement({ data, setData, handleBlur, isDi
             </label>
             <select
               className="form-input"
-              value={b08.next_touchpoint_type || 'Market Update'}
-              onChange={(e) => handleFieldChange('next_touchpoint_type', e.target.value)}
+              value={['Market Update', 'Tech Proof', 'Case Study', 'Sample Feedback'].includes(b08.next_touchpoint_type) ? b08.next_touchpoint_type : 'OTHER'}
+              onChange={(e) => {
+                if (e.target.value === 'OTHER') {
+                  handleFieldChange('next_touchpoint_type', 'Khác: ');
+                } else {
+                  handleFieldChange('next_touchpoint_type', e.target.value);
+                }
+              }}
               onBlur={handleBlur}
               disabled={isDisabled}
-              style={{ fontSize: '0.85rem', height: '40px' }}
+              style={{ fontSize: '0.85rem', height: '40px', marginBottom: !['Market Update', 'Tech Proof', 'Case Study', 'Sample Feedback'].includes(b08.next_touchpoint_type) ? '8px' : '0' }}
             >
               <option value="Market Update">📈 Market Intelligence Update (Bản tin biến động cước / nguồn cung)</option>
               <option value="Tech Proof">🔬 Technical Lab Report (Chứng chỉ / Kết quả test lab mẫu mới)</option>
               <option value="Case Study">🏢 Case Study (Câu chuyện xuất khẩu thành công vào thị trường tương tự)</option>
               <option value="Sample Feedback">📦 Sample Follow-up (Hỏi cảm nhận và đánh giá chất lượng mẫu thử)</option>
+              <option value="OTHER">✨ Khác (Tự định nghĩa)</option>
             </select>
+
+            {!['Market Update', 'Tech Proof', 'Case Study', 'Sample Feedback'].includes(b08.next_touchpoint_type) && (
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Nhập loại hình giá trị trao gửi cụ thể..."
+                value={b08.next_touchpoint_type || ''}
+                onChange={(e) => handleFieldChange('next_touchpoint_type', e.target.value)}
+                onBlur={handleBlur}
+                disabled={isDisabled}
+                style={{ fontSize: '0.85rem', marginBottom: '8px' }}
+              />
+            )}
           </div>
         </div>
 

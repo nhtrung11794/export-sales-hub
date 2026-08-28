@@ -40,6 +40,7 @@ const INITIATIVE_TYPES = [
   { id: 'upsell', label: 'Up-sell' },
   { id: 'cross_sell', label: 'Cross-sell' },
   { id: 'service', label: 'Value-Added Service' },
+  { id: 'other', label: 'Khác (Tự định nghĩa)' },
 ];
 
 export default function B15_AccountGrowth({ data, setData, handleBlur, isDisabled, isPrerequisiteComplete }: Props) {
