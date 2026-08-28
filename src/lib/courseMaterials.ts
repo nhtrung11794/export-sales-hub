@@ -21,7 +21,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M01_B01_TuDuySalesXNK.pdf',
     description: 'Dịch chuyển tư duy (Mindset Shift) từ bán hàng truyền thống sang tư vấn B2B.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1rkccIBjNzJvfoC_w-n7xZOCYg9Z8EV8q/preview',
     videoFileName: 'M01_Video01.mp4',
   },
   B02: {
@@ -31,7 +31,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M01_B02_BanChatNgheSales.pdf',
     description: '5 giai đoạn Sales B2B tiêu chuẩn và tự đánh giá Radar Chart 11 năng lực.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1gyFkgOlLtUsUe5wsfHu2Fglpfa2UZjIt/preview',
     videoFileName: 'M01_Video02.mp4',
   },
 
@@ -43,7 +43,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M02_B03_ChienLuocThiTruong.pdf',
     description: 'Ma trận 6 cột Target Market, kênh RTM và tính toán thuế quan FTA.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/189KSET8dZjGgH2ne5giryVjEMORXXrLe/preview',
     videoFileName: 'M02_Video01.mp4',
   },
   B04: {
@@ -53,7 +53,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M02_B04_ChanDuongICP_BuyerMap.pdf',
     description: 'Thiết kế cấu trúc Buyer Persona và định vị các nhân vật chủ chốt đa tầng.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1_AsD5kxYPI1qxgFFeMMBpv3uPgihdCSY/preview',
     videoFileName: 'M02_Video02.mp4',
   },
   B05: {
@@ -63,7 +63,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M02_B05_GiaiMaNhuCau_Discovery.pdf',
     description: 'Ma trận 5 lớp Discovery Insight (Context, Need, Pain, Criteria, Risk).',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1hoJyK6jTCqluY-Y4uy14amqMMrLhdHkV/preview',
     videoFileName: 'M02_Video03.mp4',
   },
   B06: {
@@ -73,7 +73,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M02_B06_SangLocLead_KenhTiepCan.pdf',
     description: 'Chiến lược tìm kiếm Lead đa kênh và tối ưu hóa chuyển đổi tài khoản mục tiêu.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1CfZ9k5dZUm176DQ0Zax2lqOEYyET3cEq/preview',
     videoFileName: 'M02_Video04.mp4',
   },
 
@@ -85,7 +85,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M03_B07_ThamDinhCoHoi_FNACM.pdf',
     description: 'Ma trận chấm điểm cơ hội Fit, Need, Authority, Commercials, Market Timing.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1TI4J9-7UqcLH25shNtqNodLKQSMsdCOg/preview',
     videoFileName: 'M03_Video01.mp4',
   },
   B08: {
@@ -95,7 +95,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M03_B08_QuanTriPipeline_FollowUp.pdf',
     description: 'Xây dựng kịch bản chăm sóc Lead và quản trị tốc độ dòng phễu Pipeline.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1G5dMtEzx9Tf60xW-Kg-g_Dxsa0WsPhGP/preview',
     videoFileName: 'M03_Video02.mp4',
   },
 
@@ -107,7 +107,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M04_B09_LamRoYeuCau_PBTPC.pdf',
     description: '5 khía cạnh thẩm định yêu cầu: Product, Budget, Timeline, Payment, Compliance.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1raoWlwz3ECU6EBFvHtYdslFJi4_Kvxvp/preview',
     videoFileName: 'M04_Video01.mp4',
   },
   B10: {
@@ -117,7 +117,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M04_B10_BaoGiaTCO_ChimMoi.pdf',
     description: 'Bóc tách chi phí Landed Cost, phí kiểm định SGS và cấu trúc 3 gói chào giá.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1-ZYDoECdZyYXUdo6OQWWDg7uXwrWPyWC/preview',
     videoFileName: 'M04_Video02.mp4',
   },
   B11: {
@@ -127,7 +127,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M04_B11_DamPhanGiveTake.pdf',
     description: 'Ngân hàng Concession Give–Take Bank và kỹ thuật Deal Desk bảo vệ biên lợi nhuận.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1DctwSitUI4Ox2yxsT4VrrGvvxjw7svUf/preview',
     videoFileName: 'M04_Video03.mp4',
   },
   B12: {
@@ -137,7 +137,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M04_B12_KiemSoatRuiRo_Closing.pdf',
     description: 'Bộ rà soát Safe Order Checklist và phòng ngừa rủi ro BEC / L/C giả mạo.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1FUi5mgeKuw4P4581ERcKF_iIGC3yolTM/preview',
     videoFileName: 'M04_Video04.mp4',
   },
 
@@ -149,7 +149,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M05_B13_BanGiaoVanHanh_SLA.pdf',
     description: 'Internal SLA 5 điểm chạm và kiểm soát các mốc Point of No Return 🔒.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1JqN-p3ALh82n2l_ti6hkC8UWTXyvKyGt/preview',
     videoFileName: 'M05_Video01.mp4',
   },
   B14: {
@@ -159,7 +159,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M05_B14_XuLyKhungHoang_CAPA.pdf',
     description: 'Khung phản ứng CAPA 3 bước (Containment, 5-Why Root Cause, Preventive Action).',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1CP9I8BbH0nJ8N3Q-vwnu0JNt6_xQDtha/preview',
     videoFileName: 'M05_Video02.mp4',
   },
   B15: {
@@ -169,7 +169,7 @@ export const COURSE_MATERIALS: Record<string, CourseMaterial> = {
     standardFileName: 'M05_B15_TangTruongTaiKhoan_JBP.pdf',
     description: 'Mở rộng thị phần ví khách hàng, Trust Score Gate và cam kết đối tác chiến lược JBP.',
     driveFolderUrl: GOOGLE_DRIVE_SLIDES_ROOT,
-    embedUrl: GOOGLE_DRIVE_EMBED_FOLDER,
+    embedUrl: 'https://drive.google.com/file/d/1jtv6Wq93wtpZsVYa8W0dB1_zgTxlUSXm/preview',
     videoFileName: 'M05_Video03.mp4',
   },
 };
