@@ -306,87 +306,86 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   )}
                 </div>
 
-                {/* 5 SUB-TABS CHO 5 LỚP SCAN */}
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '12px' }}>
+                {/* MA TRẬN 5 HÀNG TOÀN CẢNH (ALL-LAYERS MATRIX) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {/* Header Cột */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '170px 1.6fr 1.3fr', gap: '12px', padding: '0 8px', color: 'var(--text-secondary)', fontSize: '0.78rem', fontWeight: 'bold' }}>
+                    <div>Lớp Phân Tích (5 Layers)</div>
+                    <div>Dữ Liệu & Insight AI (Gemini / GPT)</div>
+                    <div>URL Nguồn Kiểm Chứng (Fact-Check) <span style={{ color: 'var(--accent-danger)' }}>*</span></div>
+                  </div>
+
+                  {/* 5 Hàng */}
                   {SCAN_LAYERS.map(layer => {
-                    const isSelected = activeScanLayer === layer.id;
-                    const layerData = scanNotes[layer.id];
-                    const hasData = Boolean(layerData?.ai_output || layerData?.fact_check_url);
+                    const currentNote = scanNotes[layer.id] || { ai_output: '', fact_check_url: '' };
+                    const hasData = Boolean(currentNote.ai_output || currentNote.fact_check_url);
 
                     return (
-                      <button
+                      <div 
                         key={layer.id}
-                        type="button"
-                        onClick={() => setActiveScanLayer(layer.id)}
-                        style={{
-                          padding: '5px 12px',
-                          borderRadius: '6px',
-                          border: isSelected ? '1px solid var(--accent-primary)' : '1px solid rgba(255,255,255,0.08)',
-                          background: isSelected ? 'rgba(59,130,246,0.15)' : 'rgba(255,255,255,0.02)',
-                          color: isSelected ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                          fontSize: '0.78rem',
-                          fontWeight: isSelected ? 700 : 500,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px'
+                        style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: '170px 1.6fr 1.3fr', 
+                          gap: '12px', 
+                          padding: '12px', 
+                          borderRadius: '8px', 
+                          background: hasData ? 'rgba(59,130,246,0.03)' : 'rgba(255,255,255,0.015)', 
+                          border: hasData ? '1px solid rgba(59,130,246,0.2)' : '1px solid rgba(255,255,255,0.05)',
+                          alignItems: 'start' 
                         }}
                       >
-                        {layer.label}
-                        {hasData && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />}
-                      </button>
+                        {/* Cột 1: Tên & Mục tiêu */}
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: hasData ? '#10b981' : 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                            {layer.label}
+                          </div>
+                          <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '4px', lineHeight: '1.35' }}>
+                            {layer.desc}
+                          </div>
+                        </div>
+
+                        {/* Cột 2: Textarea AI Output */}
+                        <div>
+                          <textarea
+                            className="form-input"
+                            rows={3}
+                            placeholder={`Dán tóm tắt dữ liệu cho ${layer.label}...`}
+                            value={currentNote.ai_output || ''}
+                            onChange={(e) => handleScanNoteChange(layer.id, 'ai_output', e.target.value)}
+                            onBlur={handleBlur}
+                            disabled={isDisabled}
+                            style={{ fontSize: '0.8rem', lineHeight: '1.4', resize: 'vertical' }}
+                          />
+                        </div>
+
+                        {/* Cột 3: Fact-Check URL */}
+                        <div>
+                          <input
+                            type="url"
+                            className="form-input"
+                            placeholder="VD: https://www.trademap.org/..."
+                            value={currentNote.fact_check_url || ''}
+                            onChange={(e) => handleScanNoteChange(layer.id, 'fact_check_url', e.target.value)}
+                            onBlur={handleBlur}
+                            disabled={isDisabled}
+                            style={{ fontSize: '0.8rem' }}
+                          />
+                          {currentNote.fact_check_url && (
+                            <a 
+                              href={currentNote.fact_check_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.72rem', color: 'var(--accent-primary)', marginTop: '4px' }}
+                            >
+                              <Link2 size={11} /> Mở nguồn kiểm chứng ↗
+                            </a>
+                          )}
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
-
-                {/* KHÔNG GIAN NHẬP LIỆU CHO LỚP SCAN HIỆN TẠI */}
-                {(() => {
-                  const currentConfig = SCAN_LAYERS.find(l => l.id === activeScanLayer) || SCAN_LAYERS[0];
-                  const currentNote = scanNotes[activeScanLayer] || { ai_output: '', fact_check_url: '' };
-
-                  return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        <strong>Mục tiêu lớp này:</strong> {currentConfig.desc}
-                      </div>
-
-                      {/* TEXTAREA DÁN KẾT QUẢ AI */}
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          📥 Dán kết quả phân tích AI (Gemini Spark / GPT):
-                        </label>
-                        <textarea
-                          className="form-input"
-                          rows={4}
-                          placeholder={`Dán tóm tắt dữ liệu cho ${currentConfig.label} tại đây (Ví dụ: Số liệu kim ngạch nhập khẩu, tên các đối thủ lớn, mức thuế MFN/FTA...)...`}
-                          value={currentNote.ai_output || ''}
-                          onChange={(e) => handleScanNoteChange(activeScanLayer, 'ai_output', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.82rem', lineHeight: '1.45' }}
-                        />
-                      </div>
-
-                      {/* INPUT URL FACT-CHECK */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--accent-primary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          <Link2 size={13} /> 🔗 URL Nguồn kiểm chứng (Fact-Check URL) <span style={{ color: 'var(--accent-danger)' }}>*</span>
-                        </label>
-                        <input
-                          type="url"
-                          className="form-input"
-                          placeholder="VD: https://www.trademap.org/ hoặc https://fas.usda.gov/ hoặc https://customs.gov.vn..."
-                          value={currentNote.fact_check_url || ''}
-                          onChange={(e) => handleScanNoteChange(activeScanLayer, 'fact_check_url', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.82rem' }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
             )}
 
@@ -419,87 +418,76 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   )}
                 </div>
 
-                {/* 4 SUB-TABS CHO BUYER LENS */}
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '12px' }}>
+                {/* MA TRẬN 4 HÀNG TOÀN CẢNH (ALL-LAYERS MATRIX) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {/* Header Cột */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '170px 1.6fr 1.3fr', gap: '12px', padding: '0 8px', color: 'var(--text-secondary)', fontSize: '0.78rem', fontWeight: 'bold' }}>
+                    <div>Góc Nhìn Buyer (4 Dimensions)</div>
+                    <div>Đúc Kết Tâm Lý & Nỗi Đau (AI / Thực Tế)</div>
+                    <div>Đề Xuất Giá Trị Tiếp Cận (Actionable Pitch)</div>
+                  </div>
+
+                  {/* 4 Hàng */}
                   {LENS_LAYERS.map(layer => {
-                    const isSelected = activeLensLayer === layer.id;
-                    const layerData = lensNotes[layer.id];
-                    const hasData = Boolean(layerData?.ai_output || layerData?.action_usp);
+                    const currentNote = lensNotes[layer.id] || { ai_output: '', action_usp: '' };
+                    const hasData = Boolean(currentNote.ai_output || currentNote.action_usp);
 
                     return (
-                      <button
+                      <div 
                         key={layer.id}
-                        type="button"
-                        onClick={() => setActiveLensLayer(layer.id)}
-                        style={{
-                          padding: '5px 12px',
-                          borderRadius: '6px',
-                          border: isSelected ? '1px solid var(--accent-warning)' : '1px solid rgba(255,255,255,0.08)',
-                          background: isSelected ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.02)',
-                          color: isSelected ? 'var(--accent-warning)' : 'var(--text-secondary)',
-                          fontSize: '0.76rem',
-                          fontWeight: isSelected ? 700 : 500,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px'
+                        style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: '170px 1.6fr 1.3fr', 
+                          gap: '12px', 
+                          padding: '12px', 
+                          borderRadius: '8px', 
+                          background: hasData ? 'rgba(245,158,11,0.03)' : 'rgba(255,255,255,0.015)', 
+                          border: hasData ? '1px solid rgba(245,158,11,0.2)' : '1px solid rgba(255,255,255,0.05)',
+                          alignItems: 'start' 
                         }}
                       >
-                        {layer.label}
-                        {hasData && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#f59e0b' }} />}
-                      </button>
+                        {/* Cột 1: Tên & Trọng tâm */}
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--accent-warning)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: hasData ? '#f59e0b' : 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                            {layer.label}
+                          </div>
+                          <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '4px', lineHeight: '1.35' }}>
+                            {layer.desc}
+                          </div>
+                        </div>
+
+                        {/* Cột 2: Textarea AI Output */}
+                        <div>
+                          <textarea
+                            className="form-input"
+                            rows={3}
+                            placeholder={`Dán phân tích tâm lý / tiêu chí cho ${layer.label}...`}
+                            value={currentNote.ai_output || ''}
+                            onChange={(e) => handleLensNoteChange(layer.id, 'ai_output', e.target.value)}
+                            onBlur={handleBlur}
+                            disabled={isDisabled}
+                            style={{ fontSize: '0.8rem', lineHeight: '1.4', resize: 'vertical' }}
+                          />
+                        </div>
+
+                        {/* Cột 3: Actionable Pitch */}
+                        <div>
+                          <textarea
+                            className="form-input"
+                            rows={3}
+                            placeholder="VD: Cam kết bù hàng 100% nếu trễ hạn giao hàng..."
+                            value={currentNote.action_usp || ''}
+                            onChange={(e) => handleLensNoteChange(layer.id, 'action_usp', e.target.value)}
+                            onBlur={handleBlur}
+                            disabled={isDisabled}
+                            style={{ fontSize: '0.8rem', lineHeight: '1.4', resize: 'vertical' }}
+                          />
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
-
-                {/* KHÔNG GIAN NHẬP LIỆU CHO BUYER LENS */}
-                {(() => {
-                  const currentConfig = LENS_LAYERS.find(l => l.id === activeLensLayer) || LENS_LAYERS[0];
-                  const currentNote = lensNotes[activeLensLayer] || { ai_output: '', action_usp: '' };
-
-                  return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        <strong>Góc nhìn Buyer:</strong> {currentConfig.desc}
-                      </div>
-
-                      {/* TEXTAREA DÁN KẾT QUẢ AI */}
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          📥 Dán kết quả phân tích Buyer Lens (Gemini / GPT / Tự đúc kết):
-                        </label>
-                        <textarea
-                          className="form-input"
-                          rows={4}
-                          placeholder={`Dán phân tích tâm lý, nỗi đau hoặc tiêu chí của Buyer cho phần ${currentConfig.label}...`}
-                          value={currentNote.ai_output || ''}
-                          onChange={(e) => handleLensNoteChange(activeLensLayer, 'ai_output', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.82rem', lineHeight: '1.45' }}
-                        />
-                      </div>
-
-                      {/* ĐỀ XUẤT THÔNG ĐIỆP TIẾP CẬN / USP */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--accent-warning)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          💡 Đề xuất thông điệp tiếp cận & Giá trị chào hàng (Actionable Buyer Pitch):
-                        </label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="VD: Cam kết bù hàng 100% nếu trễ hạn giao hàng, tối ưu MOQ đợt đầu để thử nghiệm..."
-                          value={currentNote.action_usp || ''}
-                          onChange={(e) => handleLensNoteChange(activeLensLayer, 'action_usp', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.82rem' }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
             )}
 
@@ -534,87 +522,76 @@ export default function B03_MarketIntelligence({ data, setData, handleBlur, isDi
                   )}
                 </div>
 
-                {/* 6 SUB-TABS CHO PESTEL */}
-                <div style={{ display: 'flex', gap: '6px', overflowX: 'auto', paddingBottom: '8px', marginBottom: '12px' }}>
+                {/* MA TRẬN 6 HÀNG TOÀN CẢNH (ALL-LAYERS MATRIX) */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  {/* Header Cột */}
+                  <div style={{ display: 'grid', gridTemplateColumns: '170px 1.6fr 1.3fr', gap: '12px', padding: '0 8px', color: 'var(--text-secondary)', fontSize: '0.78rem', fontWeight: 'bold' }}>
+                    <div>Yếu Tố Vĩ Mô (PESTEL)</div>
+                    <div>Dữ Liệu Tác Động & Xu Hướng (AI / Thống Kê)</div>
+                    <div>Hành Động Ứng Phó Của Doanh Nghiệp (Action)</div>
+                  </div>
+
+                  {/* 6 Hàng */}
                   {PESTEL_LAYERS.map(layer => {
-                    const isSelected = activePestelLayer === layer.id;
-                    const layerData = pestelNotes[layer.id];
-                    const hasData = Boolean(layerData?.ai_output || layerData?.impact_action);
+                    const currentNote = pestelNotes[layer.id] || { ai_output: '', impact_action: '' };
+                    const hasData = Boolean(currentNote.ai_output || currentNote.impact_action);
 
                     return (
-                      <button
+                      <div 
                         key={layer.id}
-                        type="button"
-                        onClick={() => setActivePestelLayer(layer.id)}
-                        style={{
-                          padding: '5px 12px',
-                          borderRadius: '6px',
-                          border: isSelected ? '1px solid var(--accent-success)' : '1px solid rgba(255,255,255,0.08)',
-                          background: isSelected ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.02)',
-                          color: isSelected ? 'var(--accent-success)' : 'var(--text-secondary)',
-                          fontSize: '0.76rem',
-                          fontWeight: isSelected ? 700 : 500,
-                          cursor: 'pointer',
-                          whiteSpace: 'nowrap',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '5px'
+                        style={{ 
+                          display: 'grid', 
+                          gridTemplateColumns: '170px 1.6fr 1.3fr', 
+                          gap: '12px', 
+                          padding: '12px', 
+                          borderRadius: '8px', 
+                          background: hasData ? 'rgba(16,185,129,0.03)' : 'rgba(255,255,255,0.015)', 
+                          border: hasData ? '1px solid rgba(16,185,129,0.2)' : '1px solid rgba(255,255,255,0.05)',
+                          alignItems: 'start' 
                         }}
                       >
-                        {layer.label}
-                        {hasData && <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />}
-                      </button>
+                        {/* Cột 1: Tên & Trọng tâm */}
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: '0.82rem', color: 'var(--accent-success)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ width: 6, height: 6, borderRadius: '50%', background: hasData ? '#10b981' : 'rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                            {layer.label}
+                          </div>
+                          <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', marginTop: '4px', lineHeight: '1.35' }}>
+                            {layer.desc}
+                          </div>
+                        </div>
+
+                        {/* Cột 2: Textarea AI Output */}
+                        <div>
+                          <textarea
+                            className="form-input"
+                            rows={3}
+                            placeholder={`Dán số liệu, sự kiện chính sách cho ${layer.label}...`}
+                            value={currentNote.ai_output || ''}
+                            onChange={(e) => handlePestelNoteChange(layer.id, 'ai_output', e.target.value)}
+                            onBlur={handleBlur}
+                            disabled={isDisabled}
+                            style={{ fontSize: '0.8rem', lineHeight: '1.4', resize: 'vertical' }}
+                          />
+                        </div>
+
+                        {/* Cột 3: Strategic Action */}
+                        <div>
+                          <textarea
+                            className="form-input"
+                            rows={3}
+                            placeholder="VD: Chủ động chuyển sang bao bì phân hủy sinh học..."
+                            value={currentNote.impact_action || ''}
+                            onChange={(e) => handlePestelNoteChange(layer.id, 'impact_action', e.target.value)}
+                            onBlur={handleBlur}
+                            disabled={isDisabled}
+                            style={{ fontSize: '0.8rem', lineHeight: '1.4', resize: 'vertical' }}
+                          />
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
-
-                {/* KHÔNG GIAN NHẬP LIỆU CHO PESTEL */}
-                {(() => {
-                  const currentConfig = PESTEL_LAYERS.find(l => l.id === activePestelLayer) || PESTEL_LAYERS[0];
-                  const currentNote = pestelNotes[activePestelLayer] || { ai_output: '', impact_action: '' };
-
-                  return (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                      <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                        <strong>Yếu tố vĩ mô:</strong> {currentConfig.desc}
-                      </div>
-
-                      {/* TEXTAREA DÁN KẾT QUẢ AI */}
-                      <div>
-                        <label style={{ display: 'block', fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          📥 Dán kết quả phân tích PESTEL (Gemini Spark / GPT / Dữ liệu vĩ mô):
-                        </label>
-                        <textarea
-                          className="form-input"
-                          rows={4}
-                          placeholder={`Dán số liệu, sự kiện chính sách hoặc xu hướng tác động cho ${currentConfig.label}...`}
-                          value={currentNote.ai_output || ''}
-                          onChange={(e) => handlePestelNoteChange(activePestelLayer, 'ai_output', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.82rem', lineHeight: '1.45' }}
-                        />
-                      </div>
-
-                      {/* TÁC ĐỘNG & HÀNH ĐỘNG ỨNG PHÓ */}
-                      <div>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: 'var(--accent-success)', marginBottom: '4px', fontWeight: 'bold' }}>
-                          🎯 Tác động thị trường & Hành động ứng phó của Sales (Strategic Action):
-                        </label>
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="VD: Chủ động chuyển sang bao bì phân hủy sinh học để đón đầu tiêu chuẩn xanh EU..."
-                          value={currentNote.impact_action || ''}
-                          onChange={(e) => handlePestelNoteChange(activePestelLayer, 'impact_action', e.target.value)}
-                          onBlur={handleBlur}
-                          disabled={isDisabled}
-                          style={{ fontSize: '0.82rem' }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
               </div>
             )}
           </div>
