@@ -1,7 +1,7 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v8.0 (Chuẩn Hóa Đa Tầng Báo Giá Thương Mại, Báo Cáo TCO Quốc Tế, Zero-Truncation Typography, 1-Click Bilingual & Bộ Công Cụ Tự Động Hóa)  
-**Ngày cập nhật:** 28/08/2026
+**Phiên bản:** v8.1 (Tích Hợp Cẩm Nang ChatGPT LinkedIn Plugin Sourcing, Dynamic Prompt Builder RCTO & Chuẩn Hóa Overlay Neon Pixel-Perfect)  
+**Ngày cập nhật:** 14/09/2026
 
 Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toàn bộ **Tư duy Nghiệp vụ, Kết quả Đã làm, Điểm Tồn đọng, Kỹ thuật Cốt lõi, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc cập nhật dữ liệu ngay lập tức chỉ với 1 cú click.
 
@@ -66,6 +66,16 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 - **Sửa Lỗi React Child Object (`Minified React error #31`)**: Viết hàm `formatM01Goal` và `formatPain` để bóc tách an toàn object `{ input1, input2, input3 }` của Mad Libs thành chuỗi.
 - **Tích hợp Google Drive API & Trình Đọc Slide 15 Buổi**: Service Account quét thư mục Google Drive, trích xuất ID và nhúng PDF Reader trực tiếp vào cột 1 của `ModuleLayout`.
 - **Hybrid PiP Video Player**: Khung phát video nổi kéo thả tự động nhúng `<iframe>` Google Drive Preview (`16:9`, hỗ trợ tua tốc độ $1.25\times, 1.5\times, 2.0\times$) hoặc fallback `<video>` native, tiết kiệm 100% chi phí Supabase Storage.
+
+---
+
+### 1.5. Cẩm Nang Kỹ Thuật Số & Khai Thác ChatGPT Plugin LinkedIn (M03 - B06 Lead Sourcing)
+- **Kiến Trúc Truy Cập Kép (Dual-Access Architecture)**:
+  - *Trang độc lập*: Route `/guide/linkedin-plugin` đầy đủ breadcrumbs, responsive trên mọi thiết bị và tích hợp nút copy link chia sẻ tức thì.
+  - *Tích hợp 2 điểm chạm trong luồng học*: Thẻ Card nổi bật tại Cột 3 M03 (Trợ lý AI) và nút bấm tắt `[🤖 Hướng Dẫn AI LinkedIn]` tại Bài 06 (B06 Lead Triage).
+- **Hệ Thống 4 Bước Thao Tác Trực Quan (Interactive Neon Overlay Stepper)**:
+  - *Bước 1, 2, 3 (Setup & Visual Focus)*: Phân tách tuyệt đối, tập trung toàn diện vào ảnh chụp màn hình độ phân giải cao, mũi tên vector neon nhấp nháy, khung viền highlight quét chuẩn xác theo ma trận pixel gốc, kèm Hộp Chú Thích 3 Phần (Thao tác chính, Ý nghĩa nghiệp vụ B2B, Mẹo thực chiến & Cảnh báo). Hỗ trợ Lightbox click-to-zoom phóng to toàn màn hình.
+  - *Bước 4 (Execution & Tooling)*: Trình Tạo Prompt Động RCTO (*Role - Context - Template - Output*) tự động đồng bộ biến số ICP & Target Accounts từ M02, hỗ trợ 1-click copy prompt và nút mở trực tiếp ChatGPT.
 
 ---
 
