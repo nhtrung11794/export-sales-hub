@@ -138,27 +138,56 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           boxShadow: isHovered ? '4px 0 24px rgba(0,0,0,0.5)' : 'none'
         }}
       >
-        {/* LOGO AREA */}
-        <div style={{ padding: '0 24px', marginBottom: '32px', display: 'flex', alignItems: 'center', height: '48px' }}>
-          <div style={{ 
-            width: '22px', 
-            height: '22px', 
-            background: 'var(--accent-primary)', 
-            borderRadius: '4px',
-            flexShrink: 0,
-            marginRight: '16px'
-          }}></div>
+        {/* LOGO AREA - Click to navigate to Dashboard */}
+        <Link 
+          href="/" 
+          title="Về trang chủ (Dashboard)"
+          style={{ 
+            padding: '0 24px', 
+            marginBottom: '32px', 
+            display: 'flex', 
+            alignItems: 'center', 
+            height: '48px',
+            textDecoration: 'none',
+            cursor: 'pointer',
+            borderRadius: '8px',
+            transition: 'opacity 0.2s ease'
+          }}
+          className="group hover:opacity-95"
+        >
+          <div 
+            style={{ 
+              width: '22px', 
+              height: '22px', 
+              background: 'var(--accent-primary)', 
+              borderRadius: '4px',
+              flexShrink: 0,
+              marginRight: '16px',
+              boxShadow: '0 2px 8px rgba(59, 130, 246, 0.3)',
+              transition: 'transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease, box-shadow 0.2s ease'
+            }}
+            className="group-hover:scale-105 group-hover:brightness-115 group-hover:shadow-[0_0_12px_rgba(59,130,246,0.6)]"
+          />
           
           <div style={{ 
             opacity: isHovered ? 1 : 0, 
             transition: 'opacity 0.2s',
             whiteSpace: 'nowrap'
           }}>
-            <h2 style={{ color: 'var(--accent-primary)', fontSize: '1.1rem', margin: 0, lineHeight: '1.2' }}>
+            <h2 
+              style={{ 
+                color: 'var(--accent-primary)', 
+                fontSize: '1.1rem', 
+                margin: 0, 
+                lineHeight: '1.2',
+                transition: 'color 0.2s ease'
+              }}
+              className="group-hover:text-blue-400"
+            >
               Export Sales<br/>Hub
             </h2>
           </div>
-        </div>
+        </Link>
 
         {/* NAVIGATION LINKS */}
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px', padding: '0 12px' }}>
