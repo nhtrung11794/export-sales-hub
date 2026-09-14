@@ -76,6 +76,9 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 - **Hệ Thống 4 Bước Thao Tác Trực Quan (Interactive Neon Overlay Stepper)**:
   - *Bước 1, 2, 3 (Setup & Visual Focus)*: Phân tách tuyệt đối, tập trung toàn diện vào ảnh chụp màn hình độ phân giải cao, mũi tên vector neon nhấp nháy, khung viền highlight quét chuẩn xác theo ma trận pixel gốc, kèm Hộp Chú Thích 3 Phần (Thao tác chính, Ý nghĩa nghiệp vụ B2B, Mẹo thực chiến & Cảnh báo). Hỗ trợ Lightbox click-to-zoom phóng to toàn màn hình.
   - *Bước 4 (Execution & Tooling)*: Trình Tạo Prompt Động RCTO (*Role - Context - Template - Output*) tự động đồng bộ biến số ICP & Target Accounts từ M02, hỗ trợ 1-click copy prompt và nút mở trực tiếp ChatGPT.
+- **Chuyển Hướng Về Dashboard Khi Bấm Logo Export Sales Hub (`src/components/layout/AppLayout.tsx`)**:
+  - Bọc toàn bộ logo icon và text trên Sidebar thành Next.js `<Link href="/">`.
+  - Tích hợp phản hồi trực quan: icon vuông phát sáng `scale(1.05)`, tăng sáng `brightness(1.15)`, phát viền neon đổ bóng và đổi màu chữ `text-blue-400` khi rê chuột, kèm `title="Về trang chủ (Dashboard)"`.
 
 ---
 
