@@ -5,10 +5,11 @@ import ModuleLayout from '@/components/layout/ModuleLayout';
 import M03_CombinedForm from '@/components/modules/m03/M03_CombinedForm';
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
-import { Play, BookOpen, X, Sparkles, Copy, Check } from 'lucide-react';
+import { Play, BookOpen, X, Sparkles, Copy, Check, ExternalLink } from 'lucide-react';
 import { Rnd } from 'react-rnd';
 
 import { openCourseSlide, GOOGLE_DRIVE_SLIDES_ROOT, COURSE_MATERIALS, getLessonSlideEmbedUrl, getLessonStandardFileName, getLessonVideoEmbedUrl } from '@/lib/courseMaterials';
+import LinkedInPluginGuide from '@/components/modules/m03/LinkedInPluginGuide';
 
 export default function M03Page() {
   const supabase = createClient();
@@ -18,6 +19,7 @@ export default function M03Page() {
   const [previewTitle, setPreviewTitle] = useState<string>('');
   const [pipVideoUrl, setPipVideoUrl] = useState<string | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+  const [isLinkedInGuideOpen, setIsLinkedInGuideOpen] = useState<boolean>(false);
 
   const { getModuleData, submitModule, unlockModule, submissions } = useModuleStore();
 
@@ -223,6 +225,56 @@ export default function M03Page() {
 
   const aiTutorContent = (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      {/* PROMPT 0: CHATGPT + LINKEDIN PLUGIN SOURCING */}
+      <div className="glass-panel" style={{ padding: '20px', background: 'rgba(10, 102, 194, 0.08)', borderColor: 'rgba(10, 102, 194, 0.3)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '6px',
+              background: '#0a66c2',
+              color: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '0.75rem',
+              fontWeight: 900
+            }}>
+              in
+            </div>
+            <h4 style={{ color: '#38bdf8', fontSize: '0.95rem', fontWeight: 'bold', margin: 0 }}>
+              ChatGPT + Plugin LinkedIn
+            </h4>
+          </div>
+          <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(56, 189, 248, 0.2)', color: '#38bdf8', fontWeight: 700 }}>
+            Lead Sourcing
+          </span>
+        </div>
+        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '14px', lineHeight: '1.4' }}>
+          Quy trình 4 bước cào khách hàng & Decision Makers LinkedIn chuẩn cấu trúc RCTO.
+        </p>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={() => setIsLinkedInGuideOpen(true)}
+            className="btn btn-primary"
+            style={{ flex: 1, fontSize: '0.82rem', padding: '8px 10px', background: '#0284c7', borderColor: '#0284c7' }}
+          >
+            <BookOpen size={14} /> Mở Hướng Dẫn & Lấy Prompt
+          </button>
+          <a
+            href="/guide/linkedin-plugin"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-secondary"
+            style={{ fontSize: '0.82rem', padding: '8px 10px', display: 'flex', alignItems: 'center', gap: '4px', textDecoration: 'none' }}
+            title="Mở tài liệu trên tab mới"
+          >
+            <ExternalLink size={14} />
+          </a>
+        </div>
+      </div>
+
       {/* PROMPT 1: GEMINI SPARK */}
       <div className="glass-panel" style={{ padding: '20px', background: 'rgba(16, 185, 129, 0.05)', borderColor: 'rgba(16, 185, 129, 0.2)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
@@ -351,6 +403,34 @@ export default function M03Page() {
             </div>
           </div>
         </Rnd>
+      )}
+
+      {/* MODAL HƯỚNG DẪN CHATGPT LINKEDIN PLUGIN */}
+      {isLinkedInGuideOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px'
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '1360px',
+            height: '92vh',
+            maxHeight: '92vh',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 25px 70px rgba(0, 0, 0, 0.9)',
+            border: '1px solid rgba(255, 255, 255, 0.15)'
+          }}>
+            <LinkedInPluginGuide onClose={() => setIsLinkedInGuideOpen(false)} />
+          </div>
+        </div>
       )}
     </div>
   );

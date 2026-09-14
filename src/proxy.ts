@@ -6,7 +6,10 @@ export default async function proxy(request: NextRequest) {
     request,
   })
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  if (!supabaseUrl.startsWith('http://') && !supabaseUrl.startsWith('https://')) {
+    supabaseUrl = 'https://placeholder.supabase.co';
+  }
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
   const supabase = createServerClient(

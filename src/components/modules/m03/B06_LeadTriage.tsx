@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, AlertTriangle, CheckCircle2, Mail, Plus, Trash2, ArrowRight, FileSpreadsheet, X, Upload } from 'lucide-react';
 import { M03FormData, LeadItem } from './M03_CombinedForm';
+import LinkedInPluginGuide from './LinkedInPluginGuide';
 
 interface Props {
   data: M03FormData;
@@ -14,6 +15,7 @@ interface Props {
 export default function B06_LeadTriage({ data, setData, handleBlur, isDisabled }: Props) {
   const [activeTab, setActiveTab] = useState<'triage' | 'outreach'>('triage');
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isLinkedInGuideOpen, setIsLinkedInGuideOpen] = useState(false);
   const [importText, setImportText] = useState('');
 
   // Đảm bảo dữ liệu luôn có fallback
@@ -226,14 +228,24 @@ Trân trọng,
                 {isLimitReached ? ' Các ô còn lại đã tự động khóa để bảo vệ tính kỷ luật B2B.' : ' Hãy chọn tối đa 2 accounts nét nhất.'}
               </div>
             </div>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setIsImportModalOpen(true)}
-              style={{ gap: 6, fontSize: '.8rem', padding: '6px 14px', background: 'rgba(59,130,246,.15)', borderColor: 'var(--accent-primary)', color: 'var(--accent-primary)' }}
-            >
-              <FileSpreadsheet size={15} /> 📥 Dán danh sách từ AI / CSV
-            </button>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setIsLinkedInGuideOpen(true)}
+                style={{ gap: 6, fontSize: '.8rem', padding: '6px 14px', background: 'rgba(10, 102, 194, 0.2)', borderColor: '#0a66c2', color: '#38bdf8' }}
+              >
+                <Sparkles size={15} color="#38bdf8" /> 🤖 Hướng Dẫn AI LinkedIn
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setIsImportModalOpen(true)}
+                style={{ gap: 6, fontSize: '.8rem', padding: '6px 14px', background: 'rgba(59,130,246,.15)', borderColor: 'var(--accent-primary)', color: 'var(--accent-primary)' }}
+              >
+                <FileSpreadsheet size={15} /> 📥 Dán danh sách từ AI / CSV
+              </button>
+            </div>
           </div>
 
           <div style={{
@@ -544,6 +556,34 @@ Trân trọng,
                 <Upload size={15} /> Nhập vào Bảng Sàng Lọc
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL HƯỚNG DẪN CHATGPT LINKEDIN PLUGIN */}
+      {isLinkedInGuideOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.8)',
+          backdropFilter: 'blur(8px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px'
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '1360px',
+            height: '92vh',
+            maxHeight: '92vh',
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 25px 70px rgba(0, 0, 0, 0.9)',
+            border: '1px solid rgba(255, 255, 255, 0.15)'
+          }}>
+            <LinkedInPluginGuide onClose={() => setIsLinkedInGuideOpen(false)} />
           </div>
         </div>
       )}
