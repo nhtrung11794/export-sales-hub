@@ -106,10 +106,10 @@ O — OUTPUT & CONSTRAINTS
       overlays: [
         {
           id: 'b1-item',
-          top: '34%',
+          top: '30.5%',
           left: '1.2%',
           width: '18%',
-          height: '8%',
+          height: '5.8%',
           label: '1️⃣ Nhấp vào "Plugin"',
           pulse: true,
         }
@@ -128,19 +128,19 @@ O — OUTPUT & CONSTRAINTS
       overlays: [
         {
           id: 'b2-search',
-          top: '33%',
-          left: '70%',
-          width: '21%',
-          height: '9%',
+          top: '17.5%',
+          left: '71.5%',
+          width: '19%',
+          height: '6.5%',
           label: '2A: Gõ từ khóa "linkedin"',
           pulse: false,
         },
         {
           id: 'b2-plus',
-          top: '70.5%',
-          left: '55.5%',
-          width: '3.8%',
-          height: '8%',
+          top: '37.5%',
+          left: '56.5%',
+          width: '3.5%',
+          height: '6.5%',
           label: '2B: Bấm dấu (+)',
           pulse: true,
         }
@@ -148,22 +148,31 @@ O — OUTPUT & CONSTRAINTS
     },
     {
       step: 3,
-      title: 'Bước 03: Kích hoạt Huy hiệu [in LinkedIn] trong Chat',
+      title: 'Bước 03: Gõ @linkedin & Chọn Tiện Ích Trong Chat',
       badge: 'Gọi Tiện Ích',
-      description: 'Mở cuộc trò chuyện mới, kích hoạt plugin LinkedIn để huy hiệu màu xanh [in LinkedIn] xuất hiện ngay trong khung soạn thảo câu lệnh.',
+      description: 'Mở cuộc trò chuyện mới, gõ cú pháp "@linkedin" vào khung chat và nhấp chọn dòng tiện ích "LinkedIn Find the right professional" từ menu gợi ý xuất hiện bên dưới.',
       imgSrc: '/images/tutorials/linkedin-plugin/step3-invoke-linkedin-plugin.png',
-      alt: 'Bước 3: Kích hoạt huy hiệu LinkedIn trong khung chat',
-      mainAction: 'Bấm "Đoạn chat mới" (New chat). Chọn gọi plugin LinkedIn sao cho huy hiệu màu xanh "[in LinkedIn]" xuất hiện ngay phía trước vùng nhập tin nhắn.',
-      businessNote: 'Huy hiệu [in LinkedIn] là tín hiệu bắt buộc xác nhận ChatGPT đang truy vấn trực tiếp qua API mạng xã hội LinkedIn. Nếu không có huy hiệu này, AI sẽ chỉ tìm kiếm thông tin web chung chung thay vì trích xuất đúng hồ sơ Buyer thực tế.',
-      proTip: 'Bạn có thể gọi nhanh bằng cách gõ ký tự "@" hoặc nhấp vào biểu tượng dấu cộng (+) trong thanh nhập liệu của ChatGPT để chọn tiện ích từ menu nổi.',
+      alt: 'Bước 3: Gõ @linkedin và chọn tiện ích LinkedIn Find the right professional',
+      mainAction: 'Tại khung chat mới, gõ cú pháp "@linkedin". Một danh sách gợi ý sẽ xuất hiện ngay bên dưới, nhấp chọn đúng dòng thứ 4: "[in] LinkedIn Find the right professional" để kích hoạt.',
+      businessNote: 'Thao tác gõ @linkedin trực tiếp trong khung chat là cách nhanh nhất và chuẩn xác nhất để gán context của LinkedIn vào phiên hội thoại, giúp AI hiểu và kích hoạt quyền trích xuất dữ liệu doanh nghiệp.',
+      proTip: 'Tránh chọn nhầm các plugin viết bài như Animated Infographics, Headline Rewriter hay Text Styler. Hãy chọn đúng dòng có biểu tượng [in] LinkedIn "Find the right professional".',
       overlays: [
         {
-          id: 'b3-badge',
-          top: '79%',
-          left: '38%',
-          width: '8.5%',
-          height: '8.5%',
-          label: '3️⃣ Huy hiệu [in LinkedIn]',
+          id: 'b3-type',
+          top: '43.5%',
+          left: '37.5%',
+          width: '7.5%',
+          height: '5.2%',
+          label: '3A: Gõ "@linkedin"',
+          pulse: true,
+        },
+        {
+          id: 'b3-select',
+          top: '67.5%',
+          left: '35.5%',
+          width: '49%',
+          height: '6.5%',
+          label: '3B: Chọn "LinkedIn Find the right professional"',
           pulse: true,
         }
       ]
@@ -181,7 +190,7 @@ O — OUTPUT & CONSTRAINTS
       overlays: [
         {
           id: 'b4-prompt',
-          top: '40%',
+          top: '41%',
           left: '34.5%',
           width: '53%',
           height: '38%',
@@ -192,8 +201,8 @@ O — OUTPUT & CONSTRAINTS
           id: 'b4-send',
           top: '71.5%',
           left: '81%',
-          width: '4%',
-          height: '8%',
+          width: '3.5%',
+          height: '6.5%',
           label: '4B: Bấm Gửi (↑)',
           pulse: true,
         }
