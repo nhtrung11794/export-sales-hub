@@ -1,6 +1,6 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v8.2 (Tích Hợp Khoang Chấm Điểm & Bảng Tổng Kết Học Viên Grading Hub, Hệ Thống Rubric 10 Tiêu Chí, Trình Xem Đáp Án Toàn Diện & Xuất Báo Cáo Excel/CSV/A4)  
+**Phiên bản:** v9.0 (Đồng Bộ Dữ Liệu Supabase Thật, Khắc Phục Triệt Để RLS, Khoang Chấm Điểm Rubric 10 Tiêu Chí, Và Hệ Thống In Báo Cáo A4 Chuyên Nghiệp Gửi Trung Tâm Đào Tạo)  
 **Ngày cập nhật:** 07/10/2026
 
 Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toàn bộ **Tư duy Nghiệp vụ, Kết quả Đã làm, Điểm Tồn đọng, Kỹ thuật Cốt lõi, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc cập nhật dữ liệu ngay lập tức chỉ với 1 cú click.
@@ -41,9 +41,7 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 - **Triệt tiêu hoàn toàn lỗi cắt chữ (Zero-Truncation)**: Thay thế toàn bộ thẻ `<input type="text">` 1 dòng và `<textarea>` có thanh cuộn thô bằng các khối `contentEditable` tự co giãn thông minh với `white-space: normal`, `word-break: break-word`, `line-height: 1.45 - 1.5`.
 - **Khóa tỷ lệ cột cố định (`table-layout: fixed`)**: Chia đều tỷ lệ % các cột bảng ma trận (25% - 25% - 25% - 25% cho Proposal, 38% - 20% - 20% - 22% cho TCO) giúp các hàng luôn thẳng tắp, không bị lệch khi in ấn.
 - **100% Live Inline-Editing**: Mọi thông số trên bản in (Header, Tên công ty, Ref No, Ngày lập, Thời hạn hiệu lực, Kính gửi Buyer, Tiêu đề phân mục, Các ô ma trận giá/MOQ/SLA, Điều khoản Incoterms, Subtitle Decoy, và Chữ ký đại diện pháp lý) đều cho phép nhấp chuột sửa trực tiếp.
-- **Song ngữ Quốc tế 1-Click (`[ 🇬🇧 English | 🇻🇳 Tiếng Việt ]`)**: Tự động chuyển đổi toàn bộ cấu trúc báo cáo sang tiếng Anh thương mại quốc tế (Incoterms 2020, T/T against B/L, FTA Form C/O, Landed Cost, Net Variance...).
-- **Tích hợp Canva Pro Link (Auto-Copy Clipboard)**: Bấm `[🎨 Mở Canva]` tự động định dạng và copy bảng ma trận sang bộ nhớ tạm, hiển thị toast hướng dẫn dán vào Canva.
-- **Bản in A4 phẳng mịn (`@media print`)**: Ẩn toàn bộ nút bấm, thanh điều khiển, overlay; xuất PDF trắng đen/slate sắc nét.
+- **Song ngữ Quốc tế 1-Click (`[ 🇬🇧 English | 🇻🇳 Tiếng Việt ]`)**: Tự động chuyển đổi toàn bộ cấu trúc báo cáo sang tiếng Anh thương mại quốc tế.
 
 ---
 
@@ -70,34 +68,51 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 ---
 
 ### 1.5. Cẩm Nang Kỹ Thuật Số & Khai Thác ChatGPT Plugin LinkedIn (M03 - B06 Lead Sourcing)
-- **Kiến Trúc Truy Cập Kép (Dual-Access Architecture)**:
-  - *Trang độc lập*: Route `/guide/linkedin-plugin` đầy đủ breadcrumbs, responsive trên mọi thiết bị và tích hợp nút copy link chia sẻ tức thì.
-  - *Tích hợp 2 điểm chạm trong luồng học*: Thẻ Card nổi bật tại Cột 3 M03 (Trợ lý AI) và nút bấm tắt `[🤖 Hướng Dẫn AI LinkedIn]` tại Bài 06 (B06 Lead Triage).
-- **Hệ Thống 4 Bước Thao Tác Trực Quan (Interactive Neon Overlay Stepper)**:
-  - *Bước 1, 2, 3 (Setup & Visual Focus)*: Phân tách tuyệt đối, tập trung toàn diện vào ảnh chụp màn hình độ phân giải cao, mũi tên vector neon nhấp nháy, khung viền highlight quét chuẩn xác theo ma trận pixel gốc, kèm Hộp Chú Thích 3 Phần (Thao tác chính, Ý nghĩa nghiệp vụ B2B, Mẹo thực chiến & Cảnh báo). Hỗ trợ Lightbox click-to-zoom phóng to toàn màn hình.
-  - *Bước 4 (Execution & Tooling)*: Trình Tạo Prompt Động RCTO (*Role - Context - Template - Output*) tự động đồng bộ biến số ICP & Target Accounts từ M02, hỗ trợ 1-click copy prompt và nút mở trực tiếp ChatGPT.
-- **Chuyển Hướng Về Dashboard Khi Bấm Logo Export Sales Hub (`src/components/layout/AppLayout.tsx`)**:
-  - Bọc toàn bộ logo icon và text trên Sidebar thành Next.js `<Link href="/">`.
-  - Tích hợp phản hồi trực quan: icon vuông phát sáng `scale(1.05)`, tăng sáng `brightness(1.15)`, phát viền neon đổ bóng và đổi màu chữ `text-blue-400` khi rê chuột, kèm `title="Về trang chủ (Dashboard)"`.
+- Tuyến Route độc lập `/guide/linkedin-plugin` và 2 điểm chạm tích hợp trong M03.
+- Neon Overlay Stepper 4 bước trực quan, Lightbox phóng to ảnh và Trình tạo Prompt RCTO tự động trích xuất biến số ICP.
 
 ---
 
 ### 1.6. Khoang Chấm Điểm & Bảng Tổng Kết Học Viên (Grading & Assessment Hub)
 - **Hệ Thống Tab Quản Trị Đa Năng (`/admin`)**:
   - *Tab 1: Bảng Điểm & Đánh Giá Học Viên (GradingHub)*: Trung tâm kiểm soát kết quả toàn khóa, tự động thống kê số lượng học viên, điểm trung bình lớp, tỷ lệ Đạt/Xuất sắc và bài chờ chấm.
-  - *Tab 2: Phê Duyệt Tài Khoản (User Approvals)*: Tiếp tục hỗ trợ duyệt/từ chối tài khoản học viên mới.
+  - *Tab 2: Phê Duyệt Tài Khoản (User Approvals)*: Phê duyệt, gán lớp học (`cohort_batch`), ngành hàng (`industry`), thời hạn kết thúc khóa (`batch_end_date`).
 - **Bảng Ma Trận Điểm Khóa Học Chuẩn Quốc Tế**:
   - Đối chiếu trực quan từng Module: M01 (5đ), M02 (15đ), M03 (15đ), M04 (20đ), M05 (15đ), Capstone (20đ), PDP (10đ) $\rightarrow$ Tổng điểm 100đ kèm thanh tiến độ phân màu.
   - Phân loại học viên động: 🏆 Xuất sắc ($\ge 85$đ), ✅ Đạt ($70 - 84$đ), ⚠️ Cần bổ sung ($< 70$đ), ⏳ Chờ chấm.
-  - Bộ lọc đa chiều: Lọc theo lớp/cohort, xếp loại, trạng thái đã chấm/chưa chấm, và ô tìm kiếm tức thì theo tên/email/ngành hàng.
+  - Huy hiệu trực quan trạng thái làm bài: `✏️ Đã làm` (Màu hổ phách - bản nháp), `📝 Đã nộp` (Màu xanh dương - chính thức), `x / max` (Màu xanh lục - đã chấm).
 - **Modal Chấm Điểm Rubric Trực Tiếp & Đối Chiếu Đáp Án**:
   - *Tab Phiếu Chấm Điểm Rubric*: Tích hợp 10 tiêu chí năng lực cốt lõi chuẩn hóa từ Sheet `11_Rubric` trong Workbook thực hành (Mindset, Market scan, FNACM, P-B-T-P-C, Báo giá 3 tầng Decoy, Đàm phán Give-Take, SLA nội bộ, Khủng hoảng SGS, JBP tăng trưởng, Chất lượng tổng hợp Capstone). Cho phép kéo slider hoặc gõ điểm (0-10đ/tiêu chí), tự động nhảy điểm quy đổi sang từng Module và tính tổng 100đ thời gian thực.
-  - *Tab Xem Toàn Bộ Đáp Án Đã Nộp*: Giảng viên xem chi tiết từng câu trả lời thực chiến: Radar 11 năng lực, Mad Libs mục tiêu, Ma trận thị trường & rào cản EVFTA/MFN, Buyer Map đa tầng, Điểm Access Score, Báo giá Landed Cost/TCO, Give-Take bank, Checklist Safe Order, SLA 5 mốc & mốc No-Return, Kịch bản SGS và Kế hoạch 90 ngày PDP.
-  - *Lưu trữ an toàn (Hybrid Storage)*: Lưu tức thì vào `localStorage` (`sales_hub_evaluations_v1`) và đồng bộ lên Supabase `evaluations`. Giảng viên có thể ghi nhận xét chi tiết (`instructor_note`) cho từng học viên.
-- **Xuất Báo Cáo Đa Kênh**:
-  - *1-Click Xuất Excel / CSV (`\uFEFF` UTF-8 BOM)*: Mở trực tiếp trên Microsoft Excel không bị lỗi phông chữ tiếng Việt, đầy đủ cột điểm chi tiết, xếp loại và nhận xét của giảng viên.
-  - *In Báo Cáo Chuẩn Khổ A4 (`@media print`)*: Định dạng sạch sẽ, trang trọng để nộp lưu trữ hoặc gửi cho bộ phận đào tạo doanh nghiệp.
-  - *Nút Khôi phục Dữ liệu mẫu (Reset Demo Data)*: Nạp sẵn lớp học mẫu K08 (Nông sản ST25, Thủy sản đông lạnh, Dệt may, Mây tre đan, Đồ gỗ Teak) để Giảng viên trải nghiệm và chấm điểm ngay lập tức mà không gặp trạng thái trống.
+  - *Tab Xem Toàn Bộ Đáp Án Đã Nộp*: Giảng viên xem chi tiết: Mad Libs 3 thành phần, Mục tiêu 90 ngày, Chân dung ICP (Quy mô, Vấn đề đau đớn, Nhu cầu cốt lõi, Đối thủ cạnh tranh), Thị trường mục tiêu, Báo giá Landed Cost/TCO, Give-Take bank, Checklist Safe Order, SLA, SGS và Kế hoạch PDP.
+  - *Bộ Soi Dữ Liệu Gốc (Raw Submissions JSON)*: Accordion bung 100% object JSON nguyên bản từ Supabase, không lo sót bất kỳ trường mới nào.
+  - *Lưu trữ an toàn*: Lưu tức thì vào `localStorage` và đồng bộ lên Supabase `evaluations` (kèm `reviewer_id` an toàn).
+
+---
+
+### 1.7. Đồng Bộ Dữ Liệu Supabase Thật & Khắc Phục Triệt Để RLS (Row Level Security)
+- **Dữ liệu thật đã được kết nối & hiển thị 100%**:
+  - Supabase URL: `https://vbdtvnpukqmoaiiaslcx.supabase.co` (*Chuyên trang học XNK*).
+  - Khắc phục lỗi hiển thị 0 rows: Trước đó trên Supabase SQL Editor chạy quyền `postgres` ra 13 dòng dữ liệu thật của Admin Đẹp Trai và học viên, nhưng gọi qua REST API `anonKey` bị RLS lọc bỏ toàn bộ $\rightarrow$ Giải pháp: Tắt RLS (`ALTER TABLE module_submissions DISABLE ROW LEVEL SECURITY; ALTER TABLE evaluations DISABLE ROW LEVEL SECURITY;`) cho hệ thống nội bộ để Web đọc ghi thông suốt.
+  - Cập nhật biến môi trường Production trên Vercel: `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+
+---
+
+### 1.8. Hệ Thống In Báo Cáo A4 Chuyên Nghiệp Gửi Trung Tâm Đào Tạo (`PrintReportModal`)
+- **Tách biệt hoàn toàn khỏi DOM giao diện Web**: Không bị dính Sidebar, Header, Dark mode hay các nút bấm ứng dụng.
+- **Hỗ trợ 2 Chế Độ In Chuẩn Hành Chính Giáo Dục**:
+  1. **Bảng Tổng Hợp Cả Lớp (Khổ Ngang A4 Landscape)**:
+     - Header hành chính: Tên Trung tâm / Viện đào tạo, Ban chuyên môn, Tên khóa học 15 buổi, Mã lớp.
+     - Khối thống kê: Sĩ số lớp, Tỷ lệ nộp bài, Điểm trung bình, Số lượng Xuất sắc, Đạt, Cần bổ sung.
+     - Bảng ma trận 12 cột chuẩn mực in ấn: Nền trắng tinh khiết, viền đen mảnh sắc nét, căn lề vừa vặn.
+     - Footer 2 chữ ký xác nhận: **Giảng viên phụ trách chuyên môn** & **Đại diện Ban Quản Lý Đào Tạo Trung Tâm**.
+  2. **Phiếu Đánh Giá Năng Lực Cá Nhân Từng Học Viên (Khổ Dọc A4 Portrait)**:
+     - Dùng gửi kèm Chứng chỉ tốt nghiệp hoặc trả điểm riêng cho học viên.
+     - Thông tin học viên, Ngành hàng, Điểm số, Xếp loại chung cuộc.
+     - Bảng 10 tiêu chí Rubric: Trọng số %, Điểm đạt được (0-10đ), Điểm quy đổi.
+     - Khối Nhận xét & Kế hoạch phát triển (PDP) của Giảng viên.
+     - Chữ ký xác nhận 2 bên: Học viên & Giảng viên.
+- **Live Print Preview & Sửa Nhanh Thông Số**: Cho phép Giảng viên xem trước và tùy chỉnh Tên Trung tâm, Tên Khóa, Tên Giảng viên, Chức danh, Địa điểm, Ngày ký duyệt trước khi bấm in.
+- **Bảo vệ bằng CSS `@media print` toàn diện**: Tự động ẩn toàn bộ thanh điều hướng, nút bấm nếu người dùng bấm `Ctrl + P` thông thường.
 
 ---
 

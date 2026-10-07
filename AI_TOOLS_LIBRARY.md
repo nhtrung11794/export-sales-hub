@@ -20,15 +20,23 @@ File này chứa các "Thần chú" (System Commands) đúc kết từ Kiến tr
 > **Mục tiêu:** Thiết kế CSDL, Auth và Phân quyền.
 > **Quy tắc ép buộc:** Sử dụng Supabase PostgreSQL. Hỗ trợ luồng Đăng ký tự động + Phê duyệt Admin (`approval_status = 'pending'`). Dữ liệu form lưu bằng `JSONB` trong `module_submissions`. Thiết lập nghiêm ngặt Row Level Security (RLS) để cô lập dữ liệu.
 
-### ⚙️ Lệnh DevOps & Tích hợp (DevOps-03)
-> `[EXECUTE_SKILL: vercel-integrator]`
-> **Mục tiêu:** Cài đặt Webhooks, Cronjobs và xử lý PDF.
-> **Quy tắc ép buộc:** File xuất PDF (Capstone) phải được render tại **Client-side** (`html2pdf.js`) để tránh Timeout của Vercel Serverless.
+### 🎓 Lệnh Giảng Viên & Chấm Điểm Rubric (Admin-04)
+> `[EXECUTE_SKILL: admin-grading-architect]`
+> **Mục tiêu:** Quản trị Bảng Điểm 7 chặng, Chấm theo 10 Rubric Quốc Tế, Quản lý Học viên theo Lớp và Xuất Báo Cáo.
+> **Quy tắc ép buộc:** Đọc dữ liệu từ Supabase `module_submissions` và `evaluations`. Mọi điểm số phải quy đổi theo đúng trọng số Sheet `11_Rubric`. Khi lưu kết quả phải bao gồm `reviewer_id` và fallback an toàn `localStorage`.
 
 ---
 
 ## BỘ 2: CÔNG CỤ TỰ ĐỘNG HÓA (AUTOMATION TOOLS & SKILLS)
 *Sử dụng khi bạn muốn AI chạy các luồng tự động (Skill).*
+
+### 🖨️ Lệnh Kết Xuất Báo Cáo In Ấn Gửi Trung Tâm Đào Tạo
+> `[RUN_TOOL: @print-report-generator]`
+> **Trường hợp dùng:** Khi cần in Bảng Tổng Hợp Cả Lớp (Khổ ngang Landscape A4) hoặc Phiếu Đánh Giá Năng Lực Cá Nhân (Khổ dọc Portrait A4) gửi Trung tâm Đào tạo.
+> **Hành động của AI:** 
+> 1. Sử dụng Component `PrintReportModal` với cơ chế in cô lập qua pop-up window sạch sẽ, không dính thanh điều hướng Sidebar hay Dark mode.
+> 2. Đảm bảo đầy đủ tiêu đề hành chính, thông tin Khóa học/Lớp, bảng thống kê tỷ lệ đạt, bảng điểm 12 cột viền mực đen nét, và Footer 2 chữ ký: Giảng viên phụ trách & Đại diện Ban Đào tạo Trung tâm.
+> 3. Hỗ trợ Live Preview và sửa nhanh các thông tin hành chính trước khi bấm In.
 
 ### 🔄 Lệnh Chuẩn hóa PRD (Đồng bộ tài liệu)
 > `[RUN_TOOL: @standardize-prd]`
