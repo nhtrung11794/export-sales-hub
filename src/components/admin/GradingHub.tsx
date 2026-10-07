@@ -392,8 +392,12 @@ export default function GradingHub() {
 
     // Also attempt saving to Supabase if table exists
     try {
+      const adminUser = students.find(s => s.email === 'nhtrung11794@gmail.com') || students[0];
+      const reviewerId = adminUser?.studentId || selectedStudent.studentId;
+
       await supabase.from('evaluations').upsert({
         user_id: selectedStudent.studentId,
+        reviewer_id: reviewerId,
         module_id: 'ALL',
         rubric_scores: currentRubric,
         instructor_note: instructorNote,
@@ -401,7 +405,7 @@ export default function GradingHub() {
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
     } catch (e) {
-      console.warn('Supabase evaluation sync fallback');
+      console.warn('Supabase evaluation sync fallback:', e);
     }
 
     showToast(`Đã lưu kết quả chấm điểm học viên ${selectedStudent.fullName} (${modalCalculatedTotal} điểm)!`);
