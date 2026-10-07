@@ -57,35 +57,191 @@ export default function GradingHub() {
     loadStudentsData();
   }, []);
 
+  const [dataSource, setDataSource] = useState<'supabase' | 'demo'>('supabase');
+
+  // 1. Initialize data from Supabase Cloud or LocalStorage fallback
+  useEffect(() => {
+    loadStudentsData();
+  }, []);
+
   const loadStudentsData = async () => {
     setIsSyncing(true);
     try {
-      // Check localStorage first for persisted teacher evaluations
-      const localData = localStorage.getItem('sales_hub_evaluations_v1');
-      let baseStudents = INITIAL_MOCK_STUDENTS;
+      // 1. Query real users from Supabase
+      const { data: supaUsers, error: userErr } = await supabase
+        .from('users')
+        .select('*')
+        .order('created_at', { ascending: true });
 
+      if (supaUsers && supaUsers.length > 0) {
+        // 2. Query all submissions
+        const { data: supaSubmissions } = await supabase
+          .from('module_submissions')
+          .select('*');
+
+        // 3. Query all evaluations
+        const { data: supaEvaluations } = await supabase
+          .from('evaluations')
+          .select('*');
+
+        // Check local evaluations cache as well
+        const localCacheRaw = localStorage.getItem('sales_hub_evaluations_v1');
+        const localCacheMap = new Map();
+        if (localCacheRaw) {
+          try {
+            const parsed = JSON.parse(localCacheRaw);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((item: any) => localCacheMap.set(item.email, item));
+            }
+          } catch (e) {}
+        }
+
+        // Map real users to StudentSubmissionSummary
+        const realStudents: StudentSubmissionSummary[] = supaUsers.map((u: any, idx: number) => {
+          // Find submissions for this user
+          const userSubs = (supaSubmissions || []).filter((s: any) => s.user_id === u.id);
+          const subsByMod: Record<string, any> = {};
+          userSubs.forEach((s: any) => {
+            subsByMod[s.module_id] = s;
+          });
+
+          // Find evaluation
+          const userEval = (supaEvaluations || []).find((e: any) => e.user_id === u.id);
+          const cachedEval = localCacheMap.get(u.email);
+
+          // Name formatting
+          let displayFullName = u.full_name || '';
+          if (!displayFullName || displayFullName === 'Học viên') {
+            const emailPrefix = u.email.split('@')[0];
+            // Format nice title-case from email prefix
+            displayFullName = emailPrefix.replace(/[0-9._-]+/g, ' ').trim();
+            if (!displayFullName) displayFullName = emailPrefix;
+            displayFullName = displayFullName.split(' ').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          }
+
+          const avatarColors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#6366f1'];
+          const avatarColor = avatarColors[idx % avatarColors.length];
+
+          const totalScore = userEval?.total_score || cachedEval?.totalScore || 0;
+          const isEvaluated = !!userEval || !!cachedEval?.isEvaluated;
+          const instructorNote = userEval?.instructor_note || cachedEval?.instructorNote || '';
+          const rubricScores = userEval?.rubric_scores || cachedEval?.rubricScores || DEFAULT_RUBRIC_CRITERIA.map(c => ({ ...c }));
+
+          let gradeStatus: 'distinction' | 'passed' | 'needs_revision' | 'pending' = 'pending';
+          if (totalScore >= 85) gradeStatus = 'distinction';
+          else if (totalScore >= 70) gradeStatus = 'passed';
+          else if (totalScore > 0) gradeStatus = 'needs_revision';
+
+          return {
+            id: `usr_${u.id}`,
+            studentId: u.id,
+            fullName: displayFullName,
+            email: u.email,
+            cohort: u.cohort_batch || 'BATCH_01',
+            industry: u.industry || (u.role === 'admin' ? 'Quản Trị Viên Hệ Thống' : 'Xuất Khẩu B2B'),
+            avatarColor,
+            registeredAt: u.created_at ? u.created_at.split('T')[0] : '2026-08-25',
+            totalScore,
+            gradeStatus,
+            isEvaluated,
+            instructorNote,
+            evaluatedAt: userEval?.updated_at?.split('T')[0] || cachedEval?.evaluatedAt,
+            modules: {
+              M01: {
+                moduleId: 'M01',
+                title: 'Mindset & Foundation',
+                weight: 5,
+                maxScore: 5,
+                score: cachedEval?.modules?.M01?.score,
+                status: subsByMod['M01']?.status === 'submitted' ? 'submitted' : subsByMod['M01'] ? 'draft' : 'not_started',
+                submittedAt: subsByMod['M01']?.updated_at?.split('T')[0],
+                formData: subsByMod['M01']?.form_data || {}
+              },
+              M02: {
+                moduleId: 'M02',
+                title: 'Market & ICP Understanding',
+                weight: 15,
+                maxScore: 15,
+                score: cachedEval?.modules?.M02?.score,
+                status: subsByMod['M02']?.status === 'submitted' ? 'submitted' : subsByMod['M02'] ? 'draft' : 'not_started',
+                submittedAt: subsByMod['M02']?.updated_at?.split('T')[0],
+                formData: subsByMod['M02']?.form_data || {}
+              },
+              M03: {
+                moduleId: 'M03',
+                title: 'Lead Sourcing & Qualification',
+                weight: 15,
+                maxScore: 15,
+                score: cachedEval?.modules?.M03?.score,
+                status: subsByMod['M03']?.status === 'submitted' ? 'submitted' : subsByMod['M03'] ? 'draft' : 'not_started',
+                submittedAt: subsByMod['M03']?.updated_at?.split('T')[0],
+                formData: subsByMod['M03']?.form_data || {}
+              },
+              M04: {
+                moduleId: 'M04',
+                title: 'Proposal, Negotiation & Closing',
+                weight: 20,
+                maxScore: 20,
+                score: cachedEval?.modules?.M04?.score,
+                status: subsByMod['M04']?.status === 'submitted' ? 'submitted' : subsByMod['M04'] ? 'draft' : 'not_started',
+                submittedAt: subsByMod['M04']?.updated_at?.split('T')[0],
+                formData: subsByMod['M04']?.form_data || {}
+              },
+              M05: {
+                moduleId: 'M05',
+                title: 'Execution, Recovery & Growth',
+                weight: 15,
+                maxScore: 15,
+                score: cachedEval?.modules?.M05?.score,
+                status: subsByMod['M05']?.status === 'submitted' ? 'submitted' : subsByMod['M05'] ? 'draft' : 'not_started',
+                submittedAt: subsByMod['M05']?.updated_at?.split('T')[0],
+                formData: subsByMod['M05']?.form_data || {}
+              },
+              CAPSTONE: {
+                moduleId: 'CAPSTONE',
+                title: 'Final Capstone Playbooks',
+                weight: 20,
+                maxScore: 20,
+                score: cachedEval?.modules?.CAPSTONE?.score,
+                status: subsByMod['CAPSTONE']?.status === 'submitted' ? 'submitted' : subsByMod['CAPSTONE'] ? 'draft' : 'not_started',
+                submittedAt: subsByMod['CAPSTONE']?.updated_at?.split('T')[0],
+                formData: subsByMod['CAPSTONE']?.form_data || {}
+              },
+              PDP: {
+                maxScore: 10,
+                score: cachedEval?.modules?.PDP?.score || 0,
+                status: 'pending',
+                reflectionText: '',
+                plan30Days: '',
+                plan60Days: '',
+                plan90Days: ''
+              }
+            },
+            rubricScores
+          };
+        });
+
+        setStudents(realStudents);
+        setDataSource('supabase');
+        return;
+      }
+
+      // Fallback to local / demo data if no users found
+      const localData = localStorage.getItem('sales_hub_evaluations_v1');
       if (localData) {
         try {
-          baseStudents = JSON.parse(localData);
-        } catch (e) {
-          console.warn('Lỗi đọc cache local, dùng dữ liệu gốc', e);
-        }
+          setStudents(JSON.parse(localData));
+          setDataSource('demo');
+          return;
+        } catch (e) {}
       }
 
-      // Try checking Supabase submissions if live DB is configured
-      try {
-        const { data: supaUsers } = await supabase.from('users').select('*').limit(20);
-        const { data: supaSubmissions } = await supabase.from('module_submissions').select('*').limit(50);
-        
-        if (supaUsers && supaUsers.length > 0 && supaSubmissions && supaSubmissions.length > 0) {
-          // If real users and submissions exist on Supabase, merge them!
-          console.log('Tìm thấy dữ liệu thật trên Supabase:', supaUsers.length, 'users');
-        }
-      } catch (dbErr) {
-        // Fallback silently if supabase is not connected
-      }
-
-      setStudents(baseStudents);
+      setStudents(INITIAL_MOCK_STUDENTS);
+      setDataSource('demo');
+    } catch (err: any) {
+      console.error('Error querying Supabase in GradingHub:', err);
+      setStudents(INITIAL_MOCK_STUDENTS);
+      setDataSource('demo');
     } finally {
       setIsSyncing(false);
     }
@@ -338,11 +494,42 @@ export default function GradingHub() {
       {/* Header & Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px', flexWrap: 'wrap' }}>
             <Award size={28} color="var(--accent-primary)" />
             <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
               Khoang Chấm Điểm & Tổng Kết Đáp Án Học Viên
             </h1>
+            {dataSource === 'supabase' ? (
+              <span style={{ 
+                fontSize: '0.82rem', 
+                padding: '4px 12px', 
+                borderRadius: '16px', 
+                background: 'rgba(16, 185, 129, 0.15)', 
+                color: '#10b981', 
+                border: '1px solid rgba(16, 185, 129, 0.3)', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '6px',
+                fontWeight: 700
+              }}>
+                🟢 Supabase Cloud Live: {students.length} Học Viên Thật
+              </span>
+            ) : (
+              <span style={{ 
+                fontSize: '0.82rem', 
+                padding: '4px 12px', 
+                borderRadius: '16px', 
+                background: 'rgba(245, 158, 11, 0.15)', 
+                color: '#f59e0b', 
+                border: '1px solid rgba(245, 158, 11, 0.3)', 
+                display: 'inline-flex', 
+                alignItems: 'center', 
+                gap: '6px',
+                fontWeight: 700
+              }}>
+                🟡 Chế Độ Dữ Liệu Mẫu (Demo)
+              </span>
+            )}
           </div>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', margin: 0 }}>
             Hệ thống đối chiếu đáp án toàn diện 15 buổi học, chấm điểm theo Rubric 10 tiêu chí và xuất báo cáo kết quả khóa đào tạo.
@@ -351,6 +538,24 @@ export default function GradingHub() {
 
         {/* Global Actions */}
         <div className="no-print" style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button 
+            onClick={() => {
+              if (dataSource === 'supabase') {
+                setStudents(INITIAL_MOCK_STUDENTS);
+                setDataSource('demo');
+                showToast('Đã chuyển sang xem Lớp Mẫu Thử Nghiệm (Demo)!');
+              } else {
+                loadStudentsData();
+                showToast('Đang tải dữ liệu học viên thật từ Supabase Cloud...');
+              }
+            }}
+            className="btn btn-secondary"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 14px', fontSize: '0.9rem' }}
+            title="Chuyển đổi giữa học viên thật trên Supabase và dữ liệu mẫu"
+          >
+            <span>{dataSource === 'supabase' ? '📚 Xem Lớp Mẫu (Demo)' : '🌐 Xem Học Viên Thật (Supabase)'}</span>
+          </button>
+
           <button 
             onClick={handleExportCSV}
             className="btn btn-secondary"
@@ -372,13 +577,13 @@ export default function GradingHub() {
           </button>
 
           <button 
-            onClick={handleResetDemoData}
+            onClick={() => loadStudentsData()}
             className="btn btn-secondary"
             style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 14px', fontSize: '0.9rem', color: 'var(--text-muted)' }}
-            title="Đặt lại dữ liệu mẫu của lớp"
+            title="Đồng bộ lại từ Supabase Cloud"
           >
-            <RefreshCw size={16} />
-            <span>Làm Mới Dữ Liệu</span>
+            <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} />
+            <span>Đồng Bộ Supabase</span>
           </button>
         </div>
       </div>
