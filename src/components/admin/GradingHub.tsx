@@ -252,6 +252,55 @@ export default function GradingHub() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
+  // Helper render badge bài làm / điểm số trực quan cho bảng
+  const renderModuleBadge = (mod: any) => {
+    if (!mod) return <span style={{ color: 'var(--text-muted)', opacity: 0.4 }}>-</span>;
+    if (mod.score !== undefined && mod.score !== null) {
+      return (
+        <div>
+          <span style={{ fontWeight: 800, color: '#10b981', fontSize: '0.95rem' }}>{mod.score}</span>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>/{mod.maxScore}</span>
+        </div>
+      );
+    }
+    const hasData = mod.formData && Object.keys(mod.formData).length > 0;
+    if (mod.status === 'submitted') {
+      return (
+        <span style={{ 
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '3px 8px', 
+          borderRadius: '6px', 
+          fontSize: '0.75rem', 
+          fontWeight: 600,
+          background: 'rgba(59, 130, 246, 0.2)', 
+          color: '#60a5fa',
+          border: '1px solid rgba(59, 130, 246, 0.4)'
+        }} title={`Đã nộp bài ngày ${mod.submittedAt || ''}`}>
+          📝 Đã nộp
+        </span>
+      );
+    }
+    if (mod.status === 'draft' || hasData) {
+      return (
+        <span style={{ 
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '3px 8px', 
+          borderRadius: '6px', 
+          fontSize: '0.75rem', 
+          fontWeight: 600,
+          background: 'rgba(245, 158, 11, 0.18)', 
+          color: '#fbbf24',
+          border: '1px solid rgba(245, 158, 11, 0.35)'
+        }} title={`Bản nháp đã lưu (${mod.submittedAt || 'Chưa nộp'})`}>
+          ✏️ Đã làm
+        </span>
+      );
+    }
+    return <span style={{ color: 'var(--text-muted)', opacity: 0.4 }}>-</span>;
+  };
+
   // 2. Open Grading Modal
   const openGradingModal = (student: StudentSubmissionSummary, mode: 'grade' | 'view') => {
     setSelectedStudent(student);
@@ -847,59 +896,31 @@ export default function GradingHub() {
 
                       {/* Module Scores */}
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {m1.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{m1.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(m1)}
                       </td>
 
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {m2.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{m2.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(m2)}
                       </td>
 
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {m3.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{m3.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(m3)}
                       </td>
 
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {m4.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{m4.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(m4)}
                       </td>
 
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {m5.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{m5.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(m5)}
                       </td>
 
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {capstone.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{capstone.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(capstone)}
                       </td>
 
                       <td style={{ padding: '14px 12px', textAlign: 'center' }}>
-                        {pdp.score !== undefined ? (
-                          <span style={{ fontWeight: 700, color: '#10b981' }}>{pdp.score}</span>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)' }}>-</span>
-                        )}
+                        {renderModuleBadge(pdp)}
                       </td>
 
                       {/* Total Score & Progress Bar */}
@@ -1315,30 +1336,110 @@ export default function GradingHub() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   {/* Module 1 */}
                   <div className="glass-panel" style={{ padding: '18px 20px', borderRadius: '10px' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--accent-primary)', marginBottom: '12px' }}>
-                      Module 01: Mindset & 11 Năng Lực Nền Tảng (B01 - B02)
-                    </h3>
-                    <div style={{ marginBottom: '12px' }}>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>Mục tiêu 90 ngày (Mad Libs 3 thành phần):</div>
-                      <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                        {selectedStudent.modules.M01.formData?.mad_libs ? (
-                          <>
-                            <strong>Vị thế:</strong> {selectedStudent.modules.M01.formData.mad_libs.input1} <br/>
-                            <strong>Mục tiêu:</strong> {selectedStudent.modules.M01.formData.mad_libs.input2} <br/>
-                            <strong>Cam kết:</strong> {selectedStudent.modules.M01.formData.mad_libs.input3}
-                          </>
-                        ) : 'Học viên chưa hoàn tất phần Mad Libs.'}
-                      </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--accent-primary)', margin: 0 }}>
+                        Module 01: Mindset & 11 Năng Lực Nền Tảng (B01 - B02)
+                      </h3>
+                      <span style={{ fontSize: '0.8rem', color: selectedStudent.modules.M01.status === 'not_started' ? 'var(--text-muted)' : '#10b981', fontWeight: 600 }}>
+                        Trạng thái: {selectedStudent.modules.M01.status === 'submitted' ? '✅ Đã nộp' : selectedStudent.modules.M01.status === 'draft' ? '✏️ Bản nháp' : 'Chưa làm'}
+                      </span>
                     </div>
+
+                    {/* Mad Libs */}
+                    {selectedStudent.modules.M01.formData?.mad_libs ? (
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>🎯 Mục tiêu 90 ngày (Mad Libs 3 thành phần):</div>
+                        <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px 14px', borderRadius: '8px', borderLeft: '3px solid var(--accent-primary)', fontSize: '0.9rem', lineHeight: 1.6 }}>
+                          <div><strong>Vị thế:</strong> {selectedStudent.modules.M01.formData.mad_libs.input1 || 'Chưa điền'}</div>
+                          <div><strong>Mục tiêu:</strong> {selectedStudent.modules.M01.formData.mad_libs.input2 || 'Chưa điền'}</div>
+                          <div><strong>Cam kết:</strong> {selectedStudent.modules.M01.formData.mad_libs.input3 || 'Chưa điền'}</div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Goals 90d if direct */}
+                    {selectedStudent.modules.M01.formData?.goals_90d && (
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>📋 Kế hoạch mục tiêu 90 ngày:</div>
+                        <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px', borderRadius: '8px', fontSize: '0.88rem' }}>
+                          {typeof selectedStudent.modules.M01.formData.goals_90d === 'string' 
+                            ? selectedStudent.modules.M01.formData.goals_90d 
+                            : JSON.stringify(selectedStudent.modules.M01.formData.goals_90d, null, 2)}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Competency Ratings */}
+                    {selectedStudent.modules.M01.formData?.competency_ratings && (
+                      <div style={{ marginBottom: '14px' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '6px' }}>⭐ Tự đánh giá năng lực:</div>
+                        <div style={{ background: 'rgba(0,0,0,0.25)', padding: '12px', borderRadius: '8px', fontSize: '0.85rem', maxHeight: '180px', overflowY: 'auto' }}>
+                          {Object.entries(selectedStudent.modules.M01.formData.competency_ratings).map(([k, v]: [string, any]) => (
+                            <div key={k} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                              <span style={{ color: 'var(--text-secondary)' }}>{k}</span>
+                              <strong style={{ color: '#10b981' }}>{v}/5</strong>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {(!selectedStudent.modules.M01.formData || Object.keys(selectedStudent.modules.M01.formData).length === 0) && (
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.88rem', fontStyle: 'italic' }}>
+                        Học viên chưa có dữ liệu bài tập cho Module này.
+                      </div>
+                    )}
                   </div>
 
                   {/* Module 2 */}
                   <div className="glass-panel" style={{ padding: '18px 20px', borderRadius: '10px' }}>
-                    <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--accent-primary)', marginBottom: '12px' }}>
-                      Module 02: Nghiên Cứu Thị Trường & Chân Dung Buyer (B03 - B06)
-                    </h3>
-                    {selectedStudent.modules.M02.formData?.targetMarkets ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--accent-primary)', margin: 0 }}>
+                        Module 02: Nghiên Cứu Thị Trường & Chân Dung Buyer (B03 - B06)
+                      </h3>
+                      <span style={{ fontSize: '0.8rem', color: selectedStudent.modules.M02.status === 'not_started' ? 'var(--text-muted)' : '#10b981', fontWeight: 600 }}>
+                        Trạng thái: {selectedStudent.modules.M02.status === 'submitted' ? '✅ Đã nộp' : selectedStudent.modules.M02.status === 'draft' ? '✏️ Bản nháp' : 'Chưa làm'}
+                      </span>
+                    </div>
+
+                    {/* ICP Size & Problem */}
+                    {(selectedStudent.modules.M02.formData?.icp_size || selectedStudent.modules.M02.formData?.icp_problem || selectedStudent.modules.M02.formData?.icp) ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '14px' }}>
+                        <div style={{ background: 'rgba(0,0,0,0.25)', padding: '14px', borderRadius: '8px', borderLeft: '3px solid #60a5fa' }}>
+                          <div style={{ fontWeight: 700, color: '#60a5fa', marginBottom: '8px' }}>🎯 Chân Dung Khách Hàng Lý Tưởng (ICP):</div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px', fontSize: '0.88rem' }}>
+                            <div>
+                              <strong style={{ color: 'var(--text-secondary)' }}>Quy mô doanh nghiệp:</strong><br/>
+                              <span style={{ color: '#10b981', fontWeight: 600 }}>
+                                {selectedStudent.modules.M02.formData?.icp_size || selectedStudent.modules.M02.formData?.icp?.icp_size || selectedStudent.modules.M02.formData?.icp?.company_size || 'Chưa xác định'}
+                              </span>
+                            </div>
+                            <div>
+                              <strong style={{ color: 'var(--text-secondary)' }}>Vấn đề nhức nhối (Pain Points):</strong><br/>
+                              <span>
+                                {selectedStudent.modules.M02.formData?.icp_problem || selectedStudent.modules.M02.formData?.icp?.pain_points || 'Chưa xác định'}
+                              </span>
+                            </div>
+                            {selectedStudent.modules.M02.formData?.icp?.needs && (
+                              <div>
+                                <strong style={{ color: 'var(--text-secondary)' }}>Nhu cầu cốt lõi (Needs):</strong><br/>
+                                <span>{selectedStudent.modules.M02.formData.icp.needs}</span>
+                              </div>
+                            )}
+                            {selectedStudent.modules.M02.formData?.icp?.competitor && (
+                              <div>
+                                <strong style={{ color: 'var(--text-secondary)' }}>Đối thủ cạnh tranh:</strong><br/>
+                                <span>{selectedStudent.modules.M02.formData.icp.competitor}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Target Markets list if any */}
+                    {selectedStudent.modules.M02.formData?.targetMarkets && Array.isArray(selectedStudent.modules.M02.formData.targetMarkets) && (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
                         {selectedStudent.modules.M02.formData.targetMarkets.map((m: any, idx: number) => (
                           <div key={idx} style={{ background: 'rgba(0,0,0,0.25)', padding: '12px', borderRadius: '8px' }}>
                             <div style={{ fontWeight: 700, color: '#60a5fa', marginBottom: '4px' }}>🌍 {m.country}</div>
@@ -1348,8 +1449,12 @@ export default function GradingHub() {
                           </div>
                         ))}
                       </div>
-                    ) : (
-                      <div style={{ color: 'var(--text-muted)', fontSize: '0.88rem' }}>Dữ liệu thị trường mẫu chưa có.</div>
+                    )}
+
+                    {(!selectedStudent.modules.M02.formData || Object.keys(selectedStudent.modules.M02.formData).length === 0) && (
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.88rem', fontStyle: 'italic' }}>
+                        Học viên chưa có dữ liệu bài tập cho Module này.
+                      </div>
                     )}
                   </div>
 
@@ -1436,6 +1541,25 @@ export default function GradingHub() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Collapsible Raw JSON Data */}
+                  <details style={{ background: 'rgba(0,0,0,0.3)', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                      🔍 Xem Toàn Bộ Dữ Liệu Gốc Trích Xuất (Raw Submissions JSON)
+                    </summary>
+                    <pre style={{ 
+                      marginTop: '12px', 
+                      padding: '12px', 
+                      background: 'rgba(0,0,0,0.5)', 
+                      borderRadius: '6px', 
+                      fontSize: '0.78rem', 
+                      color: '#a7f3d0', 
+                      overflowX: 'auto',
+                      maxHeight: '300px'
+                    }}>
+                      {JSON.stringify(selectedStudent.modules, null, 2)}
+                    </pre>
+                  </details>
                 </div>
               )}
             </div>
