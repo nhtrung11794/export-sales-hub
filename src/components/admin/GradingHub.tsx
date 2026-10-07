@@ -29,6 +29,7 @@ import {
   DEFAULT_RUBRIC_CRITERIA 
 } from './mockStudentData';
 import { createClient } from '@/lib/supabase/client';
+import { PrintReportModal } from './PrintReportModal';
 
 export default function GradingHub() {
   const [students, setStudents] = useState<StudentSubmissionSummary[]>([]);
@@ -45,6 +46,7 @@ export default function GradingHub() {
   // Toast state
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   // Editable Rubric in Modal
   const [currentRubric, setCurrentRubric] = useState<RubricCriteriaScore[]>([]);
@@ -475,9 +477,9 @@ export default function GradingHub() {
     showToast('Đã xuất file bảng điểm CSV thành công (Hỗ trợ mở bằng Excel chuẩn UTF-8)!');
   };
 
-  // 7. Print Report
+  // 7. Print Report (Mở hộp thoại thiết lập & xem trước bản in gửi trung tâm)
   const handlePrint = () => {
-    window.print();
+    setIsPrintModalOpen(true);
   };
 
   // 8. Filter Logic
@@ -1585,6 +1587,21 @@ export default function GradingHub() {
 
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button 
+                  onClick={() => setIsPrintModalOpen(true)}
+                  className="btn btn-secondary"
+                  style={{ 
+                    padding: '8px 16px', 
+                    fontSize: '0.9rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                  title="Mở mẫu in phiếu điểm gửi trung tâm"
+                >
+                  <Printer size={16} /> In Phiếu Điểm
+                </button>
+
+                <button 
                   onClick={closeModal}
                   className="btn btn-secondary"
                   style={{ padding: '8px 16px', fontSize: '0.9rem' }}
@@ -1613,6 +1630,30 @@ export default function GradingHub() {
           </div>
         </div>
       )}
+
+      {/* MODAL THIẾT LẬP VÀ XEM TRƯỚC BẢN IN CHUẨN GỬI TRUNG TÂM */}
+      <PrintReportModal 
+        isOpen={isPrintModalOpen}
+        onClose={() => setIsPrintModalOpen(false)}
+        students={students}
+        defaultCohort={selectedCohort}
+      />
+
+      <style jsx global>{`
+        @media print {
+          aside, nav, header, .app-sidebar, .sidebar, .sidebar-container, .no-print, [role="navigation"] {
+            display: none !important;
+            visibility: hidden !important;
+          }
+          body, html, main, .grading-hub-container {
+            background: #ffffff !important;
+            color: #000000 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
