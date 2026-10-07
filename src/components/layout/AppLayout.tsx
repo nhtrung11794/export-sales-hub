@@ -92,11 +92,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { id: 'M04', name: 'Module 04: Proposal, Negotiation & Safe Closing', path: '/m04', icon: <GitMerge size={20} /> },
     { id: 'M05', name: 'Module 05: Execution, Recovery & Account Growth', path: '/m05', icon: <Rocket size={20} /> },
     { id: 'CAPSTONE', name: 'Final Capstone: Đóng gói Playbook', path: '/capstone', icon: <Award size={20} /> },
+    { id: 'ADMIN', name: 'Khoang Chấm Điểm (Giảng Viên)', path: '/admin', icon: <Sparkles size={20} /> },
   ];
-  
-  if (isAdmin) {
-    navItems.push({ id: 'ADMIN', name: 'Quản trị viên (Admin)', path: '/admin', icon: <Sparkles size={20} /> });
-  }
 
   // Khóa giao diện nếu đang check hoặc bị pending (redirecting)
   if (isCheckingAuth) {

@@ -1,7 +1,7 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v8.1 (Tích Hợp Cẩm Nang ChatGPT LinkedIn Plugin Sourcing, Dynamic Prompt Builder RCTO & Chuẩn Hóa Overlay Neon Pixel-Perfect)  
-**Ngày cập nhật:** 14/09/2026
+**Phiên bản:** v8.2 (Tích Hợp Khoang Chấm Điểm & Bảng Tổng Kết Học Viên Grading Hub, Hệ Thống Rubric 10 Tiêu Chí, Trình Xem Đáp Án Toàn Diện & Xuất Báo Cáo Excel/CSV/A4)  
+**Ngày cập nhật:** 07/10/2026
 
 Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toàn bộ **Tư duy Nghiệp vụ, Kết quả Đã làm, Điểm Tồn đọng, Kỹ thuật Cốt lõi, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc cập nhật dữ liệu ngay lập tức chỉ với 1 cú click.
 
@@ -79,6 +79,25 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 - **Chuyển Hướng Về Dashboard Khi Bấm Logo Export Sales Hub (`src/components/layout/AppLayout.tsx`)**:
   - Bọc toàn bộ logo icon và text trên Sidebar thành Next.js `<Link href="/">`.
   - Tích hợp phản hồi trực quan: icon vuông phát sáng `scale(1.05)`, tăng sáng `brightness(1.15)`, phát viền neon đổ bóng và đổi màu chữ `text-blue-400` khi rê chuột, kèm `title="Về trang chủ (Dashboard)"`.
+
+---
+
+### 1.6. Khoang Chấm Điểm & Bảng Tổng Kết Học Viên (Grading & Assessment Hub)
+- **Hệ Thống Tab Quản Trị Đa Năng (`/admin`)**:
+  - *Tab 1: Bảng Điểm & Đánh Giá Học Viên (GradingHub)*: Trung tâm kiểm soát kết quả toàn khóa, tự động thống kê số lượng học viên, điểm trung bình lớp, tỷ lệ Đạt/Xuất sắc và bài chờ chấm.
+  - *Tab 2: Phê Duyệt Tài Khoản (User Approvals)*: Tiếp tục hỗ trợ duyệt/từ chối tài khoản học viên mới.
+- **Bảng Ma Trận Điểm Khóa Học Chuẩn Quốc Tế**:
+  - Đối chiếu trực quan từng Module: M01 (5đ), M02 (15đ), M03 (15đ), M04 (20đ), M05 (15đ), Capstone (20đ), PDP (10đ) $\rightarrow$ Tổng điểm 100đ kèm thanh tiến độ phân màu.
+  - Phân loại học viên động: 🏆 Xuất sắc ($\ge 85$đ), ✅ Đạt ($70 - 84$đ), ⚠️ Cần bổ sung ($< 70$đ), ⏳ Chờ chấm.
+  - Bộ lọc đa chiều: Lọc theo lớp/cohort, xếp loại, trạng thái đã chấm/chưa chấm, và ô tìm kiếm tức thì theo tên/email/ngành hàng.
+- **Modal Chấm Điểm Rubric Trực Tiếp & Đối Chiếu Đáp Án**:
+  - *Tab Phiếu Chấm Điểm Rubric*: Tích hợp 10 tiêu chí năng lực cốt lõi chuẩn hóa từ Sheet `11_Rubric` trong Workbook thực hành (Mindset, Market scan, FNACM, P-B-T-P-C, Báo giá 3 tầng Decoy, Đàm phán Give-Take, SLA nội bộ, Khủng hoảng SGS, JBP tăng trưởng, Chất lượng tổng hợp Capstone). Cho phép kéo slider hoặc gõ điểm (0-10đ/tiêu chí), tự động nhảy điểm quy đổi sang từng Module và tính tổng 100đ thời gian thực.
+  - *Tab Xem Toàn Bộ Đáp Án Đã Nộp*: Giảng viên xem chi tiết từng câu trả lời thực chiến: Radar 11 năng lực, Mad Libs mục tiêu, Ma trận thị trường & rào cản EVFTA/MFN, Buyer Map đa tầng, Điểm Access Score, Báo giá Landed Cost/TCO, Give-Take bank, Checklist Safe Order, SLA 5 mốc & mốc No-Return, Kịch bản SGS và Kế hoạch 90 ngày PDP.
+  - *Lưu trữ an toàn (Hybrid Storage)*: Lưu tức thì vào `localStorage` (`sales_hub_evaluations_v1`) và đồng bộ lên Supabase `evaluations`. Giảng viên có thể ghi nhận xét chi tiết (`instructor_note`) cho từng học viên.
+- **Xuất Báo Cáo Đa Kênh**:
+  - *1-Click Xuất Excel / CSV (`\uFEFF` UTF-8 BOM)*: Mở trực tiếp trên Microsoft Excel không bị lỗi phông chữ tiếng Việt, đầy đủ cột điểm chi tiết, xếp loại và nhận xét của giảng viên.
+  - *In Báo Cáo Chuẩn Khổ A4 (`@media print`)*: Định dạng sạch sẽ, trang trọng để nộp lưu trữ hoặc gửi cho bộ phận đào tạo doanh nghiệp.
+  - *Nút Khôi phục Dữ liệu mẫu (Reset Demo Data)*: Nạp sẵn lớp học mẫu K08 (Nông sản ST25, Thủy sản đông lạnh, Dệt may, Mây tre đan, Đồ gỗ Teak) để Giảng viên trải nghiệm và chấm điểm ngay lập tức mà không gặp trạng thái trống.
 
 ---
 
