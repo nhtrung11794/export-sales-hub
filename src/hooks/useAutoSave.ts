@@ -112,10 +112,32 @@ export function useAutoSave<T>(
     };
   }, [status, data, save]);
 
+  // Immediately sync to Zustand store and localStorage so submissions and Gating checks always have live data
+  useEffect(() => {
+    if (data && typeof data === 'object') {
+      updateStore(moduleId, data);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(`module_draft_${moduleId}`, JSON.stringify(data));
+        } catch (e) {
+          console.warn('Lỗi ghi cache draft vào localStorage:', e);
+        }
+      }
+    }
+  }, [data, moduleId, updateStore]);
+
   // Synchronize with DOM status-bar in ModuleLayout for consistent UX across all modules
   useEffect(() => {
     const statusBar = document.getElementById('status-bar');
     if (!statusBar) return;
+
+    const sub = useModuleStore.getState().submissions[moduleId];
+    if (sub?.status === 'submitted' || sub?.is_locked) {
+      statusBar.textContent = 'Trạng thái: 📝 Đã nộp bài (Chờ chấm)';
+      statusBar.style.color = 'var(--accent-primary, #38bdf8)';
+      return;
+    }
+
     if (status === 'saving') {
       statusBar.textContent = 'Trạng thái: Đang lưu...';
       statusBar.style.color = 'var(--accent-warning, #f59e0b)';
@@ -129,7 +151,7 @@ export function useAutoSave<T>(
       statusBar.textContent = 'Trạng thái: Bản nháp';
       statusBar.style.color = 'var(--text-muted, #94a3b8)';
     }
-  }, [status, lastSaved]);
+  }, [status, lastSaved, moduleId]);
 
   // Handle manual trigger (e.g., onBlur)
   const handleBlur = useCallback(() => {

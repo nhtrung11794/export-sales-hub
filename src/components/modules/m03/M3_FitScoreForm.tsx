@@ -50,7 +50,7 @@ export default function M3_FitScoreForm() {
         user_id: userId,
         module_id: 'M03',
         form_data: formData,
-        status: 'draft',
+        status: (useModuleStore.getState().submissions['M03']?.status === 'submitted' || useModuleStore.getState().submissions['M03']?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       

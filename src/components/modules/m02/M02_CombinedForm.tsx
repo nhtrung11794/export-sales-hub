@@ -121,7 +121,7 @@ export default function M02_CombinedForm() {
         user_id: finalUserId,
         module_id: 'M02',
         form_data: formData,
-        status: 'draft',
+        status: (submissions['M02']?.status === 'submitted' || submissions['M02']?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       

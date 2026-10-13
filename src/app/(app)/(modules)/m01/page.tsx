@@ -47,43 +47,120 @@ export default function M01Page() {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const data = getModuleData('M01');
-      const submission = submissions['M01'];
-      if (submission) {
-        setIsLocked(submission.is_locked);
-      }
-      
-      if (data) {
-        const isDraftValid = (data.goal_90_days?.trim().length > 0 || data.goals_90_days?.trim().length > 0 || (data.mad_libs && Object.values(data.mad_libs).some(Boolean)));
-        setIsValid(!!isDraftValid);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [getModuleData, submissions]);
+    const submission = submissions['M01'];
+    if (submission) {
+      setIsLocked(Boolean(submission.is_locked || submission.status === 'submitted'));
+    }
+    const data = getModuleData('M01');
+    if (data) {
+      const isDraftValid = (data.goal_90_days?.trim().length > 0 || data.goals_90_days?.trim().length > 0 || (data.mad_libs && Object.values(data.mad_libs).some(Boolean)));
+      setIsValid(!!isDraftValid);
+    }
+  }, [submissions, getModuleData]);
 
   const handleSubmit = async () => {
-    if (!userId || !isValid || isLocked) return;
-    setIsSubmitting(true);
-    const result = await submitModule('M01', userId);
-    if (result.success) {
-      alert('Nộp bài thành công! Module 02 đã được mở khóa.');
-    } else {
-      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    // 1. Resolve userId
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng tải lại trang hoặc đăng nhập lại để nộp bài.');
+      return;
+    }
+
+    // 2. Check if already locked
+    if (isLocked) {
+      alert('Bài làm đã được nộp và khóa trước đó. Nếu bạn muốn chỉnh sửa, vui lòng bấm nút "Mở Khóa để Sửa".');
+      return;
+    }
+
+    // 3. Get current data
+    let currentData = getModuleData('M01');
+    if (!currentData || Object.keys(currentData).length === 0) {
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('module_draft_M01');
+          if (cached) currentData = JSON.parse(cached);
+        } catch (e) {
+          console.warn('Lỗi đọc cache M01:', e);
+        }
+      }
+    }
+
+    // 4. Validate with explicit feedback
+    const isDraftValid = Boolean(
+      currentData?.goal_90_days?.trim() ||
+      currentData?.goals_90_days?.trim() ||
+      (currentData?.mad_libs && Object.values(currentData.mad_libs).some(Boolean)) ||
+      currentData?.competency_radar
+    );
+
+    if (!isDraftValid) {
+      alert('Vui lòng điền Mục tiêu 90 ngày hoặc hoàn thành Bảng Đánh giá Năng lực trước khi nộp bài.');
+      return;
+    }
+
+    const confirmSubmit = window.confirm('Bạn có chắc chắn muốn nộp bài Module 01? Sau khi nộp, bài tập sẽ được chuyển sang trạng thái "Đã nộp" để Giảng viên chấm điểm.');
+    if (!confirmSubmit) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await submitModule('M01', currentUserId, currentData);
+      if (result.success) {
+        setIsLocked(true);
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: 📝 Đã nộp bài (Chờ chấm)';
+          statusBar.style.color = 'var(--accent-primary, #38bdf8)';
+        }
+        alert('🎉 Chúc mừng! Nộp bài Module 01 thành công!\nModule 02 (Thấu hiểu Thị trường & Khách hàng) đã được mở khóa.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi nộp bài: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể nộp bài.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleUnlock = async () => {
-    if (!userId) return;
-    setIsSubmitting(true);
-    const result = await unlockModule('M01', userId);
-    if (result.success) {
-      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
-    } else {
-      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const confirmUnlock = window.confirm('Bạn có chắc chắn muốn mở khóa để chỉnh sửa bài Module 01?');
+    if (!confirmUnlock) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await unlockModule('M01', currentUserId);
+      if (result.success) {
+        setIsLocked(false);
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: Bản nháp';
+          statusBar.style.color = 'var(--text-muted, #94a3b8)';
+        }
+        alert('Đã mở khóa bài làm để sửa. Lưu ý: Sau khi chỉnh sửa, hãy bấm "Xác nhận Nộp bài" để cập nhật lại cho Giảng viên.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi mở khóa: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể mở khóa.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const dynamicPrompt = `"Dựa vào hồ sơ năng lực tôi vừa tự đánh giá (Market & ICP: ${radarScores.market}/5, Prospecting: ${radarScores.prospecting}/5, Pricing: ${radarScores.pricing}/5, Risk: ${radarScores.risk}/5, Internal: ${radarScores.internal}/5, CRM: ${radarScores.crm}/5), hãy đề xuất cho tôi 3 mục tiêu 90 ngày thiết thực nhất để cải thiện các điểm yếu dưới 3 điểm của tôi trong đàm phán B2B."`;

@@ -20,7 +20,7 @@ interface ModuleStore {
   // Actions
   fetchAllSubmissions: (userId: string) => Promise<void>;
   updateSubmissionLocal: (moduleId: ModuleId, data: any) => void;
-  submitModule: (moduleId: ModuleId, userId: string) => Promise<{ success: boolean; error?: string }>;
+  submitModule: (moduleId: ModuleId, userId: string, explicitData?: any) => Promise<{ success: boolean; error?: string }>;
   unlockModule: (moduleId: ModuleId, userId: string) => Promise<{ success: boolean; error?: string }>;
   getModuleData: (moduleId: ModuleId) => any;
 }
@@ -89,10 +89,30 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
     });
   },
 
-  submitModule: async (moduleId: ModuleId, userId: string) => {
+  submitModule: async (moduleId: ModuleId, userId: string, explicitData?: any) => {
     try {
       const supabase = createClient();
-      const currentData = get().submissions[moduleId]?.form_data || {};
+      let currentData = explicitData || get().submissions[moduleId]?.form_data;
+
+      // Fallback to localStorage if currentData is still missing or empty
+      if (!currentData || Object.keys(currentData).length === 0) {
+        if (typeof window !== 'undefined') {
+          try {
+            const cached = localStorage.getItem(`module_draft_${moduleId}`);
+            if (cached) {
+              const parsed = JSON.parse(cached);
+              if (parsed && typeof parsed === 'object') {
+                currentData = parsed;
+              }
+            }
+          } catch (e) {
+            console.warn('Lỗi đọc fallback draft từ localStorage:', e);
+          }
+        }
+      }
+      currentData = currentData || {};
+
+      const now = new Date().toISOString();
       const { error } = await supabase
         .from('module_submissions')
         .upsert({
@@ -100,7 +120,7 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
           module_id: moduleId,
           form_data: currentData,
           status: 'submitted',
-          updated_at: new Date().toISOString()
+          updated_at: now
         }, { onConflict: 'user_id,module_id' });
 
       if (error) throw error;
@@ -111,15 +131,17 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
           module_id: moduleId,
           form_data: currentData,
           is_locked: false,
-          updated_at: new Date().toISOString()
+          updated_at: now
         };
         return {
           submissions: {
             ...state.submissions,
             [moduleId]: {
               ...existing,
+              form_data: currentData,
               status: 'submitted',
-              is_locked: true
+              is_locked: true,
+              updated_at: now
             }
           }
         };

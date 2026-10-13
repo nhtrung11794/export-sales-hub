@@ -83,7 +83,7 @@ export default function M1_CompetencyForm() {
         user_id: finalUserId,
         module_id: 'M01',
         form_data: formData,
-        status: 'draft',
+        status: (submissions['M01']?.status === 'submitted' || submissions['M01']?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       

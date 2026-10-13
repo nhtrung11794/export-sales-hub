@@ -182,7 +182,7 @@ export default function M04_CombinedForm() {
         user_id: finalUserId,
         module_id: 'M04',
         form_data: savedData,
-        status: 'draft',
+        status: (submissions['M04']?.status === 'submitted' || submissions['M04']?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
 

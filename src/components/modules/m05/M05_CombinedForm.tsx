@@ -214,7 +214,7 @@ export default function M05_CombinedForm() {
         user_id: finalUserId,
         module_id: 'M05',
         form_data: savedData,
-        status: 'draft',
+        status: (submissions.M05?.status === 'submitted' || submissions.M05?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,module_id' });
 

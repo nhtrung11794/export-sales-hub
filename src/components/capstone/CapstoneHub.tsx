@@ -167,7 +167,7 @@ export default function CapstoneHub() {
         user_id: finalUserId,
         module_id: 'CAPSTONE',
         form_data: savedData,
-        status: 'draft',
+        status: (submissions?.CAPSTONE?.status === 'submitted' || submissions?.CAPSTONE?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString(),
       }, { onConflict: 'user_id,module_id' });
 

@@ -15,7 +15,7 @@ const CAPSTONE_LESSONS = [
 
 export default function CapstonePage() {
   const supabase = useMemo(() => createClient(), []);
-  const { submitModule, unlockModule, submissions } = useModuleStore();
+  const { submitModule, unlockModule, submissions, getModuleData } = useModuleStore();
   const [loadingFile, setLoadingFile] = useState<string | null>(null);
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -24,7 +24,7 @@ export default function CapstonePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const isLocked = submissions?.CAPSTONE?.is_locked || false;
+  const isLocked = Boolean(submissions?.CAPSTONE?.is_locked || submissions?.CAPSTONE?.status === 'submitted');
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data?.user?.id || null));
@@ -57,19 +57,93 @@ export default function CapstonePage() {
   };
 
   const handleSubmit = async () => {
-    if (!userId || isLocked) return;
+    // 1. Resolve userId
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
+    }
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng tải lại trang hoặc đăng nhập lại để nộp bài.');
+      return;
+    }
+
+    // 2. Check if already locked
+    if (isLocked) {
+      alert('Bài làm đã được nộp và khóa trước đó. Nếu bạn muốn chỉnh sửa, vui lòng bấm nút "Mở Khóa để Sửa".');
+      return;
+    }
+
+    // 3. Get current data
+    let currentData = getModuleData('CAPSTONE');
+    if (!currentData || Object.keys(currentData).length === 0) {
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('module_draft_CAPSTONE');
+          if (cached) currentData = JSON.parse(cached);
+        } catch (e) {
+          console.warn('Lỗi đọc cache CAPSTONE:', e);
+        }
+      }
+    }
+
+    const confirmSubmit = window.confirm('Bạn có chắc chắn muốn nộp bài Final Capstone? Sau khi nộp, toàn bộ 03 Playbook sẽ được chuyển sang trạng thái "Đã nộp" để Hội đồng Giảng viên chấm điểm.');
+    if (!confirmSubmit) return;
+
     setIsSubmitting(true);
-    const result = await submitModule('CAPSTONE', userId);
-    window.alert(result.success ? 'Chúc mừng! Bạn đã hoàn thành và nộp bài Final Capstone thành công!' : `Có lỗi xảy ra: ${result.error}`);
-    setIsSubmitting(false);
+    try {
+      const result = await submitModule('CAPSTONE', currentUserId, currentData);
+      if (result.success) {
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: 📝 Đã nộp bài (Chờ chấm)';
+          statusBar.style.color = 'var(--accent-primary, #38bdf8)';
+        }
+        alert('🎉 Chúc mừng! Bạn đã hoàn thành và nộp bài Final Capstone thành công!');
+      } else {
+        alert('❌ Có lỗi xảy ra khi nộp bài: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể nộp bài.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleUnlock = async () => {
-    if (!userId) return;
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
+    }
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const confirmUnlock = window.confirm('Bạn có chắc chắn muốn mở khóa để chỉnh sửa bài Final Capstone?');
+    if (!confirmUnlock) return;
+
     setIsSubmitting(true);
-    const result = await unlockModule('CAPSTONE', userId);
-    window.alert(result.success ? 'Đã mở khóa Capstone để chỉnh sửa.' : `Có lỗi xảy ra: ${result.error}`);
-    setIsSubmitting(false);
+    try {
+      const result = await unlockModule('CAPSTONE', currentUserId);
+      if (result.success) {
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: Bản nháp';
+          statusBar.style.color = 'var(--text-muted, #94a3b8)';
+        }
+        alert('Đã mở khóa Capstone để chỉnh sửa. Sau khi sửa xong, hãy bấm "Xác nhận Nộp bài" để cập nhật lại.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi mở khóa: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể mở khóa.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const m02 = submissions?.M02?.form_data || {};

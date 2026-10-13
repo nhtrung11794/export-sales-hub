@@ -37,52 +37,132 @@ export default function M02Page() {
   }, [supabase.auth]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const data = getModuleData('M02');
-      const submission = submissions['M02'];
-      if (submission) {
-        setIsLocked(submission.is_locked);
-      }
-      
-      // Validation for M02: Form Quyết định (B03) or B04/B05
-      if (data) {
-        const isDraftValid = Boolean(
-          (data.target_market?.trim() || data.strategic_reason?.trim() || data.route_to_market?.trim()) &&
-          (data.discovery_matrix?.need?.core_hypothesis?.trim() || 
-           data.discovery_matrix?.need?.surface_signal?.trim() || 
-           data.discovery_matrix?.context?.core_hypothesis?.trim() ||
-           data.discovery_matrix?.pain?.core_hypothesis?.trim() ||
-           data.icp_industry?.trim() ||
-           data.icp_size?.trim())
-        );
-        setIsValid(isDraftValid);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [getModuleData, submissions]);
+    const submission = submissions['M02'];
+    if (submission) {
+      setIsLocked(Boolean(submission.is_locked || submission.status === 'submitted'));
+    }
+    const data = getModuleData('M02');
+    if (data) {
+      const isDraftValid = Boolean(
+        (data.target_market?.trim() || data.strategic_reason?.trim() || data.route_to_market?.trim()) &&
+        (data.discovery_matrix?.need?.core_hypothesis?.trim() || 
+         data.discovery_matrix?.need?.surface_signal?.trim() || 
+         data.discovery_matrix?.context?.core_hypothesis?.trim() ||
+         data.discovery_matrix?.pain?.core_hypothesis?.trim() ||
+         data.icp_industry?.trim() ||
+         data.icp_size?.trim())
+      );
+      setIsValid(isDraftValid);
+    }
+  }, [submissions, getModuleData]);
 
   const handleSubmit = async () => {
-    if (!userId || !isValid || isLocked) return;
-    setIsSubmitting(true);
-    const result = await submitModule('M02', userId);
-    if (result.success) {
-      alert('Nộp bài thành công! Module 03 đã được mở khóa.');
-    } else {
-      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    // 1. Resolve userId
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng tải lại trang hoặc đăng nhập lại để nộp bài.');
+      return;
+    }
+
+    // 2. Check if already locked
+    if (isLocked) {
+      alert('Bài làm đã được nộp và khóa trước đó. Nếu bạn muốn chỉnh sửa, vui lòng bấm nút "Mở Khóa để Sửa".');
+      return;
+    }
+
+    // 3. Get current data
+    let currentData = getModuleData('M02');
+    if (!currentData || Object.keys(currentData).length === 0) {
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('module_draft_M02');
+          if (cached) currentData = JSON.parse(cached);
+        } catch (e) {
+          console.warn('Lỗi đọc cache M02:', e);
+        }
+      }
+    }
+
+    // 4. Validate with explicit feedback
+    const isDraftValid = Boolean(
+      (currentData?.target_market?.trim() || currentData?.strategic_reason?.trim() || currentData?.route_to_market?.trim() || currentData?.selected_market) &&
+      (currentData?.discovery_matrix?.need?.core_hypothesis?.trim() || 
+       currentData?.discovery_matrix?.need?.surface_signal?.trim() || 
+       currentData?.discovery_matrix?.context?.core_hypothesis?.trim() ||
+       currentData?.discovery_matrix?.pain?.core_hypothesis?.trim() ||
+       currentData?.icp_industry?.trim() ||
+       currentData?.icp_size?.trim() ||
+       currentData?.buyer_persona)
+    );
+
+    if (!isDraftValid) {
+      alert('Vui lòng hoàn thành ít nhất thông tin Thị trường mục tiêu hoặc Ma trận Khám phá nhu cầu (B03 / B04 / B05) trước khi nộp bài.');
+      return;
+    }
+
+    const confirmSubmit = window.confirm('Bạn có chắc chắn muốn nộp bài Module 02? Sau khi nộp, bài tập sẽ được chuyển sang trạng thái "Đã nộp" để Giảng viên chấm điểm.');
+    if (!confirmSubmit) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await submitModule('M02', currentUserId, currentData);
+      if (result.success) {
+        setIsLocked(true);
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: 📝 Đã nộp bài (Chờ chấm)';
+          statusBar.style.color = 'var(--accent-primary, #38bdf8)';
+        }
+        alert('🎉 Chúc mừng! Nộp bài Module 02 thành công!\nModule 03 (Phát triển Cơ hội & Quản trị Pipeline) đã được mở khóa.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi nộp bài: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể nộp bài.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleUnlock = async () => {
-    if (!userId) return;
-    setIsSubmitting(true);
-    const result = await unlockModule('M02', userId);
-    if (result.success) {
-      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
-    } else {
-      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const confirmUnlock = window.confirm('Bạn có chắc chắn muốn mở khóa để chỉnh sửa bài Module 02?');
+    if (!confirmUnlock) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await unlockModule('M02', currentUserId);
+      if (result.success) {
+        setIsLocked(false);
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: Bản nháp';
+          statusBar.style.color = 'var(--text-muted, #94a3b8)';
+        }
+        alert('Đã mở khóa bài làm để sửa. Lưu ý: Sau khi chỉnh sửa, hãy bấm "Xác nhận Nộp bài" để cập nhật lại cho Giảng viên.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi mở khóa: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể mở khóa.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpenDocument = (lessonId: string) => {

@@ -18,7 +18,7 @@ const LESSONS = [
 
 export default function M05Page() {
   const supabase = useMemo(() => createClient(), []);
-  const { submitModule, unlockModule, submissions } = useModuleStore();
+  const { submitModule, unlockModule, submissions, getModuleData } = useModuleStore();
   const [loadingVideo, setLoadingVideo] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState<string>('');
@@ -27,7 +27,7 @@ export default function M05Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const isLocked = submissions.M05?.is_locked || false;
+  const isLocked = Boolean(submissions.M05?.is_locked || submissions.M05?.status === 'submitted');
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id || null));
@@ -68,27 +68,107 @@ export default function M05Page() {
   };
 
   const handleSubmit = async () => {
-    if (!userId || isLocked) return;
-    setIsSubmitting(true);
-    const result = await submitModule('M05', userId);
-    if (result.success) {
-      window.alert('✅ Nộp bài Module 05 thành công! Khoang Final Capstone đã được mở khóa.');
-    } else {
-      window.alert(`Không thể nộp bài: ${result.error}`);
+    // 1. Resolve userId
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng tải lại trang hoặc đăng nhập lại để nộp bài.');
+      return;
+    }
+
+    // 2. Check if already locked
+    if (isLocked) {
+      alert('Bài làm đã được nộp và khóa trước đó. Nếu bạn muốn chỉnh sửa, vui lòng bấm nút "Mở Khóa để Sửa".');
+      return;
+    }
+
+    // 3. Get current data
+    let currentData = getModuleData('M05');
+    if (!currentData || Object.keys(currentData).length === 0) {
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('module_draft_M05');
+          if (cached) currentData = JSON.parse(cached);
+        } catch (e) {
+          console.warn('Lỗi đọc cache M05:', e);
+        }
+      }
+    }
+
+    // 4. Validate with explicit feedback
+    const isDraftValid = Boolean(
+      currentData?.b13_execution ||
+      currentData?.b14_recovery?.bad_news_email?.trim() ||
+      currentData?.b15_growth?.growth_objective?.trim() ||
+      currentData?.execution ||
+      currentData?.recovery
+    );
+
+    if (!isDraftValid) {
+      alert('Vui lòng hoàn thành ít nhất Kế hoạch Bàn giao (B13), Phương án Khủng hoảng (B14) hoặc Kế hoạch Tăng trưởng (B15) trước khi nộp bài.');
+      return;
+    }
+
+    const confirmSubmit = window.confirm('Bạn có chắc chắn muốn nộp bài Module 05? Sau khi nộp, bài tập sẽ được chuyển sang trạng thái "Đã nộp" để Giảng viên chấm điểm.');
+    if (!confirmSubmit) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await submitModule('M05', currentUserId, currentData);
+      if (result.success) {
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: 📝 Đã nộp bài (Chờ chấm)';
+          statusBar.style.color = 'var(--accent-primary, #38bdf8)';
+        }
+        alert('🎉 Chúc mừng! Nộp bài Module 05 thành công!\nKhoang Final Capstone đã được mở khóa.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi nộp bài: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể nộp bài.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleUnlock = async () => {
-    if (!userId) return;
-    setIsSubmitting(true);
-    const result = await unlockModule('M05', userId);
-    if (result.success) {
-      window.alert('Đã mở khóa bài tập M05.');
-    } else {
-      window.alert(`Không thể mở khóa: ${result.error}`);
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const confirmUnlock = window.confirm('Bạn có chắc chắn muốn mở khóa để chỉnh sửa bài Module 05?');
+    if (!confirmUnlock) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await unlockModule('M05', currentUserId);
+      if (result.success) {
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: Bản nháp';
+          statusBar.style.color = 'var(--text-muted, #94a3b8)';
+        }
+        alert('Đã mở khóa bài làm để sửa. Lưu ý: Sau khi chỉnh sửa, hãy bấm "Xác nhận Nộp bài" để cập nhật lại cho Giảng viên.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi mở khóa: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể mở khóa.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const m05 = submissions.M05?.form_data as Partial<M05FormData> | undefined;

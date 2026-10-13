@@ -33,49 +33,128 @@ export default function M04Page() {
   }, [supabase.auth]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const data = getModuleData('M04');
-      const submission = submissions['M04'];
-      if (submission) {
-        setIsLocked(submission.is_locked);
-      }
-      
-      if (data) {
-        const isDraftValid = Boolean(
-          data.b12_closing?.selected_payment_method ||
-          data.b10_quotation?.pricing_options?.some((p: any) => p.price > 0 || p.features?.trim()) ||
-          data.b11_negotiation?.buyer_objection?.trim() ||
-          (data.b09_clarification && Object.values(data.b09_clarification).some((item: any) => item.is_clear || item.note?.trim())) ||
-          (data.b10_quotation?.tco_calculator && data.b10_quotation.tco_calculator.fob_price > 0)
-        );
-        setIsValid(isDraftValid);
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [getModuleData, submissions]);
+    const submission = submissions['M04'];
+    if (submission) {
+      setIsLocked(Boolean(submission.is_locked || submission.status === 'submitted'));
+    }
+    const data = getModuleData('M04');
+    if (data) {
+      const isDraftValid = Boolean(
+        data.b12_closing?.selected_payment_method ||
+        data.b10_quotation?.pricing_options?.some((p: any) => p.price > 0 || p.features?.trim()) ||
+        data.b11_negotiation?.buyer_objection?.trim() ||
+        (data.b09_clarification && Object.values(data.b09_clarification).some((item: any) => item.is_clear || item.note?.trim())) ||
+        (data.b10_quotation?.tco_calculator && data.b10_quotation.tco_calculator.fob_price > 0)
+      );
+      setIsValid(isDraftValid);
+    }
+  }, [submissions, getModuleData]);
 
   const handleSubmit = async () => {
-    if (!userId || !isValid || isLocked) return;
-    setIsSubmitting(true);
-    const result = await submitModule('M04', userId);
-    if (result.success) {
-      alert('Nộp bài thành công! Module 05 đã được mở khóa.');
-    } else {
-      alert('Có lỗi xảy ra khi nộp bài. Chi tiết lỗi: ' + result.error);
+    // 1. Resolve userId
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng tải lại trang hoặc đăng nhập lại để nộp bài.');
+      return;
+    }
+
+    // 2. Check if already locked
+    if (isLocked) {
+      alert('Bài làm đã được nộp và khóa trước đó. Nếu bạn muốn chỉnh sửa, vui lòng bấm nút "Mở Khóa để Sửa".');
+      return;
+    }
+
+    // 3. Get current data
+    let currentData = getModuleData('M04');
+    if (!currentData || Object.keys(currentData).length === 0) {
+      if (typeof window !== 'undefined') {
+        try {
+          const cached = localStorage.getItem('module_draft_M04');
+          if (cached) currentData = JSON.parse(cached);
+        } catch (e) {
+          console.warn('Lỗi đọc cache M04:', e);
+        }
+      }
+    }
+
+    // 4. Validate with explicit feedback
+    const isDraftValid = Boolean(
+      currentData?.b12_closing?.selected_payment_method ||
+      currentData?.selected_payment_method ||
+      currentData?.b10_quotation?.pricing_options?.some((p: any) => p.price > 0 || p.features?.trim()) ||
+      currentData?.b11_negotiation?.buyer_objection?.trim() ||
+      (currentData?.b09_clarification && Object.values(currentData.b09_clarification).some((item: any) => item.is_clear || item.note?.trim())) ||
+      (currentData?.b10_quotation?.tco_calculator && currentData.b10_quotation.tco_calculator.fob_price > 0)
+    );
+
+    if (!isDraftValid) {
+      alert('Vui lòng hoàn thiện ít nhất Báo giá (B10), Phương án đàm phán (B11) hoặc Phương thức thanh toán (B12) trước khi nộp bài.');
+      return;
+    }
+
+    const confirmSubmit = window.confirm('Bạn có chắc chắn muốn nộp bài Module 04? Sau khi nộp, bài tập sẽ được chuyển sang trạng thái "Đã nộp" để Giảng viên chấm điểm.');
+    if (!confirmSubmit) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await submitModule('M04', currentUserId, currentData);
+      if (result.success) {
+        setIsLocked(true);
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: 📝 Đã nộp bài (Chờ chấm)';
+          statusBar.style.color = 'var(--accent-primary, #38bdf8)';
+        }
+        alert('🎉 Chúc mừng! Nộp bài Module 04 thành công!\nModule 05 (Vận hành, Xử lý Khủng hoảng & Tăng trưởng Khách hàng) đã được mở khóa.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi nộp bài: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể nộp bài.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleUnlock = async () => {
-    if (!userId) return;
-    setIsSubmitting(true);
-    const result = await unlockModule('M04', userId);
-    if (result.success) {
-      alert('Đã mở khóa bài làm để sửa. Lưu ý: Module tiếp theo có thể tạm thời bị khóa lại cho đến khi bạn nộp bài.');
-    } else {
-      alert('Có lỗi xảy ra khi mở khóa: ' + result.error);
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+      if (currentUserId) setUserId(currentUserId);
     }
-    setIsSubmitting(false);
+    if (!currentUserId) {
+      alert('Không tìm thấy phiên đăng nhập. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const confirmUnlock = window.confirm('Bạn có chắc chắn muốn mở khóa để chỉnh sửa bài Module 04?');
+    if (!confirmUnlock) return;
+
+    setIsSubmitting(true);
+    try {
+      const result = await unlockModule('M04', currentUserId);
+      if (result.success) {
+        setIsLocked(false);
+        const statusBar = document.getElementById('status-bar');
+        if (statusBar) {
+          statusBar.textContent = 'Trạng thái: Bản nháp';
+          statusBar.style.color = 'var(--text-muted, #94a3b8)';
+        }
+        alert('Đã mở khóa bài làm để sửa. Lưu ý: Sau khi chỉnh sửa, hãy bấm "Xác nhận Nộp bài" để cập nhật lại cho Giảng viên.');
+      } else {
+        alert('❌ Có lỗi xảy ra khi mở khóa: ' + (result.error || 'Vui lòng thử lại.'));
+      }
+    } catch (err: any) {
+      alert('❌ Lỗi hệ thống: ' + (err.message || 'Không thể mở khóa.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleOpenDocument = (lessonId: string) => {

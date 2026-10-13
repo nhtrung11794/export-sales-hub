@@ -140,7 +140,7 @@ export default function M2_MarketForm() {
         user_id: userId,
         module_id: 'M02',
         form_data: formData,
-        status: 'draft',
+        status: (useModuleStore.getState().submissions['M02']?.status === 'submitted' || useModuleStore.getState().submissions['M02']?.is_locked) ? 'submitted' : 'draft',
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       
