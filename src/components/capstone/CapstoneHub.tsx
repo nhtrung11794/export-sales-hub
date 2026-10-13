@@ -134,6 +134,8 @@ export default function CapstoneHub() {
   const [activeSplitTab, setActiveSplitTab] = useState<SplitTabType>('m01');
   const [previewPlaybookType, setPreviewPlaybookType] = useState<PlaybookType | null>(null);
 
+  const isLocked = Boolean(submissions?.CAPSTONE?.is_locked || submissions?.CAPSTONE?.status === 'submitted');
+
   const m01 = submissions?.M01?.form_data || {};
   const m02 = submissions?.M02?.form_data || {};
   const m03 = submissions?.M03?.form_data || {};
@@ -447,6 +449,11 @@ export default function CapstoneHub() {
             {isOnline ? <Wifi size={16} /> : <WifiOff size={16} />}
             {isOnline ? 'Online' : 'Mất kết nối'}
           </span>
+          {isLocked && (
+            <span style={{ background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+              🔒 Đã Nộp & Khóa Sửa
+            </span>
+          )}
           <span style={{
             padding: '4px 10px',
             borderRadius: 6,
@@ -464,6 +471,8 @@ export default function CapstoneHub() {
           {status === 'saved' && <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#10b981' }}><CheckCircle2 size={16} /> Đã lưu {lastSaved ? lastSaved.toLocaleTimeString('vi-VN') : ''}</span>}
         </div>
       </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 32, opacity: isLocked ? 0.7 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s ease' }}>
 
       {/* ZONE 1: Trạm Rà Soát Toàn Khóa (M01-M05) - DEEP LINKING INTERACTIVE CARDS */}
       <section className="glass-panel" style={{ padding: 28 }}>
@@ -668,6 +677,7 @@ export default function CapstoneHub() {
             )}
           </div>
         </aside>
+      </div>
       </div>
 
       {/* Split-View Drawer (TRỰC QUAN HÓA TOÀN BỘ B01-B15 DASHBOARDS) */}

@@ -278,30 +278,31 @@ export default function M03_CombinedForm() {
         </div>
       )}
 
-      {/* BÀI 06: SÀNG LỌC LEAD & TIẾP CẬN */}
-      <B06_LeadTriage 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled} 
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', opacity: isLocked ? 0.7 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s ease' }}>
+        {/* BÀI 06: SÀNG LỌC LEAD & TIẾP CẬN */}
+        <B06_LeadTriage 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled} 
+        />
 
-      {/* BÀI 07: CHẤM ĐIỂM CƠ HỘI SÂU */}
-      <B07_OpportunityQualification 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled} 
-      />
+        {/* BÀI 07: CHẤM ĐIỂM CƠ HỘI SÂU */}
+        <B07_OpportunityQualification 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled} 
+        />
 
-      {/* BÀI 08: QUẢN TRỊ PIPELINE & KỶ LUẬT FOLLOW-UP */}
-      <B08_PipelineManagement 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled} 
-      />
-
+        {/* BÀI 08: QUẢN TRỊ PIPELINE & KỶ LUẬT FOLLOW-UP */}
+        <B08_PipelineManagement 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled} 
+        />
+      </div>
     </div>
   );
 }

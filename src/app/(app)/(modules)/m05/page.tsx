@@ -262,11 +262,27 @@ export default function M05Page() {
         previewUrl={previewUrl}
         previewTitle={previewTitle}
         onClosePreview={() => setPreviewUrl(null)}
-        headerActionNode={isLocked ? (
-          <button className="btn" onClick={handleUnlock} disabled={isSubmitting} style={{ background: '#f59e0b', color: '#0f172a', fontWeight: 800 }}>{isSubmitting ? 'Đang mở...' : 'Mở khóa để sửa'}</button>
-        ) : (
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={isSubmitting} style={{ fontWeight: 800 }}>{isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}</button>
-        )}
+        headerActionNode={
+          isLocked ? (
+            <button
+              onClick={handleUnlock}
+              disabled={isSubmitting}
+              className="btn btn-warning"
+              style={{ fontWeight: 'bold' }}
+            >
+              {isSubmitting ? 'Đang mở khóa...' : 'Mở Khóa để Sửa'}
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="btn btn-primary"
+              style={{ fontWeight: 'bold' }}
+            >
+              {isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}
+            </button>
+          )
+        }
       />
 
       {pipVideoUrl && (

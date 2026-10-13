@@ -154,25 +154,7 @@ export default function M2_MarketForm() {
     3000
   );
 
-  // Cập nhật trạng thái lên UI
-  useEffect(() => {
-    const statusBar = document.getElementById('status-bar');
-    if (statusBar) {
-      if (status === 'saving') {
-        statusBar.textContent = 'Trạng thái: Đang lưu...';
-        statusBar.style.color = 'var(--accent-warning)';
-      } else if (status === 'saved') {
-        statusBar.textContent = `Trạng thái: Đã lưu (${lastSaved?.toLocaleTimeString()})`;
-        statusBar.style.color = 'var(--accent-success)';
-      } else if (status === 'error') {
-        statusBar.textContent = 'Trạng thái: Lỗi khi lưu!';
-        statusBar.style.color = 'var(--accent-danger)';
-      } else {
-        statusBar.textContent = 'Trạng thái: Chưa có thay đổi (Draft)';
-        statusBar.style.color = 'var(--text-muted)';
-      }
-    }
-  }, [status, lastSaved]);
+
 
   // Fallback for partial data
   const safeData = {

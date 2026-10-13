@@ -292,23 +292,7 @@ export default function M05_CombinedForm() {
     loadData();
   }, [setData, supabase, updateSubmissionLocal, syncSavedData]);
 
-  useEffect(() => {
-    const statusBar = document.getElementById('status-bar');
-    if (!statusBar) return;
-    if (status === 'saving') {
-      statusBar.textContent = 'Trạng thái: Đang lưu...';
-      statusBar.style.color = 'var(--accent-warning)';
-    } else if (status === 'saved') {
-      statusBar.textContent = `Trạng thái: Đã lưu (${lastSaved?.toLocaleTimeString('vi-VN')})`;
-      statusBar.style.color = 'var(--accent-success)';
-    } else if (status === 'error') {
-      statusBar.textContent = 'Trạng thái: Bị chặn bởi kiểm soát nghiệp vụ';
-      statusBar.style.color = 'var(--accent-danger)';
-    } else {
-      statusBar.textContent = 'Trạng thái: Bản nháp';
-      statusBar.style.color = 'var(--text-muted)';
-    }
-  }, [lastSaved, status]);
+
 
   if (isInitializing) {
     return <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-secondary)' }}>Đang nạp dữ liệu Module 05...</div>;
@@ -331,7 +315,11 @@ export default function M05_CombinedForm() {
             {isOnline ? <Wifi size={16} /> : <WifiOff size={16} />}
             {isOnline ? 'Online' : 'Mất kết nối'}
           </span>
-          {isLocked && <span style={{ color: '#f59e0b', fontWeight: 700 }}>🔒 Đã nộp & khóa sửa</span>}
+          {isLocked && (
+            <span style={{ marginLeft: '12px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+              🔒 Đã Nộp & Khóa Sửa
+            </span>
+          )}
           <span style={{
             padding: '4px 10px',
             borderRadius: 6,
@@ -353,29 +341,31 @@ export default function M05_CombinedForm() {
 
       {debugError && <div style={{ padding: 12, color: '#fca5a5', background: 'rgba(239,68,68,.1)', borderRadius: 8 }}>{debugError}</div>}
 
-      <B13_HandoverExecution
-        data={data}
-        setData={setData}
-        handleBlur={handleBlur}
-        isDisabled={isDisabled}
-        isPrerequisiteComplete={true}
-      />
-      <B14_IssueRecovery
-        data={data}
-        setData={setData}
-        handleBlur={handleBlur}
-        isDisabled={isDisabled}
-        isPrerequisiteComplete={true}
-        targetMarket={marketContext.target_market || ''}
-        legalContext={marketContext.strategic_reason || ''}
-      />
-      <B15_AccountGrowth
-        data={data}
-        setData={setData}
-        handleBlur={handleBlur}
-        isDisabled={isDisabled}
-        isPrerequisiteComplete={true}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 32, opacity: isLocked ? 0.7 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s ease' }}>
+        <B13_HandoverExecution
+          data={data}
+          setData={setData}
+          handleBlur={handleBlur}
+          isDisabled={isDisabled}
+          isPrerequisiteComplete={true}
+        />
+        <B14_IssueRecovery
+          data={data}
+          setData={setData}
+          handleBlur={handleBlur}
+          isDisabled={isDisabled}
+          isPrerequisiteComplete={true}
+          targetMarket={marketContext.target_market || ''}
+          legalContext={marketContext.strategic_reason || ''}
+        />
+        <B15_AccountGrowth
+          data={data}
+          setData={setData}
+          handleBlur={handleBlur}
+          isDisabled={isDisabled}
+          isPrerequisiteComplete={true}
+        />
+      </div>
     </div>
   );
 }

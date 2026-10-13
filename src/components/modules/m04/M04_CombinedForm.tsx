@@ -338,40 +338,42 @@ export default function M04_CombinedForm() {
         </div>
       )}
 
-      {/* BÀI 09: REQUIREMENT CLARIFICATION */}
-      <B09_RequirementClarification 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled}
-        totalScore={totalScore as number}
-      />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', opacity: isLocked ? 0.7 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s ease' }}>
+        {/* BÀI 09: REQUIREMENT CLARIFICATION */}
+        <B09_RequirementClarification 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled}
+          totalScore={totalScore as number}
+        />
 
-      {/* BÀI 10: PROPOSAL & QUOTATION */}
-      <B10_ProposalQuotation 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled} 
-      />
+        {/* BÀI 10: PROPOSAL & QUOTATION */}
+        <B10_ProposalQuotation 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled} 
+        />
 
-      {/* BÀI 11: NEGOTIATION & BLOCKER */}
-      <B11_NegotiationBlocker 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled} 
-      />
-      
-      {/* BÀI 12: PAYMENT RISK & SAFE CLOSING */}
-      <B12_PaymentRisk 
-        data={data} 
-        setData={setData} 
-        handleBlur={handleBlur} 
-        isDisabled={isDisabled}
-        opportunityScore={totalScore as number}
-        accessScore={accessScore}
-      />
+        {/* BÀI 11: NEGOTIATION & BLOCKER */}
+        <B11_NegotiationBlocker 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled} 
+        />
+        
+        {/* BÀI 12: PAYMENT RISK & SAFE CLOSING */}
+        <B12_PaymentRisk 
+          data={data} 
+          setData={setData} 
+          handleBlur={handleBlur} 
+          isDisabled={isDisabled}
+          opportunityScore={totalScore as number}
+          accessScore={accessScore}
+        />
+      </div>
 
     </div>
   );

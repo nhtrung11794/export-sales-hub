@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useAutoSave } from '@/hooks/useAutoSave';
 import { createClient } from '@/lib/supabase/client';
 import { useModuleStore } from '@/store/useModuleStore';
+import { Wifi, WifiOff, CloudUpload, CheckCircle2 } from 'lucide-react';
 
 import B03_MarketIntelligence from './B03_MarketIntelligence';
 import B04_BuyerMap from './B04_BuyerMap';
@@ -131,7 +132,7 @@ export default function M02_CombinedForm() {
     }
   };
 
-  const { data, setData, status, lastSaved, handleBlur, syncSavedData } = useAutoSave<M02FormData>(
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData, manualSave } = useAutoSave<M02FormData>(
     'M02',
     initialData,
     handleSave,
@@ -185,25 +186,7 @@ export default function M02_CombinedForm() {
     loadData();
   }, [supabase.auth, updateSubmissionLocal, syncSavedData]);
 
-  // Status Bar UI Update
-  useEffect(() => {
-    const statusBar = document.getElementById('status-bar');
-    if (statusBar) {
-      if (status === 'saving') {
-        statusBar.textContent = 'Trạng thái: Đang lưu...';
-        statusBar.style.color = 'var(--accent-warning)';
-      } else if (status === 'saved') {
-        statusBar.textContent = `Trạng thái: Đã lưu (${lastSaved?.toLocaleTimeString()})`;
-        statusBar.style.color = 'var(--accent-success)';
-      } else if (status === 'error') {
-        statusBar.textContent = 'Trạng thái: Lỗi khi lưu!';
-        statusBar.style.color = 'var(--accent-danger)';
-      } else {
-        statusBar.textContent = 'Trạng thái: Chưa có thay đổi (Draft)';
-        statusBar.style.color = 'var(--text-muted)';
-      }
-    }
-  }, [status, lastSaved]);
+
 
   if (isInitializing) {
     return <div style={{ color: 'var(--text-muted)' }}>Đang tải dữ liệu bài làm...</div>;
@@ -220,33 +203,79 @@ export default function M02_CombinedForm() {
   );
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-      {errorBanner}
-      
-      {(!isOnline || isLocked) && (
-        <div style={{ 
-          background: 'rgba(239, 68, 68, 0.15)', 
-          border: '1px dashed var(--accent-danger)', 
-          padding: '16px', 
-          borderRadius: '12px', 
-          color: '#fca5a5', 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '12px',
-          boxShadow: '0 4px 20px rgba(239, 68, 68, 0.1)'
-        }}>
-          <strong>⚠️ {isLocked ? 'BÀI LÀM ĐÃ KHÓA' : 'MẤT KẾT NỐI MẠNG'}:</strong> {isLocked ? 'Bài làm của bạn đã được nộp. Chế độ xem chỉ đọc.' : 'Toàn bộ dữ liệu đã được tự động khóa (Read-only) để bảo vệ an toàn thông tin.'}
-        </div>
-      )}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+      {/* STATUS HEADER BAR */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '12px 20px', background: 'rgba(255, 255, 255, 0.03)',
+        borderRadius: '12px', border: '1px solid var(--border-color)'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem' }}>
+          {isOnline ? (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
+              <Wifi size={16} /> Online
+            </span>
+          ) : (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-danger)' }}>
+              <WifiOff size={16} /> Mất kết nối (Offline)
+            </span>
+          )}
 
-      {/* Block B03 */}
-      <B03_MarketIntelligence data={data} setData={setData} handleBlur={handleBlur} isDisabled={isDisabled} />
-      
-      {/* Block B04 */}
-      <B04_BuyerMap data={data} setData={setData} handleBlur={handleBlur} isDisabled={isDisabled} />
-      
-      {/* Block B05 */}
-      <B05_DiscoveryMatrix data={data} setData={setData} handleBlur={handleBlur} isDisabled={isDisabled} />
+          {isLocked && (
+            <span style={{ marginLeft: '12px', background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', padding: '2px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+              🔒 Đã Nộp & Khóa Sửa
+            </span>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+          {status === 'saving' && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-primary)' }}>
+              <CloudUpload size={16} /> Đang lưu...
+            </span>
+          )}
+          {status === 'saved' && (
+            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
+              <CheckCircle2 size={16} /> Đã lưu tự động {lastSaved ? `lúc ${lastSaved.toLocaleTimeString('vi-VN')}` : ''}
+            </span>
+          )}
+          {status === 'error' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: 'var(--accent-danger)' }}>
+                ⚠️ Lưu thất bại (sẽ tự thử lại)
+              </span>
+              <button
+                type="button"
+                onClick={() => manualSave(true)}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Thử lại ngay
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {errorBanner}
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', opacity: isLocked ? 0.7 : 1, pointerEvents: isLocked ? 'none' : 'auto', transition: 'opacity 0.2s ease' }}>
+        {/* Block B03 */}
+        <B03_MarketIntelligence data={data} setData={setData} handleBlur={handleBlur} isDisabled={isDisabled} />
+        
+        {/* Block B04 */}
+        <B04_BuyerMap data={data} setData={setData} handleBlur={handleBlur} isDisabled={isDisabled} />
+        
+        {/* Block B05 */}
+        <B05_DiscoveryMatrix data={data} setData={setData} handleBlur={handleBlur} isDisabled={isDisabled} />
+      </div>
     </div>
   );
 }
