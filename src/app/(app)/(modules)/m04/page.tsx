@@ -399,8 +399,7 @@ export default function M04Page() {
             <button
               onClick={handleUnlock}
               disabled={isSubmitting}
-              className="btn btn-warning"
-              style={{ fontWeight: 'bold' }}
+              className="btn-header-action btn-warning"
             >
               {isSubmitting ? 'Đang mở khóa...' : 'Mở Khóa để Sửa'}
             </button>
@@ -408,8 +407,7 @@ export default function M04Page() {
             <button
               onClick={handleSubmit}
               disabled={isSubmitting}
-              className="btn btn-primary"
-              style={{ fontWeight: 'bold' }}
+              className="btn-header-action btn-primary"
             >
               {isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}
             </button>

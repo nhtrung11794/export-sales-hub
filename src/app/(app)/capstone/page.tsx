@@ -243,8 +243,7 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
               <button
                 onClick={handleUnlock}
                 disabled={isSubmitting}
-                className="btn btn-warning"
-                style={{ fontWeight: 'bold' }}
+                className="btn-header-action btn-warning"
               >
                 {isSubmitting ? 'Đang mở khóa...' : 'Mở Khóa để Sửa'}
               </button>
@@ -252,8 +251,7 @@ Hãy đặt 3 câu hỏi sắc bén thách thức tính nhất quán trong toàn
               <button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="btn btn-primary"
-                style={{ fontWeight: 'bold' }}
+                className="btn-header-action btn-primary"
               >
                 {isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}
               </button>

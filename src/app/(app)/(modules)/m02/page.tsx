@@ -324,39 +324,15 @@ export default function M02Page() {
             <button
               onClick={handleUnlock}
               disabled={isSubmitting}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: 'var(--accent-warning)',
-                color: '#1e293b',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                opacity: isSubmitting ? 0.7 : 1,
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
-                transition: 'all 0.2s ease'
-              }}
+              className="btn-header-action btn-warning"
             >
               {isSubmitting ? 'Đang mở khóa...' : 'Mở Khóa để Sửa'}
             </button>
           ) : (
             <button
               onClick={handleSubmit}
-              disabled={!isValid || isSubmitting}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: isValid ? 'var(--accent-primary)' : 'var(--bg-tertiary)',
-                color: isValid ? '#fff' : 'var(--text-muted)',
-                border: isValid ? 'none' : '1px solid var(--border-color)',
-                borderRadius: '8px',
-                cursor: isValid ? 'pointer' : 'not-allowed',
-                opacity: isSubmitting ? 0.7 : 1,
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                boxShadow: isValid ? '0 4px 12px rgba(59, 130, 246, 0.3)' : 'none',
-                transition: 'all 0.2s ease'
-              }}
+              disabled={isSubmitting}
+              className="btn-header-action btn-primary"
             >
               {isSubmitting ? 'Đang nộp...' : 'Xác nhận Nộp bài'}
             </button>
