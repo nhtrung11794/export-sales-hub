@@ -51,7 +51,7 @@ export default function M3_FitScoreForm() {
         module_id: 'M03',
         form_data: formData,
         status: 'draft',
-        last_saved_at: new Date().toISOString()
+        updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       
     if (error) throw error;

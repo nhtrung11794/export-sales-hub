@@ -163,6 +163,42 @@ export default function M04_CombinedForm() {
     };
   }, []);
 
+  // Save handler for useAutoSave
+  const handleSave = async (savedData: M04FormData) => {
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+    }
+    if (!currentUserId) return;
+    const finalUserId: string = currentUserId;
+    
+    // Đồng bộ Zustand local trước
+    updateSubmissionLocal('M04', savedData);
+
+    const { error } = await supabase
+      .from('module_submissions')
+      .upsert({
+        user_id: finalUserId,
+        module_id: 'M04',
+        form_data: savedData,
+        status: 'draft',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,module_id' });
+
+    if (error) {
+      console.error('Lỗi Auto-save Supabase M04:', error);
+      throw error;
+    }
+  };
+
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData, manualSave } = useAutoSave<M04FormData>(
+    'M04',
+    initialData,
+    handleSave,
+    3000
+  );
+
   // Fetch initial data
   useEffect(() => {
     async function loadData() {
@@ -180,14 +216,14 @@ export default function M04_CombinedForm() {
           .select('form_data')
           .eq('user_id', user.id)
           .eq('module_id', 'M04')
-          .single();
+          .maybeSingle();
           
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw error;
         }
         
         if (data?.form_data) {
-          setData(prev => ({
+          const merged: M04FormData = {
             ...initialData,
             ...data.form_data,
             b09_clarification: {
@@ -209,8 +245,10 @@ export default function M04_CombinedForm() {
               ...initialData.b12_closing,
               ...(data.form_data.b12_closing || {})
             }
-          }));
-          updateSubmissionLocal('M04', data.form_data);
+          };
+          setData(merged);
+          syncSavedData(merged);
+          updateSubmissionLocal('M04', merged);
         }
       } catch (err: any) {
         console.error('Lỗi nạp dữ liệu M04:', err);
@@ -221,37 +259,7 @@ export default function M04_CombinedForm() {
     }
 
     loadData();
-  }, [supabase, updateSubmissionLocal]);
-
-  // Save handler for useAutoSave
-  const handleSave = async (savedData: M04FormData) => {
-    if (!userId) return;
-    
-    // Đồng bộ Zustand local trước
-    updateSubmissionLocal('M04', savedData);
-
-    const { error } = await supabase
-      .from('module_submissions')
-      .upsert({
-        user_id: userId,
-        module_id: 'M04',
-        form_data: savedData,
-        status: 'draft',
-        last_saved_at: new Date().toISOString()
-      }, { onConflict: 'user_id,module_id' });
-
-    if (error) {
-      console.error('Lỗi Auto-save Supabase M04:', error);
-      throw error;
-    }
-  };
-
-  const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M04FormData>(
-    'M04',
-    initialData,
-    handleSave,
-    3000
-  );
+  }, [supabase, updateSubmissionLocal, syncSavedData]);
 
   if (isInitializing) {
     return (
@@ -300,9 +308,26 @@ export default function M04_CombinedForm() {
             </span>
           )}
           {status === 'error' && (
-            <span style={{ color: 'var(--accent-danger)' }}>
-              ⚠️ Lưu thất bại (sẽ tự thử lại)
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: 'var(--accent-danger)' }}>
+                ⚠️ Lưu thất bại (sẽ tự thử lại)
+              </span>
+              <button
+                type="button"
+                onClick={() => manualSave(true)}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Thử lại ngay
+              </button>
+            </div>
           )}
         </div>
       </div>

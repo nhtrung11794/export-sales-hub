@@ -195,16 +195,23 @@ export default function M05_CombinedForm() {
   }, []);
 
   const handleSave = useCallback(async (savedData: M05FormData) => {
-    if (!userId) return;
     if (hasBlockedRecoveryEmail(savedData)) {
       throw new Error('Email CAPA đang cam kết bồi hoàn khi chưa có bằng chứng xác minh.');
     }
+
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+    }
+    if (!currentUserId) return;
+    const finalUserId: string = currentUserId;
 
     updateSubmissionLocal('M05', savedData);
     const { error } = await supabase
       .from('module_submissions')
       .upsert({
-        user_id: userId,
+        user_id: finalUserId,
         module_id: 'M05',
         form_data: savedData,
         status: 'draft',
@@ -214,7 +221,7 @@ export default function M05_CombinedForm() {
     if (error) throw error;
   }, [supabase, updateSubmissionLocal, userId]);
 
-  const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M05FormData>(
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData } = useAutoSave<M05FormData>(
     'M05',
     initialM05Data,
     handleSave,
@@ -233,9 +240,9 @@ export default function M05_CombinedForm() {
           .select('form_data')
           .eq('user_id', authData.user.id)
           .eq('module_id', 'M05')
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') throw error;
+        if (error) throw error;
         if (!submission?.form_data) return;
 
         const fetched = submission.form_data as Partial<M05FormData>;
@@ -271,6 +278,7 @@ export default function M05_CombinedForm() {
           b16_capstone: { ...initialM05Data.b16_capstone, ...(fetched.b16_capstone || {}) },
         };
         setData(merged);
+        syncSavedData(merged);
         updateSubmissionLocal('M05', merged);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Không thể nạp dữ liệu M05.';
@@ -282,7 +290,7 @@ export default function M05_CombinedForm() {
     }
 
     loadData();
-  }, [setData, supabase, updateSubmissionLocal]);
+  }, [setData, supabase, updateSubmissionLocal, syncSavedData]);
 
   useEffect(() => {
     const statusBar = document.getElementById('status-bar');

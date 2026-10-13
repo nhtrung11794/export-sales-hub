@@ -43,8 +43,13 @@ export default function M03Page() {
       }
       
       if (data) {
-        const isDraftValid = (data.leads && data.leads.length > 0) || Boolean(data.b07_qualification);
-        setIsValid(!!isDraftValid);
+        const isDraftValid = Boolean(
+          (data.b06_leads && data.b06_leads.length > 0) ||
+          (data.leads && data.leads.length > 0) ||
+          data.b07_qualification?.buyer_response_text?.trim() ||
+          data.b08_pipeline?.follow_up_message?.trim()
+        );
+        setIsValid(isDraftValid);
       }
     }, 1000);
     return () => clearInterval(interval);

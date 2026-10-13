@@ -44,13 +44,18 @@ export default function M02Page() {
         setIsLocked(submission.is_locked);
       }
       
-      // Simple validation for M02: Form Quyết định (B03) is required + at least 1 insight in B05
+      // Validation for M02: Form Quyết định (B03) or B04/B05
       if (data) {
-        const isDraftValid = data.target_market?.trim().length > 0 && 
-                             data.route_to_market?.trim().length > 0 && 
-                             data.strategic_reason?.trim().length > 0 && 
-                             (data.discovery_matrix?.need?.hypothesis?.trim().length > 0 || data.discovery_matrix?.need?.insight?.trim().length > 0);
-        setIsValid(!!isDraftValid);
+        const isDraftValid = Boolean(
+          (data.target_market?.trim() || data.strategic_reason?.trim() || data.route_to_market?.trim()) &&
+          (data.discovery_matrix?.need?.core_hypothesis?.trim() || 
+           data.discovery_matrix?.need?.surface_signal?.trim() || 
+           data.discovery_matrix?.context?.core_hypothesis?.trim() ||
+           data.discovery_matrix?.pain?.core_hypothesis?.trim() ||
+           data.icp_industry?.trim() ||
+           data.icp_size?.trim())
+        );
+        setIsValid(isDraftValid);
       }
     }, 1000);
     return () => clearInterval(interval);

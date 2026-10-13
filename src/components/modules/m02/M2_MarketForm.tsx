@@ -141,7 +141,7 @@ export default function M2_MarketForm() {
         module_id: 'M02',
         form_data: formData,
         status: 'draft',
-        last_saved_at: new Date().toISOString()
+        updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,module_id' });
       
     if (error) throw error;

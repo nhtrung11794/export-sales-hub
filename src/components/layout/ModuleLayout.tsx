@@ -110,7 +110,7 @@ export default function ModuleLayout({
           <h2 style={{ color: !isOnline ? 'var(--accent-danger)' : 'var(--accent-primary)', fontSize: '1.05rem', margin: 0, fontWeight: 800 }}>Thực thi & Làm bài</h2>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <div id="status-bar" style={{ fontSize: '0.8rem', color: !isOnline ? 'var(--accent-danger)' : 'var(--text-muted)' }}>
-              {!isOnline ? 'MẤT KẾT NỐI' : 'Trạng thái: Đang tải...'}
+              {!isOnline ? 'MẤT KẾT NỐI' : 'Trạng thái: Bản nháp'}
             </div>
             {headerActionNode}
           </div>

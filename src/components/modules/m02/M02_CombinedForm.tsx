@@ -103,6 +103,41 @@ export default function M02_CombinedForm() {
     };
   }, []);
 
+  const handleSave = async (formData: M02FormData) => {
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+    }
+    if (!currentUserId) return;
+    const finalUserId: string = currentUserId;
+    
+    // Sync to store for real-time validation in page.tsx
+    updateSubmissionLocal('M02', formData);
+
+    const { error } = await supabase
+      .from('module_submissions')
+      .upsert({
+        user_id: finalUserId,
+        module_id: 'M02',
+        form_data: formData,
+        status: 'draft',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,module_id' });
+      
+    if (error) {
+      console.error('Error saving to Supabase:', error);
+      throw error;
+    }
+  };
+
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData } = useAutoSave<M02FormData>(
+    'M02',
+    initialData,
+    handleSave,
+    3000
+  );
+
   // Fetch initial data
   useEffect(() => {
     async function loadData() {
@@ -120,22 +155,23 @@ export default function M02_CombinedForm() {
           .select('form_data')
           .eq('user_id', user.id)
           .eq('module_id', 'M02')
-          .single();
+          .maybeSingle();
           
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw error;
         }
 
         if (data && data.form_data) {
-          const fetchedData = data.form_data as any;
-          setData({
+          const fetchedData: M02FormData = {
             ...initialData,
-            ...fetchedData,
+            ...data.form_data,
             discovery_matrix: {
               ...initialData.discovery_matrix,
-              ...(fetchedData.discovery_matrix || {})
+              ...(data.form_data.discovery_matrix || {})
             }
-          });
+          };
+          setData(fetchedData);
+          syncSavedData(fetchedData);
           // Also sync to global store so validation can run
           updateSubmissionLocal('M02', fetchedData);
         }
@@ -147,36 +183,7 @@ export default function M02_CombinedForm() {
       }
     }
     loadData();
-  }, [supabase.auth, updateSubmissionLocal]); // Add missing deps
-
-  const handleSave = async (formData: M02FormData) => {
-    if (!userId) return;
-    
-    // Sync to store for real-time validation in page.tsx
-    updateSubmissionLocal('M02', formData);
-
-    const { error } = await supabase
-      .from('module_submissions')
-      .upsert({
-        user_id: userId,
-        module_id: 'M02',
-        form_data: formData,
-        status: 'draft',
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,module_id' });
-      
-    if (error) {
-      console.error('Error saving to Supabase:', error);
-      throw error;
-    }
-  };
-
-  const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M02FormData>(
-    'M02',
-    initialData,
-    handleSave,
-    3000
-  );
+  }, [supabase.auth, updateSubmissionLocal, syncSavedData]);
 
   // Status Bar UI Update
   useEffect(() => {

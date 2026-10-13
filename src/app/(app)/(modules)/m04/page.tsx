@@ -41,8 +41,14 @@ export default function M04Page() {
       }
       
       if (data) {
-        const isDraftValid = Boolean(data.b12_closing?.selected_payment_method || data.b10_quotation);
-        setIsValid(!!isDraftValid);
+        const isDraftValid = Boolean(
+          data.b12_closing?.selected_payment_method ||
+          data.b10_quotation?.pricing_options?.some((p: any) => p.price > 0 || p.features?.trim()) ||
+          data.b11_negotiation?.buyer_objection?.trim() ||
+          (data.b09_clarification && Object.values(data.b09_clarification).some((item: any) => item.is_clear || item.note?.trim())) ||
+          (data.b10_quotation?.tco_calculator && data.b10_quotation.tco_calculator.fob_price > 0)
+        );
+        setIsValid(isDraftValid);
       }
     }, 1000);
     return () => clearInterval(interval);

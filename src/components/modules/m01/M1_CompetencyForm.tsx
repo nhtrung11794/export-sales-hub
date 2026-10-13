@@ -42,7 +42,7 @@ const initialData: M1FormData = {
 
 export default function M1_CompetencyForm() {
   const supabase = createClient();
-  const { isInitialized, submissions } = useModuleStore();
+  const { isInitialized, submissions, updateSubmissionLocal } = useModuleStore();
   const [userId, setUserId] = useState<string | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [isOnline, setIsOnline] = useState(true);
@@ -66,6 +66,40 @@ export default function M1_CompetencyForm() {
     };
   }, []);
 
+  const handleSave = async (formData: M1FormData) => {
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+    }
+    if (!currentUserId) return;
+    const finalUserId: string = currentUserId;
+    
+    updateSubmissionLocal('M01', formData);
+
+    const { error } = await supabase
+      .from('module_submissions')
+      .upsert({
+        user_id: finalUserId,
+        module_id: 'M01',
+        form_data: formData,
+        status: 'draft',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,module_id' });
+      
+    if (error) {
+      console.error('Error saving to Supabase:', error);
+      throw error;
+    }
+  };
+
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData } = useAutoSave<M1FormData>(
+    'M01',
+    initialData,
+    handleSave,
+    3000 // Tự động lưu sau 3s
+  );
+
   // Khởi tạo và Load dữ liệu cũ
   useEffect(() => {
     async function loadData() {
@@ -83,15 +117,15 @@ export default function M1_CompetencyForm() {
           .select('form_data')
           .eq('user_id', user.id)
           .eq('module_id', 'M01')
-          .single();
+          .maybeSingle();
           
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw error;
         }
 
         if (data && data.form_data) {
           const fetchedData = data.form_data as any;
-          setData({
+          const merged: M1FormData = {
             ...initialData,
             ...fetchedData,
             mad_libs: {
@@ -102,7 +136,10 @@ export default function M1_CompetencyForm() {
               ...initialData.competency_radar,
               ...(fetchedData.competency_radar || {})
             }
-          });
+          };
+          setData(merged);
+          syncSavedData(merged);
+          updateSubmissionLocal('M01', merged);
         }
       } catch (err: any) {
         console.error('Initial fetch error:', err);
@@ -112,33 +149,7 @@ export default function M1_CompetencyForm() {
       }
     }
     loadData();
-  }, []);
-
-  const handleSave = async (formData: M1FormData) => {
-    if (!userId) return;
-    
-    const { error } = await supabase
-      .from('module_submissions')
-      .upsert({
-        user_id: userId,
-        module_id: 'M01',
-        form_data: formData,
-        status: 'draft',
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,module_id' });
-      
-    if (error) {
-      console.error('Error saving to Supabase:', error);
-      throw error;
-    }
-  };
-
-  const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M1FormData>(
-    'M01',
-    initialData,
-    handleSave,
-    3000 // Tự động lưu sau 3s
-  );
+  }, [supabase.auth, syncSavedData, updateSubmissionLocal]);
 
   // Cập nhật trạng thái lên UI thông qua ID được định nghĩa ở ModuleLayout
   useEffect(() => {

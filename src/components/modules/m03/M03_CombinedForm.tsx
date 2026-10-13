@@ -109,6 +109,42 @@ export default function M03_CombinedForm() {
     };
   }, []);
 
+  // Save handler for useAutoSave
+  const handleSave = async (savedData: M03FormData) => {
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+    }
+    if (!currentUserId) return;
+    const finalUserId: string = currentUserId;
+    
+    // Đồng bộ Zustand local trước
+    updateSubmissionLocal('M03', savedData);
+
+    const { error } = await supabase
+      .from('module_submissions')
+      .upsert({
+        user_id: finalUserId,
+        module_id: 'M03',
+        form_data: savedData,
+        status: 'draft',
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,module_id' });
+
+    if (error) {
+      console.error('Lỗi Auto-save Supabase M03:', error);
+      throw error;
+    }
+  };
+
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData, manualSave } = useAutoSave<M03FormData>(
+    'M03',
+    initialData,
+    handleSave,
+    3000
+  );
+
   // Fetch initial data
   useEffect(() => {
     async function loadData() {
@@ -126,14 +162,14 @@ export default function M03_CombinedForm() {
           .select('form_data')
           .eq('user_id', user.id)
           .eq('module_id', 'M03')
-          .single();
+          .maybeSingle();
           
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           throw error;
         }
         
         if (data?.form_data) {
-          setData(prev => ({
+          const merged: M03FormData = {
             ...initialData,
             ...data.form_data,
             b06_leads: data.form_data.b06_leads?.length ? data.form_data.b06_leads : initialData.b06_leads,
@@ -149,8 +185,10 @@ export default function M03_CombinedForm() {
               ...initialData.b08_pipeline,
               ...(data.form_data.b08_pipeline || {})
             }
-          }));
-          updateSubmissionLocal('M03', data.form_data);
+          };
+          setData(merged);
+          syncSavedData(merged);
+          updateSubmissionLocal('M03', merged);
         }
       } catch (err: any) {
         console.error('Lỗi nạp dữ liệu M03:', err);
@@ -161,37 +199,7 @@ export default function M03_CombinedForm() {
     }
 
     loadData();
-  }, [supabase, updateSubmissionLocal]);
-
-  // Save handler for useAutoSave
-  const handleSave = async (savedData: M03FormData) => {
-    if (!userId) return;
-    
-    // Đồng bộ Zustand local trước
-    updateSubmissionLocal('M03', savedData);
-
-    const { error } = await supabase
-      .from('module_submissions')
-      .upsert({
-        user_id: userId,
-        module_id: 'M03',
-        form_data: savedData,
-        status: 'draft',
-        last_saved_at: new Date().toISOString()
-      }, { onConflict: 'user_id,module_id' });
-
-    if (error) {
-      console.error('Lỗi Auto-save Supabase M03:', error);
-      throw error;
-    }
-  };
-
-  const { data, setData, status, lastSaved, handleBlur } = useAutoSave<M03FormData>(
-    'M03',
-    initialData,
-    handleSave,
-    3000
-  );
+  }, [supabase, updateSubmissionLocal, syncSavedData]);
 
   if (isInitializing) {
     return (
@@ -240,9 +248,26 @@ export default function M03_CombinedForm() {
             </span>
           )}
           {status === 'error' && (
-            <span style={{ color: 'var(--accent-danger)' }}>
-              ⚠️ Lưu thất bại (sẽ tự thử lại)
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: 'var(--accent-danger)' }}>
+                ⚠️ Lưu thất bại (sẽ tự thử lại)
+              </span>
+              <button
+                type="button"
+                onClick={() => manualSave(true)}
+                style={{
+                  background: 'rgba(239, 68, 68, 0.2)',
+                  color: '#fca5a5',
+                  border: '1px solid rgba(239, 68, 68, 0.4)',
+                  borderRadius: '4px',
+                  padding: '2px 8px',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer'
+                }}
+              >
+                Thử lại ngay
+              </button>
+            </div>
           )}
         </div>
       </div>

@@ -152,12 +152,19 @@ export default function CapstoneHub() {
   }, []);
 
   const handleSave = useCallback(async (savedData: CapstoneFormData) => {
-    if (!userId) return;
+    let currentUserId = userId;
+    if (!currentUserId) {
+      const { data: authData } = await supabase.auth.getUser();
+      currentUserId = authData?.user?.id || null;
+    }
+    if (!currentUserId) return;
+    const finalUserId: string = currentUserId;
+
     updateSubmissionLocal('CAPSTONE', savedData);
     const { error } = await supabase
       .from('module_submissions')
       .upsert({
-        user_id: userId,
+        user_id: finalUserId,
         module_id: 'CAPSTONE',
         form_data: savedData,
         status: 'draft',
@@ -169,7 +176,7 @@ export default function CapstoneHub() {
     }
   }, [supabase, updateSubmissionLocal, userId]);
 
-  const { data, setData, status, lastSaved, handleBlur } = useAutoSave<CapstoneFormData>(
+  const { data, setData, status, lastSaved, handleBlur, syncSavedData } = useAutoSave<CapstoneFormData>(
     'CAPSTONE',
     initialCapstoneData,
     handleSave,
@@ -195,15 +202,19 @@ export default function CapstoneHub() {
 
         if (submission?.form_data) {
           const fetched = submission.form_data as Partial<CapstoneFormData>;
-          setData({ ...initialCapstoneData, ...fetched });
-          updateSubmissionLocal('CAPSTONE', { ...initialCapstoneData, ...fetched });
+          const merged = { ...initialCapstoneData, ...fetched };
+          setData(merged);
+          syncSavedData(merged);
+          updateSubmissionLocal('CAPSTONE', merged);
         } else if (submissions?.M05?.form_data?.b16_capstone) {
           const legacy = submissions.M05.form_data.b16_capstone;
-          setData({
+          const legacyMerged = {
             final_reflection: legacy?.final_reflection || '',
             action_plan_90_days: legacy?.action_plan_90_days || '',
             review_notes: '',
-          });
+          };
+          setData(legacyMerged);
+          syncSavedData(legacyMerged);
         }
       } catch (error) {
         console.error('Lỗi nạp dữ liệu Capstone:', error);
@@ -213,7 +224,7 @@ export default function CapstoneHub() {
     }
 
     loadData();
-  }, [setData, submissions?.M05, supabase, updateSubmissionLocal]);
+  }, [setData, submissions?.M05, supabase, updateSubmissionLocal, syncSavedData]);
 
   const updateField = (field: keyof CapstoneFormData, value: string) => {
     setData(prev => ({ ...prev, [field]: value }));

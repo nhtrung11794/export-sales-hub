@@ -92,23 +92,33 @@ export const useModuleStore = create<ModuleStore>((set, get) => ({
   submitModule: async (moduleId: ModuleId, userId: string) => {
     try {
       const supabase = createClient();
+      const currentData = get().submissions[moduleId]?.form_data || {};
       const { error } = await supabase
         .from('module_submissions')
-        .update({ status: 'submitted', updated_at: new Date().toISOString() })
-        .eq('user_id', userId)
-        .eq('module_id', moduleId);
+        .upsert({
+          user_id: userId,
+          module_id: moduleId,
+          form_data: currentData,
+          status: 'submitted',
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'user_id,module_id' });
 
       if (error) throw error;
 
       // Cập nhật local state
       set((state) => {
-        const existing = state.submissions[moduleId];
-        if (!existing) return state;
+        const existing = state.submissions[moduleId] || {
+          module_id: moduleId,
+          form_data: currentData,
+          is_locked: false,
+          updated_at: new Date().toISOString()
+        };
         return {
           submissions: {
             ...state.submissions,
             [moduleId]: {
               ...existing,
+              status: 'submitted',
               is_locked: true
             }
           }
