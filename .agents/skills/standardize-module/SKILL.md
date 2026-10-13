@@ -31,12 +31,14 @@ Khi User yêu cầu chuẩn hóa một Module cụ thể (ví dụ: `@[Chuẩn h
 - Thêm logic kiểm tra tính hợp lệ của dữ liệu (Validation) trong file `page.tsx`. Chỉ những trường cực kỳ quan trọng mới bắt buộc khác rỗng.
 - Cập nhật logic `isUnlocked` trong `AppLayout.tsx` và `page.tsx` (Dashboard) để đảm bảo Module này chỉ mở khi Module trước đó đã được nộp.
 
-## Bước 6: Xử lý Trạng thái Khóa / Mở Khóa bài làm (Re-submission)
+## Bước 6: Xử lý Trạng thái Khóa / Mở Khóa bài làm (Re-submission) & Nút Header Chuẩn Hóa
 - Nhắc lại thiết kế DB: Bảng `module_submissions` sử dụng cột `status` (`'draft'` hoặc `'submitted'`), KHÔNG có cột `is_locked`. Việc mapping sang biến `is_locked` được thực hiện cục bộ tại store `useModuleStore`.
 - Import các actions `submitModule` và `unlockModule` từ `useModuleStore`.
-- Nút Action trên Header (`headerActionNode` của `ModuleLayout`) luôn bao gồm 2 trạng thái:
-  1. Khi ĐÃ NỘP (`isLocked == true`): Hiển thị nút "Mở Khóa để Sửa" (`var(--accent-warning)`). Gọi hàm `handleUnlock`.
-  2. Khi CHƯA NỘP (`!isLocked`): Hiển thị nút "Xác nhận Nộp bài" (`var(--accent-primary)`). Gọi hàm `handleSubmit`.
+- Nút Action trên Header (`headerActionNode` của `ModuleLayout`) **BẮT BUỘC dùng class CSS tập trung `.btn-header-action`** (kích thước chuẩn 8px 18px, min-height 38px, font 0.95rem bold):
+  1. Khi ĐÃ NỘP (`isLocked == true`): `<button onClick={handleUnlock} disabled={isSubmitting} className="btn-header-action btn-warning">Mở Khóa để Sửa</button>`.
+  2. Khi CHƯA NỘP (`!isLocked`): `<button onClick={handleSubmit} disabled={isSubmitting} className="btn-header-action btn-primary">Xác nhận Nộp bài</button>`.
+- TUYỆT ĐỐI KHÔNG dùng inline styles phân mảnh hoặc dùng class `.btn` phụ trợ nhỏ.
+- KHÔNG tạo `useEffect` ghi đè thẻ `#status-bar` trong component con (để `useAutoSave` tự động quản lý Single Source of Truth).
 
 ## Bước 7: Thẩm mỹ Toàn cục (Global Dark Theme)
 - Luôn nhớ hệ thống của chúng ta sử dụng **CSS Variables ép cứng thành Màu Xanh Đen (Dark Theme)** trong `:root` tại `globals.css` (bỏ qua media query `prefers-color-scheme`). 

@@ -1,7 +1,7 @@
 # 📘 CẨM NANG BÀN GIAO & TỔNG KẾT TOÀN DIỆN (HANDOFF HANDBOOK)
 **Dự án:** Export Sales Interactive Hub (LOS) — Nền Tảng Học Tập Xuất Khẩu B2B Thực Chiến  
-**Phiên bản:** v9.0 (Đồng Bộ Dữ Liệu Supabase Thật, Khắc Phục Triệt Để RLS, Khoang Chấm Điểm Rubric 10 Tiêu Chí, Và Hệ Thống In Báo Cáo A4 Chuyên Nghiệp Gửi Trung Tâm Đào Tạo)  
-**Ngày cập nhật:** 07/10/2026
+**Phiên bản:** v10.0 (Đồng Bộ Hóa Toàn Diện Hệ Thống Lưu Tự Động, Vá Lỗi Ghi Đè Status Bar, Chuẩn Hóa Nút Header Action .btn-header-action & Triệt Tiêu Lệch Kích Thước Giao Diện Khóa Bài M01-M05-Capstone)  
+**Ngày cập nhật:** 13/10/2026
 
 Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toàn bộ **Tư duy Nghiệp vụ, Kết quả Đã làm, Điểm Tồn đọng, Kỹ thuật Cốt lõi, Lỗi quan trọng đã sửa, Công cụ và Skill** để người dùng hoặc bất kỳ AI Agent nào trong các phiên tiếp theo có thể tiếp nối, nâng cấp hoặc cập nhật dữ liệu ngay lập tức chỉ với 1 cú click.
 
@@ -116,6 +116,24 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 
 ---
 
+### 1.9. Chuẩn Hóa Toàn Diện Hệ Thống Lưu, Khóa Bài & Nút Bấm Header Action (`.btn-header-action`)
+- **Triệt tiêu lỗi xung đột `useEffect` ghi đè sai thanh `#status-bar`**:
+  - `useAutoSave.ts` tự động phát hiện trạng thái nộp bài và cập nhật `#status-bar` thành `Trạng thái: 📝 Đã nộp bài (Chờ chấm)`.
+  - Loại bỏ hoàn toàn các đoạn code `useEffect` cục bộ tại các form M01, M02, M05 trước đó tự ý gán lại `Trạng thái: Chưa có thay đổi (Draft)`, đảm bảo trạng thái nộp bài luôn trung thực và phản ánh ngay lập tức trên UI.
+- **Kiến trúc CSS nút hành động Header tập trung (`.btn-header-action`)**:
+  - Xây dựng class CSS dùng chung `.btn-header-action` trong `globals.css` thay thế toàn bộ inline styles và class `.btn` nhỏ lẻ.
+  - Kích thước chuẩn hoá: `padding: 8px 18px`, `min-height: 38px`, `font-size: 0.95rem`, `font-weight: 700`, `border-radius: 8px`, `line-height: 1.2`.
+  - Phân nhánh thẩm mỹ:
+    - *Bản nháp / Nộp bài* (`.btn-header-action.btn-primary`): Nền xanh dương `var(--accent-primary)`, bóng mờ mềm mại `0 4px 14px rgba(59, 130, 246, 0.35)`.
+    - *Đã nộp / Mở khóa* (`.btn-header-action.btn-warning`): Nền vàng hổ phách `#f59e0b`, chữ đậm `#0f172a`, bóng mờ `0 4px 14px rgba(245, 158, 11, 0.35)`.
+  - Triệt tiêu 100% hiện tượng lệch kích thước (nút to nút nhỏ) giữa các Module M01–M05 và Capstone.
+- **Đồng bộ hóa thanh Status Header Bar & Hiệu ứng Khóa Form sạch sẽ**:
+  - Gỡ bỏ hoàn toàn khung viền đỏ đứt nét `⚠️ BÀI LÀM ĐÃ KHÓA...` gây cảm giác đe dọa hoặc đứt gãy thẩm mỹ.
+  - Thay bằng thanh Status Bar bo góc kính mờ sang trọng: Tín hiệu mạng `Online` (hoặc `Offline`), trạng thái lưu tự động và badge nổi bật `🔒 Đã Nộp & Khóa Sửa`.
+  - Toàn bộ trường dữ liệu trong form khi khóa được chuyển sang `disabled`, mờ nhẹ thanh lịch (`opacity: 0.7`) và vô hiệu hóa tương tác chuột (`pointerEvents: none`).
+
+---
+
 ## 2. ⏳ NHỮNG ĐIỂM CẦN LƯU Ý & CẢI TIẾN TIẾP THEO (PENDING / NEXT STEPS)
 
 1. **Khóa Supabase Enum Constraint**:
@@ -131,6 +149,10 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
    - Cho phép giáo viên / admin nạp bộ dữ liệu mẫu để học viên mới có thể bấm xem thử trọn vẹn 1 Deal hoàn chỉnh từ M01 đến M05.
 4. **Cú pháp Lệnh Shell trên Windows**:
    - Dùng lệnh `cmd.exe /c "npm.cmd run build"` để tránh lỗi PowerShell Execution Policy hoặc lỗi file lock trên thư mục `.next`.
+5. **Quy tắc Bất Biến khi Render Nút Header (`headerActionNode`)**:
+   - BẮT BUỘC dùng class `.btn-header-action` kèm `.btn-primary` (Nộp bài) hoặc `.btn-warning` (Mở khóa). TUYỆT ĐỐI KHÔNG viết inline styles `padding`, `fontSize` riêng lẻ trong từng file `page.tsx`.
+6. **Kiểm soát Trạng Thái Status Bar Duy Nhất (Single Source of Truth for Status Bar)**:
+   - Duy nhất `useAutoSave.ts` và `handleSubmit / handleUnlock` được quyền điều khiển nội dung của thẻ `#status-bar`. Các component con KHÔNG được tạo `useEffect` ghi đè status bar.
 
 ---
 
@@ -149,6 +171,8 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
    - Dữ liệu chảy xuyên suốt từ bài trước sang bài sau: Nỗi đau Buyer B05 $\rightarrow$ Gợi ý TAKE B11; Buyer Map B04 $\rightarrow$ QBR B15; Mục tiêu B02 $\rightarrow$ Kế hoạch 90 ngày Capstone.
 4. **Phòng Vệ Dữ Liệu Tuyệt Đối (Bulletproof Defensive Coding)**:
    - Luôn kiểm tra `Array.isArray()`, `typeof === 'object'`, fallback chuỗi rỗng `(val || '')`, bọc `ErrorBoundary` ở mọi cấp.
+5. **Kiến Trúc CSS Tập Trung (Centralized Design System Tokens vs Inline Styles)**:
+   - Không rải rác inline styles cho các thành phần điều hướng trọng yếu. Mọi nút bấm, trạng thái, kích thước phải được quản lý tập trung trong Design System (`globals.css`) để bảo đảm tính nhất quán trường tồn khi hệ thống mở rộng lên hàng chục module.
 
 ---
 
@@ -156,10 +180,11 @@ Tài liệu này là "Save Point" (Điểm Nhớ Toàn Diện) tổng hợp toà
 
 | Công cụ / Skill | Đường dẫn | Công dụng & Cách kích hoạt |
 | :--- | :--- | :--- |
-| **`@module-ui-architect`** | [`.agents/skills/module-ui-architect/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/module-ui-architect/SKILL.md) | Tự động thiết kế, lập trình và chuẩn hóa UI/UX các Module theo đúng chuẩn Dynamic Design, Gating, State Management, Zero-Truncation Typography & ErrorBoundary. |
-| **`@sync-drive-materials`** | [`.agents/skills/sync-drive-materials/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/sync-drive-materials/SKILL.md) | Tự động quét Google Drive bằng Service Account, lấy File ID và nhúng 15 Slide bài giảng vào `courseMaterials.ts`. |
-| **`@standardize-prd`** | [`.agents/skills/standardize-prd/SKILL.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/standardize-prd/SKILL.md) | Đọc file Word `.docx` mới và đồng bộ tự động vào `PRD_Master.md`. |
-| **1-Click Chuẩn Hóa Tool** | [`🚀_1_CLICK_CAP_NHAT_CHUAN_HOA.md`](file:///c:/Users/ADMIN/OneDrive/Desktop/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/%F0%9F%9A%80_1_CLICK_CAP_NHAT_CHUAN_HOA.md) | File lệnh mẫu 1-click dán vào chat để AI tự động kiểm tra, rà soát và chuẩn hóa toàn bộ hệ thống. |
+| **`@module-ui-architect`** | [`.agents/skills/module-ui-architect/SKILL.md`](file:///g:/Business/Teaching/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/module-ui-architect/SKILL.md) | Tự động thiết kế, lập trình và chuẩn hóa UI/UX các Module theo đúng chuẩn Dynamic Design, Gating, State Management, Header Action Standardization (`.btn-header-action`), Zero-Truncation Typography & ErrorBoundary. |
+| **`@standardize-module`** | [`export-sales-hub/.agents/skills/standardize-module/SKILL.md`](file:///g:/Business/Teaching/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/export-sales-hub/.agents/skills/standardize-module/SKILL.md) | Quy trình chuẩn hóa từng Module cụ thể theo 8 bước tự động khép kín. |
+| **`@sync-drive-materials`** | [`.agents/skills/sync-drive-materials/SKILL.md`](file:///g:/Business/Teaching/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/sync-drive-materials/SKILL.md) | Tự động quét Google Drive bằng Service Account, lấy File ID và nhúng 15 Slide bài giảng vào `courseMaterials.ts`. |
+| **`@standardize-prd`** | [`.agents/skills/standardize-prd/SKILL.md`](file:///g:/Business/Teaching/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/.agents/skills/standardize-prd/SKILL.md) | Đọc file Word `.docx` mới và đồng bộ tự động vào `PRD_Master.md`. |
+| **1-Click Chuẩn Hóa Tool** | [`🚀_1_CLICK_CAP_NHAT_CHUAN_HOA.md`](file:///g:/Business/Teaching/Website%20Chuy%C3%AAn%20trang%20H%E1%BB%8Dc%20t%E1%BA%ADp%20XK%20B2B/%F0%9F%9A%80_1_CLICK_CAP_NHAT_CHUAN_HOA.md) | File lệnh mẫu 1-click dán vào chat để AI tự động kiểm tra, rà soát và chuẩn hóa toàn bộ hệ thống. |
 
 ---
 
